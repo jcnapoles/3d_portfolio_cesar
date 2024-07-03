@@ -46,7 +46,7 @@ const Navbar = () => {
         > 
         <img src={logo} alt='logo' className='w-9 h-9 object-contain' />          
           <div className='w-1 h-9 bg-white'></div>       
-          <p className='text-white text-[36px] font-bold cursor-pointer flex '>
+          <p className='text-white text-[24px] font-bold cursor-pointer flex '>
             Cesar Napoles
            
           </p>
