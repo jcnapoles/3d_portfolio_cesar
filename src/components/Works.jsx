@@ -104,7 +104,7 @@ const Works = () => {
         setCurrentSlide((prevSlide) => prevSlide + 1);
         carouselRef.current.goTo(currentSlide + 1);
       }
-    }, 13000); // Adjust the duration between slides as needed (12 seconds in this example)
+    }, 5000); // Adjust the duration between slides as needed (12 seconds in this example)
 
     return () => {
       clearInterval(interval);
@@ -133,20 +133,19 @@ const Works = () => {
         <Carousel
           ref={carouselRef}
           isRTL={false}
-          pagination={true} // Show dots for paging
-          transitionMs={12000} // Animation speed
+          pagination={true}
+          transitionMs={8000} // Animation speed
           easing={"ease"} // transition easing pattern
           tiltEasing={"ease"} // transition easing pattern for the tilt
-          enableTilt={false} // The “bump” animation when reaching the last item
-          //itemsToShow={3}   // Number of visible items
-          //itemsToScroll={1} // Number of items to scroll
+          enableTilt={false} // The “bump” animation when reaching the last item        
+          itemsToScroll={1} // Number of items to scroll
           breakPoints={breakPoints} // Collection of objects with a width, itemsToShow and itemsToScroll
           initialActiveIndex={currentSlide} // The initial active index when the component mounts
           showArrows={false} // Show the arrow buttons
           focusOnSelect={true} // Go to item on click
           itemPadding={[0, 1]} // A padding for each element
-          enableAutoPlay={true} // Enable or disable auto play
-          autoPlaySpeed={currentSlide === webDevProjects.length - 1 ? 3000 : 13000}
+          enableAutoPlay={false} // Enable or disable auto play
+          autoPlaySpeed={currentSlide === webDevProjects.length - 1 ? 3000 : 8000}
         >
           
           {projects.map((project, index) => (
@@ -161,4 +160,4 @@ const Works = () => {
   );
 };
 
-export default SectionWrapper(Works, "");
+export default SectionWrapper(Works, "projects");

@@ -94,12 +94,12 @@ const Feedbacks = () => {
             isRTL={false}
             pagination={true}
             transitionMs={2000} // Set the duration for each item transition
-            enableAutoPlay={false} // Disable auto play
+            enableAutoPlay={true} // Disable auto play
             enableTilt={false}
             breakPoints={breakPoints}
             showArrows={false}
-            focusOnSelect={false}
-            itemPadding={[0, 1]}
+            focusOnSelect={true}
+          
             initialActiveIndex={currentSlide}
           >
             {testimonials.map((testimonial, index) => (
@@ -107,8 +107,7 @@ const Feedbacks = () => {
                 <FeedbackCard index={index} {...testimonial} />
               </div>
             ))}
-          </Carousel>
-          <div style={{ height: '20px' }}></div>
+          </Carousel>          
         </div>
       </div>
     </>
