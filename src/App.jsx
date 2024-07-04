@@ -19,17 +19,18 @@ const App = () => {
   useFavicon();
   return (
     <BrowserRouter>
-      <div className='relative z-0 bg-primary'>        
+      <div className='relative z-0'>        
         <Navbar />
-        <Hero />
+        <Hero /> 
         <About />
-        <Experience />
+        <Experience />        
         <Tech />
         <Works />
-        <Feedbacks />       
-        <Contact />     
-        <StarsCanvas />
+        <Feedbacks />
+        <Contact />
+        <StarsCanvas />      
       </div>
+      
     </BrowserRouter>
   );
 }
