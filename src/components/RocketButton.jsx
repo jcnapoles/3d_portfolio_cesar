@@ -30,7 +30,7 @@ const RocketButton = () => {
   const handleLaunch = () => {
     if (!isLaunched) {     
       setIsLaunched(true);         
-      setTimeout(() => setIsLaunched(false), 2000);
+      setTimeout(() => setIsLaunched(false), 500);
     }
   };
 

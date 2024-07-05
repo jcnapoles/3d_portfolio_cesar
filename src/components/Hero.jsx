@@ -11,9 +11,9 @@ const Hero = () => {
       <div
         className={`absolute inset-0 max-w-7xl mx-auto ${styles.paddingX} flex flex-row justify-center items-center gap-5`}
       >
-        <div className='flex flex-col justify-center items-center mt-5'>
+        <div className='flex flex-col justify-center items-center'>
           <div className='w-5 h-5 rounded-full bg-[#915EFF]' />
-          <div className='w-1 sm:h-80 h-40 violet-gradient' />
+          <div className='w-1 h-80 violet-gradient' />
         </div>
         <Tilt  options={{ max: 25, scale: 1.05 }}>
         <div className="flex flex-col justify-center items-center mt-5">
@@ -27,7 +27,7 @@ const Hero = () => {
             </p>   
            
           </div>
-          <div className="mb-14" >
+          <div className="mb-28" >
             <img width="200" height="200" src='/cesar.webp' alt='Cesar Napoles' className='mt-5 order-1 object-cover  p-1 md:order-2 rotate-3 lg:p-2 lg:w-44 aspect-square rounded-2xl bg-black/20 dark:bg-yellow-500/5 ring-1 ring-black/70 dark:ring-white/20 ' style={{borderRadius: "50%"}} />
             <a
               href="/#contact"      
