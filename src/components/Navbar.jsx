@@ -69,7 +69,7 @@ const Navbar = () => {
             <a
               href="/Cesar_Napoles_CV.pdf"
               download
-              className='bg-[#915EFF] text-white px-4 py-2 rounded hover:bg-primary text-[18px] font-medium cursor-pointertext-white text-[18px] font-medium cursor-pointer'
+              className='bg-tertiary text-white px-4 py-2 rounded hover:bg-[#915EFF] text-[18px] font-medium cursor-pointertext-white text-[18px] font-medium cursor-pointer'
             >
               Download CV <sup>PDF</sup>
             </a>
@@ -109,7 +109,7 @@ const Navbar = () => {
                   <a
                     href="/Cesar_Napoles_CV.pdf"
                     download
-                    className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 text-[18px] font-medium cursor-pointertext-white text-[18px] font-medium cursor-pointer'
+                    className='bg-[#915EFF] text-white px-4 py-2 rounded hover:bg-[#915EFF] text-[18px] font-medium cursor-pointertext-white text-[18px] font-medium cursor-pointer'
                   >
                    <FontAwesomeIcon icon={faDownload} /> CV <sup>PDF</sup>
                   </a>
