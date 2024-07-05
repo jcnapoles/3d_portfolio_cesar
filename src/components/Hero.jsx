@@ -1,7 +1,9 @@
-import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
+import { motion } from "framer-motion";
 import { styles } from "../styles";
 import Badge from "./Badge";
+import RocketButton from "./RocketButton";
+
 
 const Hero = () => {
   return (
@@ -44,18 +46,21 @@ const Hero = () => {
 
       <div className='absolute xs:bottom-5 bottom-24 w-full flex justify-center items-center'>
         <a href='#about'>
-          <div className='w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2'>
-            <motion.div
+          <div className='flex justify-center items-start p-2'>
+          <motion.div
               animate={{
-                y: [0, 24, 0],
+                y: [0, 30, 0],
               }}
               transition={{
-                duration: 1.5,
+                duration: 2,
                 repeat: Infinity,
                 repeatType: "loop",
               }}
-              className='w-3 h-3 rounded-full bg-secondary mb-1'
-            />
+              className='w-1 h-5 rounded-full mb-5 sm:mb-28'
+            >
+              <RocketButton />
+            </motion.div>
+            
           </div>
         </a>
       </div>
