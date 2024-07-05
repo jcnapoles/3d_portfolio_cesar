@@ -26,13 +26,10 @@ const RocketSVG = () => (
 
 const RocketButton = () => {
   const [isLaunched, setIsLaunched] = useState(false);
-  const audio = new Audio('/sounds/launch.mp3');
 
   const handleLaunch = () => {
-    if (!isLaunched) {
-      audio.play();
-      setIsLaunched(true);
-      audio.currentTime = 0;     
+    if (!isLaunched) {     
+      setIsLaunched(true);         
       setTimeout(() => setIsLaunched(false), 2000);
     }
   };

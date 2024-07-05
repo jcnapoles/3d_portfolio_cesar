@@ -27,7 +27,7 @@ const Hero = () => {
             </p>   
            
           </div>
-          <div className="" >
+          <div className="mb-14" >
             <img width="200" height="200" src='/cesar.webp' alt='Cesar Napoles' className='mt-5 order-1 object-cover  p-1 md:order-2 rotate-3 lg:p-2 lg:w-44 aspect-square rounded-2xl bg-black/20 dark:bg-yellow-500/5 ring-1 ring-black/70 dark:ring-white/20 ' style={{borderRadius: "50%"}} />
             <a
               href="/#contact"      
@@ -45,8 +45,8 @@ const Hero = () => {
    
 
       <div className='absolute xs:bottom-5 bottom-24 w-full flex justify-center items-center'>
-        <a href='#about'>
-          <div className='flex justify-center items-start p-2'>
+       
+          <div className='flex justify-center items-start p-2 mb-7 sm:mb-10'>
           <motion.div
               animate={{
                 y: [0, 30, 0],
@@ -56,13 +56,15 @@ const Hero = () => {
                 repeat: Infinity,
                 repeatType: "loop",
               }}
-              className='w-1 h-5 rounded-full mb-5 sm:mb-28'
+              className='w-1 h-5 rounded-full mb-6 sm:mb-28'
             >
+               <a href='#about'>
               <RocketButton />
+              </a>
             </motion.div>
             
           </div>
-        </a>
+        
       </div>
     </section>
   );
