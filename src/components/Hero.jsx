@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-
+import Tilt from "react-parallax-tilt";
 import { styles } from "../styles";
 import Badge from "./Badge";
 
@@ -13,8 +13,8 @@ const Hero = () => {
           <div className='w-5 h-5 rounded-full bg-[#915EFF]' />
           <div className='w-1 sm:h-80 h-40 violet-gradient' />
         </div>
-
-       <div className="flex flex-col justify-center items-center mt-5">
+        <Tilt  options={{ max: 25, scale: 1.05 }}>
+        <div className="flex flex-col justify-center items-center mt-5">
         <div>
             <h1 className={`${styles.heroHeadText} text-white`}>
               Hi, I'm <span className='text-[#915EFF]'>Cesar</span>
@@ -35,7 +35,9 @@ const Hero = () => {
               <Badge>Available to work! 🔗</Badge>
             </a>
           </div>           
-       </div>   
+       </div> 
+        </Tilt>
+         
       </div>
       
    

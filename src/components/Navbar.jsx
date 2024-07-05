@@ -32,7 +32,7 @@ const Navbar = () => {
       className={`${
         styles.paddingX
       } w-full flex items-center py-5 fixed top-0 z-20 ${
-        scrolled ? "bg-primary" : "bg-transparent"
+        scrolled ? "bg-tertiary" : "bg-transparent"
       }`}
     >
       <div className='w-full flex justify-between items-center max-w-7xl mx-auto'>
@@ -69,7 +69,7 @@ const Navbar = () => {
             <a
               href="/Cesar_Napoles_CV.pdf"
               download
-              className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 text-[18px] font-medium cursor-pointertext-white text-[18px] font-medium cursor-pointer'
+              className='bg-[#915EFF] text-white px-4 py-2 rounded hover:bg-primary text-[18px] font-medium cursor-pointertext-white text-[18px] font-medium cursor-pointer'
             >
               Download CV <sup>PDF</sup>
             </a>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import Tilt from "react-parallax-tilt";
 import Carousel from '@itseasy21/react-elastic-carousel';
 import { styles } from "../styles";
 import { SectionWrapper } from "../hoc";
@@ -17,9 +18,17 @@ const FeedbackCard = ({
   image,
 }) => (
   <motion.div
-  variants={fadeIn("", "spring", index * 0.5, 0.75)}
-  className='bg-black-200 p-10 rounded-3xl xs:w-[320px] w-full flex flex-col justify-center items-center'
+  variants={fadeIn("up", "spring", index * 0.5, 0.75)}
+  
 >
+<Tilt
+        options={{
+          max: 45,
+          scale: 1,
+          speed: 450,
+        }}
+        className='p-5 rounded-2xl sm:w-[360px] w-full'
+      >
   <div className='mt-1 flex-grow flex flex-col justify-between'>
     <p className='text-white tracking-wider text-[18px]'>" {testimonial} "</p>
     <div className='mt-7 flex flex-col items-center gap-1'>
@@ -48,6 +57,7 @@ const FeedbackCard = ({
       </div>
     </div>
   </div>
+  </Tilt>
 </motion.div>
 );
 
