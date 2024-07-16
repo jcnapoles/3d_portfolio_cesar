@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
 import { styles } from "../styles";
 import { navLinks } from "../constants";
 import { logo, menu, close } from "../assets";
+import AnimatedButton from  "./buttons/AnimatedButton";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
@@ -29,9 +29,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`${
-        styles.paddingX
-      } w-full flex items-center py-5 fixed top-0 z-20 ${
+      className={`${styles.paddingX} w-full flex items-center py-5 fixed top-0 z-20 ${
         scrolled ? "bg-tertiary" : "bg-transparent"
       }`}
     >
@@ -43,12 +41,11 @@ const Navbar = () => {
             setActive("");
             window.scrollTo(0, 0);
           }}
-        > 
-        <img src={logo} alt='logo' className='w-9 h-9 object-contain' />          
-          <div className='w-1 h-9 bg-white'></div>       
+        >
+          <img src={logo} alt='logo' className='w-9 h-9 object-contain' />
+          <div className='w-1 h-9 bg-white'></div>
           <p className='text-white text-[24px] font-bold cursor-pointer flex '>
             Cesar Napoles
-           
           </p>
         </Link>
 
@@ -64,15 +61,10 @@ const Navbar = () => {
               <a href={`#${nav.id}`}>{nav.title}</a>
             </li>
           ))}
-
-        <li>
-            <a
-              href="/Cesar_Napoles_CV.pdf"
-              download
-              className='bg-tertiary text-white px-4 py-2 rounded hover:bg-[#915EFF] text-[18px] font-medium cursor-pointertext-white text-[18px] font-medium cursor-pointer'
-            >
-              Download CV <sup>PDF</sup>
-            </a>
+          <li>
+            <AnimatedButton href="/Cesar_Napoles_CV.pdf" download>
+              <FontAwesomeIcon icon={faDownload} /> Download CV <sup>PDF</sup>
+            </AnimatedButton>
           </li>
         </ul>
 
@@ -105,15 +97,11 @@ const Navbar = () => {
                   <a href={`#${nav.id}`}>{nav.title}</a>
                 </li>
               ))}
-               <li>
-                  <a
-                    href="/Cesar_Napoles_CV.pdf"
-                    download
-                    className='bg-[#915EFF] text-white px-4 py-2 rounded hover:bg-[#915EFF] text-[18px] font-medium cursor-pointertext-white text-[18px] font-medium cursor-pointer'
-                  >
-                   <FontAwesomeIcon icon={faDownload} /> CV <sup>PDF</sup>
-                  </a>
-                </li>
+              <li>
+                <AnimatedButton href="/Cesar_Napoles_CV.pdf" download>
+                  <FontAwesomeIcon icon={faDownload} /> CV <sup>PDF</sup>
+                </AnimatedButton>
+              </li>
             </ul>
           </div>
         </div>

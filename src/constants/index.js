@@ -280,9 +280,9 @@ const projects = [
     source_code_link: "https://github.com/jcnapoles/Tic-Tac-Toe",
   },
   {
-    name: "Interview Questions",
+    name: "Fullstack Questions",
     description:
-      "A web application that helps users prepare for technical interviews. It includes a list of common interview questions, a code editor, and a timer.",
+      "A web application that helps users prepare for technical interviews. It includes a list of common interview questions, answers, and explanations.",
     tags: [
       {
         name: "nextjs",
@@ -298,7 +298,7 @@ const projects = [
       },
     ],
     image: interviewquestions,
-    link: "https://interview-fullstack.vercel.app",
+    link: "https://fullstack.cesarnapoles.com",
     source_code_link: "https://github.com/jcnapoles/interview-docs",
   },
 ];
