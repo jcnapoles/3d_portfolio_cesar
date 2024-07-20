@@ -238,7 +238,7 @@ const projects = [
   {
     name: "Suneidis' Portfolio",
     description:
-      "An online portfolio that showcases my skills and experience as a web developer. It includes a brief introduction, a list of projects, and a contact form.",
+      "An online portfolio that showcases her skills and experience as a QA Tester. It includes a brief introduction, a list of projects, and a contact form.",
     tags: [
       {
         name: "astro",
