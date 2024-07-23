@@ -97,8 +97,8 @@ const experiences = [
     points: [
       "Developing and maintaining web applications using PHP and other related technologies.",
       "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",      
-      "Development of tools to manage components (services and dependencies)",
-      "Creating database schemas and managing relational databases like MySQL, PostgreSQL",
+      "Development of tools to manage components (services and dependencies).",
+      "Creating database schemas and managing relational databases like MySQL, PostgreSQL.",
     ],
   },
   {
@@ -108,10 +108,10 @@ const experiences = [
     iconBg: "#E6DEDD",
     date: "Sep 2014 - Aug 2016",
     points: [
-      "Performing manual testing activities such as functional testing, regression testing, and exploratory testing",
-      "Writing automated test scripts using tools like Selenium WebDriver",
+      "Performing manual testing activities such as functional testing, regression testing, and exploratory testing.",
+      "Writing automated test scripts using tools like Selenium WebDriver.",
       "Validating API functionality through techniques like endpoint testing, request and response validation, and data manipulation testing.",
-      "Designing and executing performance testing scenarios using tools like JMeter",
+      "Designing and executing performance testing scenarios using tools like JMeter.",
     ],
   },
   {
@@ -124,7 +124,7 @@ const experiences = [
       "Analysis, design, and development of business applications.",
       "Technical and functional consulting.",
       "Writing complex SQL queries to extract insights from structured databases.",
-      "Developing data pipelines to ingest, process, and analyze large volumes of data using technologies like Hadoop MapReduce."
+      "Developing data pipelines to ingest, process, and analyze large volumes of data using technologies like Hadoop MapReduce.",
     ],
   }, 
   {
@@ -133,24 +133,26 @@ const experiences = [
     icon: isern,
     iconBg: "#E6DEDD",
     date: "Aug 2018 - May 2021",
-    points: [
-      "Developing and maintaining web applications using React.js and other related technologies.",
-      "Technical and functional consulting.",
+    points: [     
+      "Experience with cloud platforms like AWS, Azure, and Google Cloud Platform.",
       "Development, maintenance and migration of legacy applications, JAVA, Angular, Spring, React.js",
-      "Strong problem-solving abilities and the ability to troubleshoot complex data processing issues",
+      "Strong problem-solving abilities and the ability to troubleshoot complex data processing issues.",
+      "Experience with continuous integration and continuous deployment (CI/CD) tools like Jenkins and GitLab CI/CD.",
     ],
   },
   {
-    title: "Full Stack Developer",
+    title: "Full Stack Dev / Project Manager",
     company_name: "Amaris Consulting",
     icon: amaris,
     iconBg: "#E6DEDD",
     date: "May 2021 - Present",
     points: [
-      "Designing and developing responsive user interfaces using HTML, CSS, and JavaScript frameworks such as React.js and Angular",
-      "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",
-      "Implementing responsive design and ensuring cross-browser compatibility.",
+      "Designing and developing responsive user interfaces using HTML, CSS, and JavaScript frameworks such as React.js and Angular.",
+      "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",      
       "Familiarity with containerization technologies like Docker and orchestration tools like Kubernetes.",
+      "Leading a team of developers, QAs and designers to deliver high-quality software solutions on time and within budget.",
+      "Planning, executing, and managing projects from start to finish.",
+    
     ],
   },    
   
