@@ -141,7 +141,7 @@ const experiences = [
     ],
   },
   {
-    title: "Full Stack Dev / Project Manager",
+    title: "Full Stack Dev | Project Manager",
     company_name: "Amaris Consulting",
     icon: amaris,
     iconBg: "#E6DEDD",
