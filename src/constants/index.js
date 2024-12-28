@@ -12,6 +12,7 @@ import {
   java,
   reactjs, 
   amaris,
+  caixabanktech,
   myportfolio,
   investanalysis,
   interviewquestions,
@@ -144,8 +145,8 @@ const experiences = [
     title: "Full Stack Dev | Project Manager",
     company_name: "Amaris Consulting",
     icon: amaris,
-    iconBg: "#E6DEDD",
-    date: "May 2021 - Present",
+    iconBg: "#272774",
+    date: "May 2021 - Oct 2024",
     points: [
       "Designing and developing responsive user interfaces using HTML, CSS, and JavaScript frameworks such as React.js and Angular.",
       "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",      
@@ -154,7 +155,21 @@ const experiences = [
       "Planning, executing, and managing projects from start to finish.",
     
     ],
-  },    
+  },
+  {
+    title: "Software Engineer Pro",
+    company_name: "CaixaBank Tech",
+    icon: caixabanktech,
+    iconBg: "#000000",
+    date: "Oct 2024 - Present",
+    points: [
+      "Designing and developing responsive user interfaces, components and pages using HTML, CSS, and JavaScript frameworks like React.js.",
+      "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.", 
+      "Developing microservices using Java, Spring Boot, and other related technologies.",
+      "Creating and maintaining large-scale distributed systems using technologies like Kafka.",    
+    
+    ],
+  },        
   
 ];
 

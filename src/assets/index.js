@@ -24,6 +24,7 @@ import threejs from "./tech/threejs.svg";
 import uci from "./company/uci.png";
 import indra from "./company/indra.svg";
 import amaris from "./company/amaris.svg";
+import caixabanktech from "./company/caixabanktech.png";
 import isern from "./company/isern.png";
 
 import myportfolio from "./projects/myportfolio.jpg";
@@ -70,6 +71,7 @@ export {
   uci,
   indra,
   amaris,
+  caixabanktech,
   isern,
   myportfolio,
   investanalysis,
