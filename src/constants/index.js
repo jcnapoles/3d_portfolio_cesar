@@ -244,8 +244,8 @@ const testimonials = [
     testimonial:
       "After Cesar optimized our website, our traffic increased by 50%. We can't thank him enough!",
     name: "Erasmo Garcia",
-    designation: "Software Engineer",
-    company: "Glofox",
+    designation: "CTO",
+    company: "Sttok",
     linkedin: "https://www.linkedin.com/in/erasmogarciaglez",
     image: "/testimonials/erasmo.jpeg",
   },
