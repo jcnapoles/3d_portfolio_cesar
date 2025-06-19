@@ -45,6 +45,9 @@ import php from "./tech/php.svg";
 import heroku from "./tech/heroku.svg";
 import jenkins from "./tech/jenkins.svg";
 import world from "./company/world.png";
+import fiatc from "./company/fiatc.svg";
+import sttok from "./company/sttok_logo.png";
+import flyr from "./company/flyr.svg";
 
 export {
   logo,
@@ -73,6 +76,9 @@ export {
   indra,
   amaris,
   world,
+  flyr,
+  sttok,
+  fiatc,
   caixabanktech,
   isern,
   myportfolio,
