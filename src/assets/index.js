@@ -44,6 +44,7 @@ import bootstrap from "./tech/bootstrap.svg";
 import php from "./tech/php.svg";
 import heroku from "./tech/heroku.svg";
 import jenkins from "./tech/jenkins.svg";
+import world from "./company/world.png";
 
 export {
   logo,
@@ -71,6 +72,7 @@ export {
   uci,
   indra,
   amaris,
+  world,
   caixabanktech,
   isern,
   myportfolio,

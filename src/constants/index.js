@@ -12,6 +12,7 @@ import {
   java,
   reactjs, 
   amaris,
+  world,
   caixabanktech,
   myportfolio,
   investanalysis,
@@ -156,6 +157,21 @@ const experiences = [
     
     ],
   },
+  {
+    title: "Fractional CTO",
+    company_name: "Multiple Startups & SMEs (AdTech, Fintech, HealthTech)",
+    icon: world, 
+    iconBg: "#1F2937",
+    date: "Jan 2022 - Present",
+    points: [
+      "Provided strategic technical leadership as a Fractional CTO across 10+ projects in diverse sectors including advertising, healthcare, banking, and retail.",
+      "Defined scalable architectures, led cloud migrations (AWS, GCP), and structured DevOps processes using tools like Docker and Kubernetes.",
+      "Led technical hiring processes, defined technical OKRs, and aligned product roadmaps with business objectives.",
+      "Mentored internal teams, improved engineering culture, and implemented agile development best practices (Scrum, CI/CD).",
+      "Notable examples: launched MVP for an AdTech startup, conducted tech audit for a European fintech, deployed GDPR/HIPAA-compliant telehealth platform."
+    ],
+  },
+  
   {
     title: "Software Engineer Pro",
     company_name: "CaixaBank Tech",
