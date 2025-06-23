@@ -165,7 +165,7 @@ const experiences = [
   company_name: "FIATC Seguros",
   icon: fiatc,
   iconBg: "#E6DEDD",
-  date: "Jan 2023 - October 2024",
+  date: "Jan 2023 - Oct 2024",
   points: [
     "Acted as a fractional CTO for internal digital transformation projects within the insurance sector.",
     "Led the complete redesign and migration of the internal intranet platform to Liferay, replacing a legacy CMS with a scalable and maintainable solution.",
@@ -179,7 +179,7 @@ const experiences = [
   company_name: "Flyr",
   icon: flyr, 
   iconBg: "#E6DEDD",
-  date: "Mar 2023 - Sep 2025",
+  date: "Mar 2023 - Sep 2024",
   points: [
     "Led the frontend architecture for white-label airline applications deployed for FlyArystan, HKExpress, JSX, and PlusUltra.",
     "Defined a modular architecture enabling rapid deployment of new airline apps with shared core components.",
