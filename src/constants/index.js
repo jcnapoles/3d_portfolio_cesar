@@ -238,7 +238,7 @@ const experiences = [
 const testimonials = [
   {
     testimonial:
-      "I thought it was impossible to make a website as beautiful as our product, but Cesar proved me wrong.",
+      "As a fractional CTO, Cesar aligned our tech strategy with the product vision, unblocked key decisions, and raised engineering quality without slowing delivery.",
     name: "Lazaro Campoalegre",
     designation: "EP Manager",
     company: "AiFi Inc",
@@ -247,7 +247,7 @@ const testimonials = [
   },
   {
     testimonial:
-      "I've never met a web developer who truly cares about their clients' success like Cesar does.",
+      "Cesar stepped in as a fractional CTO and brought structure to our processes: CI/CD, testing culture, and pragmatic architecture that empowered the team.",
     name: "Suneidis Vinent",
     designation: "QA Engineer",
     company: "Amaris",
@@ -256,12 +256,21 @@ const testimonials = [
   },
   {
     testimonial:
-      "After Cesar optimized our website, our traffic increased by 50%. We can't thank him enough!",
+      "Acting as our fractional CTO, Cesar led our cloud migration and architecture modernization—AWS, security, and performance—enabling faster releases and stability.",
     name: "Erasmo Garcia",
     designation: "CTO",
     company: "Sttok",
     linkedin: "https://www.linkedin.com/in/erasmogarciaglez",
     image: "/testimonials/erasmo.jpeg",
+  },
+  {
+    testimonial:
+      "Cesar guided us as a fractional CTO at a critical stage—clarifying the architecture, prioritizing the roadmap, and establishing standards that helped us scale with confidence.",
+    name: "Reynier Ortiz Tamayo",
+    designation: "COO",
+    company: "Cashela",
+    linkedin: "https://www.linkedin.com/in/reynier-ortiz-tamayo/",
+    image: "/testimonials/reynier.jpeg",
   },
 ];
 
@@ -269,7 +278,7 @@ const projects = [
   {
     name: "Closevibe",
     description:
-      "SaaS platform for AI-powered sales assistant that automates lead management and customer support across WhatsApp, Instagram, Messenger, and Email. Allows training assistants with documents, voice notes, and business context, integrating follow-up automation and intelligent responses to boost conversions.",
+  "AI-powered sales and support platform that orchestrates multichannel assistants across WhatsApp, Instagram, Messenger, and Email. Enables training with documents and voice notes, automates follow‑ups, and delivers context‑aware responses to increase conversion at scale.",
     tags: [
       {
         name: "reactjs",
@@ -299,7 +308,7 @@ const projects = [
   {
     name: "My Portfolio",
     description:
-      "An 3D online portfolio that showcases my skills and experience as a web developer. It includes a brief introduction, a list of my projects, and a contact form.",
+  "Interactive 3D portfolio showcasing selected projects, technical expertise, and experience. Built with performant Three.js/React patterns, responsive UI, and smooth micro‑interactions.",
     tags: [
       {
         name: "three.js",
@@ -321,7 +330,7 @@ const projects = [
   {
     name: "Invest Analysis",
     description:
-      "Web application that allows users to analyze the performance of their investments. It includes features like a stock screener, a portfolio tracker, and a news feed.",
+  "Investment analytics web app featuring a stock screener, portfolio tracking, and curated news. Provides data‑driven dashboards, custom filters, and actionable signals for better decisions.",
     tags: [
       {
         name: "typescript",
@@ -351,7 +360,7 @@ const projects = [
   {
     name: "Suneidis' Portfolio",
     description:
-      "An online portfolio that showcases her skills and experience as a QA Tester. It includes a brief introduction, a list of projects, and a contact form.",
+  "Clean, responsive portfolio for a QA Engineer highlighting experience, selected work, and contact. Optimized for performance, accessibility, and maintainability.",
     tags: [
       {
         name: "astro",
@@ -373,7 +382,7 @@ const projects = [
   {
     name: "Tic Tac Toe Game",
     description:
-      "A simple tic-tac-toe game that allows two players to play against each other. It includes features like a score tracker and a restart button.",
+  "Lightweight React game demonstrating component composition and state management. Includes score tracking and restart controls with concise, testable logic.",
     tags: [
       {
         name: "css",
@@ -395,7 +404,7 @@ const projects = [
   {
     name: "Fullstack Questions",
     description:
-      "A web application that helps users prepare for technical interviews. It includes a list of common interview questions, answers, and explanations.",
+  "Interview preparation app with curated full‑stack questions, detailed explanations, and references. Designed for efficient study with tagging, filtering, and practical examples.",
     tags: [
       {
         name: "nextjs",
