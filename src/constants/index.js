@@ -12,7 +12,7 @@ import {
   java,
   reactjs, 
   amaris,
-  world,
+  closevibe,
   flyr,
   sttok,
   fiatc,
@@ -21,7 +21,8 @@ import {
   investanalysis,
   interviewquestions,
   suneidisportfolio,
-  tictactoe,  
+  tictactoe,
+  closevibeweb,  
 } from "../assets";
 
 
@@ -76,6 +77,7 @@ const technologies = [
     name: "JavaScript",
     icon: javascript,
   },
+  
   {
     name: "Spring",
     icon: spring,
@@ -88,8 +90,6 @@ const technologies = [
     name: "Angular",
     icon: angular,
   }, 
-    
-
 ];
 
 const experiences = [
@@ -217,7 +217,21 @@ const experiences = [
       "Creating and maintaining large-scale distributed systems using technologies like Kafka.",    
     
     ],
-  },        
+  },
+  
+  {
+    title: "Founder & CTO",
+    company_name: "Closevibe",
+    icon: closevibe,
+    iconBg: "#E6DEDD",
+    date: "Jul 2025 - Present",
+    points: [
+      "Founder and CTO of Closevibe, a SaaS platform for AI-powered sales and customer support automation across WhatsApp, Instagram, Messenger, and Email.",
+      "Led the design and development of the multichannel architecture, integrating trainable conversational assistants and automated lead follow-up.",
+      "Implemented custom AI solutions, channel integrations, and cloud deployment to scale to thousands of users.",
+      "Responsible for technical vision, product strategy, and building multidisciplinary teams."
+    ]
+  },
   
 ];
 
@@ -253,6 +267,36 @@ const testimonials = [
 
 const projects = [
   {
+    name: "Closevibe",
+    description:
+      "SaaS platform for AI-powered sales assistant that automates lead management and customer support across WhatsApp, Instagram, Messenger, and Email. Allows training assistants with documents, voice notes, and business context, integrating follow-up automation and intelligent responses to boost conversions.",
+    tags: [
+      {
+        name: "reactjs",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "nodejs",
+        color: "green-text-gradient",
+      },
+      {
+        name: "tailwind",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "openai",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "cloud",
+        color: "gray-text-gradient",
+      },
+    ],
+    image: closevibeweb,
+    link: "https://www.closevibe.com/",
+    source_code_link: "",
+  },
+  {
     name: "My Portfolio",
     description:
       "An 3D online portfolio that showcases my skills and experience as a web developer. It includes a brief introduction, a list of my projects, and a contact form.",
@@ -284,8 +328,12 @@ const projects = [
         color: "blue-text-gradient",
       },
       {
+        name: "nodejs",
+        color: "green-text-gradient",
+      },
+      {
         name: "tailwind",
-        color: "blue-text-gradientt",
+  color: "blue-text-gradient",
       },
       {
         name: "nextjs",
@@ -356,6 +404,10 @@ const projects = [
       {
         name: "typescript",
         color: "blue-text-gradient",
+      },
+      {
+        name: "nodejs",
+        color: "green-text-gradient",
       },
       {
         name: "css",

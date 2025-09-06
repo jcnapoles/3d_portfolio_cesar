@@ -26,12 +26,14 @@ import indra from "./company/indra.svg";
 import amaris from "./company/amaris.svg";
 import caixabanktech from "./company/caixabanktech.png";
 import isern from "./company/isern.png";
+import closevibe from "./company/closevibe.png";
 
 import myportfolio from "./projects/myportfolio.jpg";
 import investanalysis from "./projects/investanalysis.jpg";
 import interviewquestions from "./projects/interviewquestions.jpg";
 import suneidisportfolio from "./projects/suneidisportfolio.jpg";
 import tictactoe from "./projects/tic-tac-toe.jpg";
+import closevibeweb from "./projects/closevibeweb.jpg";
 import java from "./tech/java.svg";
 import spring from "./tech/spring.svg";
 import angular from "./tech/angular.svg";
@@ -80,11 +82,13 @@ export {
   sttok,
   fiatc,
   caixabanktech,
+  closevibe,
   isern,
   myportfolio,
   investanalysis,
   interviewquestions, 
   suneidisportfolio,
+  closevibeweb,
   tictactoe, 
   spring,
   angular,
