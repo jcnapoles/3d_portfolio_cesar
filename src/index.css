@@ -4,6 +4,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Continuous marquee animation for Projects */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-33.333333%); }
+}
+
+.animate-marquee {
+  animation: marquee-scroll var(--duration, 30s) linear infinite;
+}
+
+/* Pause marquee when hovering anywhere inside the container */
+.group:hover .animate-marquee,
+.group:focus-within .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* Also pause if hovering/focusing directly on the track or its children */
+.animate-marquee:hover,
+.animate-marquee:focus-within {
+  animation-play-state: paused;
+}
+
+.paused {
+  animation-play-state: paused !important;
+}
+
 * {
   margin: 0;
   padding: 0;

@@ -7,7 +7,7 @@ import { styles } from "../styles";
 import { EarthCanvas } from "./canvas";
 import { SectionWrapper } from "../hoc";
 import { slideIn } from "../utils/motion";
-import { FaLinkedin, FaSkype, FaGithub } from 'react-icons/fa';
+import { FaLinkedin, FaGithub, FaRegCalendarAlt } from 'react-icons/fa';
 
 const Contact = () => {
   const formRef = useRef();
@@ -106,26 +106,32 @@ const Contact = () => {
           <a
             href="https://linkedin.com/in/jcnapoles"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
+            aria-label="Open LinkedIn profile (opens in a new tab)"
+            title="LinkedIn"
             className="flex items-center transition md:justify-center md:hover:scale-105"
           >
-            <FaLinkedin className="mr-2 text-2xl" />     
+            <FaLinkedin className="mr-2 text-2xl" aria-hidden="true" />     
           </a>
           <a
-            href="skype:live:juliocesarnapolespuente?chat"
+            href="https://calendly.com/cesarnapoles/30min"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
+            aria-label="Schedule a 30-minute meeting on Calendly (opens in a new tab)"
+            title="Book a call on Calendly"
             className="flex items-center transition md:justify-center md:hover:scale-105"
           >
-            <FaSkype className="mr-2 text-2xl" />
+            <FaRegCalendarAlt className="mr-2 text-2xl" aria-hidden="true" />
           </a>
           <a
             href="https://github.com/jcnapoles"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
+            aria-label="Open GitHub profile (opens in a new tab)"
+            title="GitHub"
             className="flex items-center transition md:justify-center md:hover:scale-105"
           >
-            <FaGithub className="mr-2 text-2xl" />
+            <FaGithub className="mr-2 text-2xl" aria-hidden="true" />
           </a>
         </div>
         <form
