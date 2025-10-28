@@ -205,7 +205,7 @@ const experiences = [
 },
   
   {
-    title: "Software Engineer Pro",
+    title: "Senior Technical Lead",
     company_name: "CaixaBank Tech",
     icon: caixabanktech,
     iconBg: "#000000",
