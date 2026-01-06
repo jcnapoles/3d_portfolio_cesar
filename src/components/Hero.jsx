@@ -28,7 +28,7 @@ const Hero = () => {
            
           </div>
           <div className="mb-28" >
-            <img width="200" height="200" src='/cesar.webp' alt='Cesar Napoles' className='mt-5 order-1 object-cover  p-1 md:order-2 rotate-3 lg:p-2 lg:w-44 aspect-square rounded-2xl bg-black/20 dark:bg-yellow-500/5 ring-1 ring-black/70 dark:ring-white/20 ' style={{borderRadius: "50%"}} />
+            <img width="200" height="200" src='/PerfilProColor.jpeg' alt='Cesar Napoles' className='mt-5 order-1 object-cover  p-1 md:order-2 rotate-3 lg:p-2 lg:w-44 aspect-square rounded-2xl bg-black/20 dark:bg-yellow-500/5 ring-1 ring-black/70 dark:ring-white/20 ' style={{borderRadius: "50%"}} />
             <a
               href="/#contact"      
               className="mt-10 ml-5 hover:bg-gray-200 transition-colors duration-200"

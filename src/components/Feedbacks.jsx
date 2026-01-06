@@ -47,7 +47,7 @@ const FeedbackCard = ({
           className='w-10 h-10 rounded-full object-cover'
           onError={(e) => {
             e.currentTarget.onerror = null; // prevent loop
-            e.currentTarget.src = '/cesar.webp';
+            e.currentTarget.src = '/PerfilProColor.jpeg';
           }}
         />
         <a
