@@ -76,30 +76,33 @@ const About = () => {
       </motion.div>
 
       
-      <div className='flex items-center'> 
-      <motion.p
-        variants={fadeIn("", "", 0.1, 1)}
-        className='mt-10 text-secondary text-[19px] max-w-3x1 leading-[35px]'
-      >
+      {/* Mobile: image on top + text below. Desktop: image floats right inside text */}
+      <div className='flex flex-col items-center md:block mt-4 md:mt-10'>
         <img 
-      width="200" 
-      height="200" 
-      src="/cesar_desktop.webp" 
-      alt={personalImageAlt} 
-      className="float-right mt-auto ml-auto mr-auto order-1 object-cover w-64 h-full p-1 md:order-2 rotate-3 lg:p-2 lg:w-64 aspect-square rounded-2xl bg-black/20 dark:bg-yellow-500/5 ring-1 ring-black/70 dark:ring-white/20 "  
-    /> 
-        I'm a hands-on tech leader and founder with 12+ years of experience shipping production 
-        software at scale. I've driven digital transformation in insurance (FIATC Seguros), 
-        scaled platforms to 250K+ users (Sttok), and currently build banking systems at 
-        CaixaBank Tech while running Closevibe — my AI-powered SaaS startup. As a Fractional CTO, 
-        I help companies go from idea to scalable product, aligning technology with business outcomes 
-        and building teams that deliver.
-      </motion.p> 
+          width="200" 
+          height="200" 
+          src="/cesar_desktop.webp" 
+          alt={personalImageAlt} 
+          className="block md:float-right object-cover w-28 h-28 md:w-64 md:h-auto p-1 rotate-3 md:ml-6 mb-4 lg:p-2 aspect-square rounded-2xl bg-black/20 dark:bg-yellow-500/5 ring-1 ring-black/70 dark:ring-white/20"  
+        />
+        <motion.p
+          variants={fadeIn("", "", 0.1, 1)}
+          className='text-secondary text-[16px] md:text-[19px] leading-[28px] md:leading-[35px]'
+        >
+          I'm a hands-on tech leader and founder with 12+ years of experience shipping production 
+          software at scale. I've driven digital transformation in insurance (FIATC Seguros), 
+          scaled platforms to 250K+ users (Sttok), and currently build banking systems at 
+          CaixaBank Tech while running Closevibe — my AI-powered SaaS startup. As a Fractional CTO, 
+          I help companies go from idea to scalable product, aligning technology with business outcomes 
+          and building teams that deliver.
+        </motion.p>
       </div>
                 
-      <div className='mt-5 flex flex-wrap gap-10 justify-center items-center'>
+      <div className='clear-both mt-5 flex flex-nowrap overflow-x-auto gap-6 snap-x snap-mandatory pb-4 md:flex-wrap md:overflow-visible md:gap-10 md:justify-center md:items-center md:snap-none md:pb-0'>
         {services.map((service, index) => (
-          <ServiceCard key={service.title} index={index} {...service} />
+          <div key={service.title} className='snap-center shrink-0'>
+            <ServiceCard index={index} {...service} />
+          </div>
         ))}
       </div>
     </>

@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide scrollbar on horizontal service cards */
+.flex.flex-nowrap.overflow-x-auto {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.flex.flex-nowrap.overflow-x-auto::-webkit-scrollbar {
+  display: none;
+}
+
 /* Continuous marquee animation for Projects */
 @keyframes marquee-scroll {
   from { transform: translateX(0); }
