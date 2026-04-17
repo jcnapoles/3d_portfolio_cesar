@@ -34,6 +34,7 @@ import interviewquestions from "./projects/interviewquestions.jpg";
 import suneidisportfolio from "./projects/suneidisportfolio.jpg";
 import tictactoe from "./projects/tic-tac-toe.jpg";
 import closevibeweb from "./projects/closevibeweb.jpg";
+import dretimediacio from "./projects/dretimediacio.jpg";
 import java from "./tech/java.svg";
 import spring from "./tech/spring.svg";
 import angular from "./tech/angular.svg";
@@ -89,6 +90,7 @@ export {
   interviewquestions, 
   suneidisportfolio,
   closevibeweb,
+  dretimediacio,
   tictactoe, 
   spring,
   angular,

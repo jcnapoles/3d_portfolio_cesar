@@ -22,7 +22,8 @@ import {
   interviewquestions,
   suneidisportfolio,
   tictactoe,
-  closevibeweb,  
+  closevibeweb,
+  dretimediacio,
 } from "../assets";
 
 
@@ -265,6 +266,15 @@ const testimonials = [
     linkedin: "https://www.linkedin.com/in/reynier-ortiz-tamayo/",
     image: "/testimonials/reynier.jpeg",
   },
+  {
+    testimonial:
+      "Cesar transformed our internal systems — he modernized legacy applications, migrated us to the cloud, and built reliable solutions that our team still depends on every day.",
+    name: "Jorge Isern",
+    designation: "Director & Managing Partner",
+    company: "Isern Patentes y Marcas",
+    linkedin: "https://www.linkedin.com/in/jorgeisern/",
+    image: "/testimonials/jorgeisern.jpg",
+  },
 ];
 
 const projects = [
@@ -403,25 +413,55 @@ const projects = [
     source_code_link: "https://github.com/jcnapoles/Tic-Tac-Toe",
   },
   {
-    name: "Fullstack Questions",
+    name: "Dret i Mediació",
     description:
-  "Technical interview preparation platform with 500+ curated full-stack questions, detailed explanations, and real-world examples. Built with Next.js and SSR for fast loading, featuring tag-based filtering and spaced-repetition study flow.",
+  "Professional website for a Barcelona-based law firm specializing in immigration and family law. Features appointment booking, multilingual support, and an admin panel — built with a modern stack focused on performance and SEO.",
     tags: [
       {
         name: "next.js",
         color: "black-text-gradient",
       },
       {
-        name: "typescript",
+        name: "tailwind",
         color: "blue-text-gradient",
       },
       {
-        name: "node.js",
+        name: "framer-motion",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "supabase",
         color: "green-text-gradient",
       },
       {
-        name: "ssr",
-        color: "green-text-gradient",
+        name: "shadcn",
+        color: "blue-text-gradient",
+      },
+    ],
+    image: dretimediacio,
+    link: "https://dretimediacio.vercel.app/",
+    source_code_link: "",
+  },
+  {
+    name: "Fullstack Questions",
+    description:
+  "Technical interview preparation platform with 500+ curated full-stack questions, detailed explanations, and real-world examples. Built with Nextra and MDX for fast static-site generation, featuring tag-based filtering and structured study flow.",
+    tags: [
+      {
+        name: "nextra",
+        color: "black-text-gradient",
+      },
+      {
+        name: "next.js",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "mdx",
+        color: "yellow-text-gradient",
+      },
+      {
+        name: "typescript",
+        color: "blue-text-gradient",
       },
     ],
     image: interviewquestions,
