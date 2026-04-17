@@ -26,9 +26,9 @@ const ProjectCard = ({
           scale: 1,
           speed: 450,
         }}
-        className={`p-5 rounded-2xl w-full ${isGrid ? 'sm:w-[340px]' : 'sm:w-[360px]'}`}
+        className={`p-5 rounded-2xl w-[280px] sm:w-[340px] ${isGrid ? '' : 'sm:w-[360px]'}`}
       >
-        <div className='relative w-full h-[230px]'>
+        <div className='relative w-full h-[180px] sm:h-[230px]'>
           <img
             src={image}
             alt='project_image'
@@ -64,7 +64,7 @@ const ProjectCard = ({
 
         <div className='mt-5'>
           <h3 className='text-white font-bold text-[24px]'>{name}</h3>
-          <p className={`mt-2 text-secondary text-[14px] ${isGrid ? '' : 'line-clamp-4'}`}>{description}</p>
+          <p className={`mt-2 text-secondary text-[14px] line-clamp-3 sm:line-clamp-4`}>{description}</p>
         </div>
 
         <div className='mt-4 flex flex-wrap gap-2'>
@@ -384,7 +384,7 @@ const Works = () => {
       {activeFilter !== "All" && (
         <motion.div
           key={activeFilter}
-          className='mt-10 flex flex-wrap gap-7 justify-center'
+          className='mt-10 flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 sm:flex-wrap sm:overflow-visible sm:snap-none sm:gap-7 sm:justify-center scrollbar-hide'
           initial='hidden'
           animate='show'
           variants={{
@@ -393,7 +393,9 @@ const Works = () => {
           }}
         >
           {filteredProjects.map((project, index) => (
-            <ProjectCard key={`project-${project.name}`} index={index} {...project} isGrid />
+            <div key={`project-${project.name}`} className='snap-center shrink-0'>
+              <ProjectCard index={index} {...project} isGrid />
+            </div>
           ))}
         </motion.div>
       )}
