@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 
@@ -9,33 +9,63 @@ import { fadeIn, textVariant } from "../utils/motion";
 
 const personalImageAlt = "Cesar Napoles"
 
-const ServiceCard = ({ index, title, icon }) => (
-  <Tilt className='xs:w-[250px] w-full'>
+const ServiceCard = ({ index, title, icon }) => {
+  const [expanded, setExpanded] = useState(false);
+  const leaveTimer = useRef(null);
+
+  const handleEnter = useCallback(() => {
+    if (leaveTimer.current) {
+      clearTimeout(leaveTimer.current);
+      leaveTimer.current = null;
+    }
+    setExpanded(true);
+  }, []);
+
+  const handleLeave = useCallback(() => {
+    leaveTimer.current = setTimeout(() => setExpanded(false), 150);
+  }, []);
+
+  return (
     <motion.div
       variants={fadeIn("up", "spring", index * 0.5, 0.75)}
-      className='w-full green-pink-gradient p-[1px] rounded-[20px] shadow-card'
+      className="service-sphere-wrapper"
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
     >
-      <div
-        options={{
-          max: 45,
-          scale: 1,
-          speed: 450,
-        }}
-        className='bg-tertiary rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col'
-      >
-        <img
-          src={icon}
-          alt='web-development'
-          className='w-16 h-16 object-contain'
-        />
+      <div className={`service-sphere-container ${expanded ? 'is-expanded' : ''}`}>
+        {/* Sphere face */}
+        <div className="service-sphere-face">
+          <img src={icon} alt={title} className="service-sphere-icon" />
+          <span className="service-sphere-label">{title}</span>
+        </div>
 
-        <h3 className='text-white text-[20px] font-bold text-center'>
-          {title}
-        </h3>
+        {/* Card face (with Tilt) */}
+        <div className="service-card-face">
+          <Tilt
+            tiltMaxAngleX={45}
+            tiltMaxAngleY={45}
+            scale={1}
+            transitionSpeed={450}
+            style={{ width: '100%', height: '100%' }}
+          >
+            <div className='green-pink-gradient p-[1px] rounded-[20px] shadow-card w-full h-full'>
+              <div className='bg-tertiary rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col w-full h-full'>
+                <img
+                  src={icon}
+                  alt={title}
+                  className='w-16 h-16 object-contain'
+                />
+                <h3 className='text-white text-[20px] font-bold text-center'>
+                  {title}
+                </h3>
+              </div>
+            </div>
+          </Tilt>
+        </div>
       </div>
     </motion.div>
-  </Tilt>
-);
+  );
+};
 
 const About = () => {
   return (
@@ -67,7 +97,7 @@ const About = () => {
       </motion.p> 
       </div>
                 
-      <div className='mt-5 flex flex-wrap gap-10'>
+      <div className='mt-5 flex flex-wrap gap-10 justify-center items-center'>
         {services.map((service, index) => (
           <ServiceCard key={service.title} index={index} {...service} />
         ))}

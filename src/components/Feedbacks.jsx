@@ -18,52 +18,51 @@ const FeedbackCard = ({
   image,
 }) => (
   <motion.div
-  variants={fadeIn("up", "spring", index * 0.5, 0.75)}
-  
->
-<Tilt
-        options={{
-          max: 45,
-          scale: 1,
-          speed: 450,
-        }}
-        className='p-5 rounded-2xl sm:w-[360px] w-full'
-      >
-  <div className='mt-1 flex-grow flex flex-col justify-between'>
-    <p className='text-white tracking-wider text-[18px]'>" {testimonial} "</p>
-    <div className='mt-7 flex flex-col items-center gap-1'>
-      <div className='flex-1 flex flex-col items-center'>
-        <p className='text-white font-medium text-[16px]'>
-          <span className='blue-text-gradient'>@</span> {name}
-        </p>
-        <p className='mt-1 text-secondary text-[12px]'>
-          {designation} at {company}
-        </p>         
+    variants={fadeIn("up", "spring", index * 0.5, 0.75)}
+  >
+    <Tilt
+      options={{
+        max: 45,
+        scale: 1,
+        speed: 450,
+      }}
+      className='p-5 rounded-2xl sm:w-[360px] w-full'
+    >
+      <div className='mt-1 flex-grow flex flex-col justify-between'>
+        <p className='text-white tracking-wider text-[18px]'>" {testimonial} "</p>
+        <div className='mt-7 flex flex-col items-center gap-1'>
+          <div className='flex-1 flex flex-col items-center'>
+            <p className='text-white font-medium text-[16px]'>
+              <span className='blue-text-gradient'>@</span> {name}
+            </p>
+            <p className='mt-1 text-secondary text-[12px]'>
+              {designation} at {company}
+            </p>
+          </div>
+          <div className='flex items-center gap-2'>
+            <img
+              src={image}
+              alt={`feedback_by-${name}`}
+              className='w-10 h-10 rounded-full object-cover'
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/PerfilProColor.jpeg';
+              }}
+            />
+            <a
+              href={linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-no-drag='true'
+              className="mt-2"
+            >
+              <FaLinkedin className="text-[20px]" />
+            </a>
+          </div>
+        </div>
       </div>
-      <div className='flex items-center gap-2'>
-        <img
-          src={image}
-          alt={`feedback_by-${name}`}
-          className='w-10 h-10 rounded-full object-cover'
-          onError={(e) => {
-            e.currentTarget.onerror = null; // prevent loop
-            e.currentTarget.src = '/PerfilProColor.jpeg';
-          }}
-        />
-        <a
-          href={linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-          data-no-drag='true'
-          className="mt-2"
-        >
-          <FaLinkedin className="text-[20px]" /> 
-        </a>
-      </div>
-    </div>
-  </div>
-  </Tilt>
-</motion.div>
+    </Tilt>
+  </motion.div>
 );
 
 FeedbackCard.propTypes = {
