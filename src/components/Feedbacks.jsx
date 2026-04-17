@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
@@ -6,7 +6,7 @@ import { styles } from "../styles";
 import { SectionWrapper } from "../hoc";
 import { fadeIn, textVariant } from "../utils/motion";
 import { testimonials } from "../constants";
-import { FaLinkedin } from 'react-icons/fa';
+import { FaLinkedin, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const FeedbackCard = ({
   index,
@@ -16,17 +16,18 @@ const FeedbackCard = ({
   company,
   linkedin,
   image,
+  mobile,
 }) => (
   <motion.div
-    variants={fadeIn("up", "spring", index * 0.5, 0.75)}
+    variants={!mobile ? fadeIn("up", "spring", index * 0.5, 0.75) : undefined}
   >
     <Tilt
       options={{
-        max: 45,
+        max: mobile ? 0 : 45,
         scale: 1,
         speed: 450,
       }}
-      className='p-5 rounded-2xl sm:w-[360px] w-full'
+      className={`p-5 rounded-2xl ${mobile ? 'w-full' : 'sm:w-[360px] w-full'}`}
     >
       <div className='mt-1 flex-grow flex flex-col justify-between'>
         <p className='text-white tracking-wider text-[18px]'>" {testimonial} "</p>
@@ -73,9 +74,84 @@ FeedbackCard.propTypes = {
   company: PropTypes.string.isRequired,
   linkedin: PropTypes.string,
   image: PropTypes.string,
+  mobile: PropTypes.bool,
+};
+
+const MobileCarousel = () => {
+  const [current, setCurrent] = useState(0);
+  const touchStartX = useRef(0);
+  const touchDeltaX = useRef(0);
+  const total = testimonials.length;
+
+  const prev = () => setCurrent((c) => (c - 1 + total) % total);
+  const next = () => setCurrent((c) => (c + 1) % total);
+
+  const onTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+  };
+  const onTouchMove = (e) => {
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+  };
+  const onTouchEnd = () => {
+    if (touchDeltaX.current > 50) prev();
+    else if (touchDeltaX.current < -50) next();
+  };
+
+  return (
+    <div className="mt-8">
+      <div
+        className="overflow-hidden"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+        <div
+          className="flex transition-transform duration-300 ease-in-out"
+          style={{ transform: `translateX(-${current * 100}%)` }}
+        >
+          {testimonials.map((t, i) => (
+            <div key={`fb-m-${t.name}`} className="w-full flex-shrink-0 px-2">
+              <FeedbackCard index={i} {...t} mobile />
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Navigation dots + arrows */}
+      <div className="flex items-center justify-center gap-4 mt-6">
+        <button onClick={prev} className="text-secondary hover:text-white transition-colors p-2" aria-label="Previous testimonial">
+          <FaChevronLeft className="text-[16px]" />
+        </button>
+        <div className="flex gap-2">
+          {testimonials.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`w-2.5 h-2.5 rounded-full transition-colors ${i === current ? 'bg-white' : 'bg-secondary/40'}`}
+              aria-label={`Go to testimonial ${i + 1}`}
+            />
+          ))}
+        </div>
+        <button onClick={next} className="text-secondary hover:text-white transition-colors p-2" aria-label="Next testimonial">
+          <FaChevronRight className="text-[16px]" />
+        </button>
+      </div>
+    </div>
+  );
 };
 
 const Feedbacks = () => {
+  // Detect mobile (<640px = below sm breakpoint)
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 639px)');
+    setIsMobile(mql.matches);
+    const handler = (e) => setIsMobile(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+
   // Marquee-style draggable track (same behavior as Works)
   const firstHalfRef = useRef(null);
   const firstCardRef = useRef(null);
@@ -245,6 +321,10 @@ const Feedbacks = () => {
         <p className={`${styles.sectionSubText} text-left`}>What others say</p>
         <h2 className={`${styles.sectionHeadText} text-left`}>Testimonials.</h2>
       </motion.div>
+
+      {isMobile ? (
+        <MobileCarousel />
+      ) : (
       <div className={`mt-12 rounded-[20px]`}>
         <div className={`mt-12 rounded-2xl min-h-[300px]`}>
           <div style={{ height: '20px' }}></div>
@@ -293,6 +373,7 @@ const Feedbacks = () => {
           </div>
         </div>
       </div>
+      )}
     </>
   );
 };

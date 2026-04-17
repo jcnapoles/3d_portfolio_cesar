@@ -158,7 +158,12 @@ const Experience = () => {
 
   return (
     <>
-      <motion.div variants={textVariant()}>
+      <motion.div
+        variants={textVariant()}
+        initial='hidden'
+        whileInView='show'
+        viewport={{ once: true, amount: 0.5 }}
+      >
         <p className={`${styles.sectionSubText}`}>
           What I have done so far
         </p>
