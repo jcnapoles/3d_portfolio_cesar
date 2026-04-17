@@ -24,6 +24,49 @@ import {
   tictactoe,
   closevibeweb,
   dretimediacio,
+  css,
+  docker,
+  figma,
+  git,
+  html,
+  mongodb,
+  nodejs,
+  redux,
+  tailwind,
+  typescript,
+  threejs,
+  hibernate,
+  mysql,
+  postgresql,
+  aws,
+  jquery,
+  bootstrap,
+  php,
+  heroku,
+  jenkins,
+  hadoop,
+  jest,
+  jmeter,
+  linux,
+  maven,
+  oracle,
+  postman,
+  quartz,
+  selenium,
+  kubernetes,
+  kafka,
+  azure,
+  gitlab,
+  liferay,
+  python,
+  fastapi,
+  nextjs,
+  redis,
+  gcp,
+  cypress,
+  junit,
+  githubactions,
+  graphql,
 } from "../assets";
 
 
@@ -78,7 +121,10 @@ const technologies = [
     name: "JavaScript",
     icon: javascript,
   },
-  
+  {
+    name: "TypeScript",
+    icon: typescript,
+  },
   {
     name: "Spring",
     icon: spring,
@@ -90,7 +136,175 @@ const technologies = [
   {
     name: "Angular",
     icon: angular,
-  }, 
+  },
+  {
+    name: "Node JS",
+    icon: nodejs,
+  },
+  {
+    name: "HTML 5",
+    icon: html,
+  },
+  {
+    name: "CSS 3",
+    icon: css,
+  },
+  {
+    name: "Redux",
+    icon: redux,
+  },
+  {
+    name: "Tailwind CSS",
+    icon: tailwind,
+  },
+  {
+    name: "MongoDB",
+    icon: mongodb,
+  },
+  {
+    name: "MySQL",
+    icon: mysql,
+  },
+  {
+    name: "PostgreSQL",
+    icon: postgresql,
+  },
+  {
+    name: "Oracle",
+    icon: oracle,
+  },
+  {
+    name: "Docker",
+    icon: docker,
+  },
+  {
+    name: "AWS",
+    icon: aws,
+  },
+  {
+    name: "Git",
+    icon: git,
+  },
+  {
+    name: "Jenkins",
+    icon: jenkins,
+  },
+  {
+    name: "Maven",
+    icon: maven,
+  },
+  {
+    name: "Hibernate",
+    icon: hibernate,
+  },
+  {
+    name: "Three JS",
+    icon: threejs,
+  },
+  {
+    name: "Bootstrap",
+    icon: bootstrap,
+  },
+  {
+    name: "jQuery",
+    icon: jquery,
+  },
+  {
+    name: "PHP",
+    icon: php,
+  },
+  {
+    name: "Hadoop",
+    icon: hadoop,
+  },
+  {
+    name: "Jest",
+    icon: jest,
+  },
+  {
+    name: "JMeter",
+    icon: jmeter,
+  },
+  {
+    name: "Linux",
+    icon: linux,
+  },
+  {
+    name: "Postman",
+    icon: postman,
+  },
+  {
+    name: "Selenium",
+    icon: selenium,
+  },
+  {
+    name: "Heroku",
+    icon: heroku,
+  },
+  {
+    name: "Figma",
+    icon: figma,
+  },
+  {
+    name: "Kubernetes",
+    icon: kubernetes,
+  },
+  {
+    name: "Kafka",
+    icon: kafka,
+  },
+  {
+    name: "Azure",
+    icon: azure,
+  },
+  {
+    name: "GitLab",
+    icon: gitlab,
+  },
+  {
+    name: "Liferay",
+    icon: liferay,
+  },
+  {
+    name: "Quartz",
+    icon: quartz,
+  },
+  {
+    name: "Python",
+    icon: python,
+  },
+  {
+    name: "FastAPI",
+    icon: fastapi,
+  },
+  {
+    name: "Next.js",
+    icon: nextjs,
+  },
+  {
+    name: "Redis",
+    icon: redis,
+  },
+  {
+    name: "GCP",
+    icon: gcp,
+  },
+  {
+    name: "Cypress",
+    icon: cypress,
+  },
+  {
+    name: "JUnit",
+    icon: junit,
+  },
+  {
+    name: "GitHub Actions",
+    icon: githubactions,
+  },
+  {
+    name: "GraphQL",
+    icon: graphql,
+  },
 ];
 
 const experiences = [

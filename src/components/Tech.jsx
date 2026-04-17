@@ -1,6 +1,6 @@
 import React from "react";
 
-import { BallCanvas } from "./canvas";
+import { TechSphereCanvas } from "./canvas";
 import { SectionWrapper } from "../hoc";
 import { technologies } from "../constants";
 
@@ -15,18 +15,12 @@ const Tech = () => {
         <p className={`${styles.sectionSubText}`}>
           Technologies I work with daily
         </p>
-        <h2 className={`${styles.sectionHeadText} mb-20`}>
+        <h2 className={`${styles.sectionHeadText} mb-10`}>
           Tech Skills.
         </h2>
       </motion.div>
 
-      <div className='flex flex-row flex-wrap justify-center gap-10'>
-        {technologies.map((technology) => (
-          <div className='w-28 h-28' key={technology.name}>
-            <BallCanvas icon={technology.icon} />
-          </div>
-        ))}
-      </div>
+      <TechSphereCanvas technologies={technologies} />
     </>
   );
 };

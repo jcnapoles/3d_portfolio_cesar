@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <path fill="#4285F4" d="M24 58l-12 20h28L24 58z"/>
+  <path fill="#EA4335" d="M64 8L40 48h48L64 8z"/>
+  <path fill="#FBBC04" d="M104 58l-16 20h28l-12-20z"/>
+  <path fill="#4285F4" d="M40 48L24 78h32V48z"/>
+  <path fill="#34A853" d="M88 48l16 30H72V48z"/>
+  <path fill="#EA4335" d="M56 78h16V48H56v30z"/>
+  <path fill="#FBBC04" d="M40 48h48L64 8 40 48z" opacity="0.1"/>
+  <text x="64" y="114" text-anchor="middle" fill="#5F6368" font-family="Arial,sans-serif" font-size="18" font-weight="bold">GCP</text>
+</svg>

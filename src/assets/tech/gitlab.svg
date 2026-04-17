@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <g transform="translate(64,68)">
+    <!-- GitLab fox logo simplified -->
+    <polygon points="0,-10 -40,35 40,35" fill="#FC6D26"/>
+    <polygon points="0,-10 -16,-50 -40,35" fill="#E24329"/>
+    <polygon points="0,-10 16,-50 40,35" fill="#E24329"/>
+    <polygon points="-16,-50 -40,35 -50,5" fill="#FCA326"/>
+    <polygon points="16,-50 40,35 50,5" fill="#FCA326"/>
+  </g>
+</svg>

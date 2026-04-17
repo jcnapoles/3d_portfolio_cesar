@@ -47,6 +47,29 @@ import bootstrap from "./tech/bootstrap.svg";
 import php from "./tech/php.svg";
 import heroku from "./tech/heroku.svg";
 import jenkins from "./tech/jenkins.svg";
+import hadoop from "./tech/hadoop.svg";
+import jest from "./tech/jest-2.svg";
+import jmeter from "./tech/jmeter.svg";
+import linux from "./tech/linux-tux.svg";
+import maven from "./tech/maven.svg";
+import oracle from "./tech/oracle-6.svg";
+import postman from "./tech/postman.svg";
+import quartz from "./tech/quartz.svg";
+import selenium from "./tech/selenium-1.svg";
+import kubernetes from "./tech/kubernetes.svg";
+import kafka from "./tech/kafka.svg";
+import azure from "./tech/azure.svg";
+import gitlab from "./tech/gitlab.svg";
+import liferay from "./tech/liferay.svg";
+import python from "./tech/python.svg";
+import fastapi from "./tech/fastapi.svg";
+import nextjs from "./tech/nextjs.svg";
+import redis from "./tech/redis.svg";
+import gcp from "./tech/gcp.svg";
+import cypress from "./tech/cypress.svg";
+import junit from "./tech/junit.svg";
+import githubactions from "./tech/github-actions.svg";
+import graphql from "./tech/graphql.svg";
 import world from "./company/world.png";
 import fiatc from "./company/fiatc.svg";
 import sttok from "./company/sttok_logo.png";
@@ -103,4 +126,27 @@ export {
   php,
   heroku,
   jenkins,
+  hadoop,
+  jest,
+  jmeter,
+  linux,
+  maven,
+  oracle,
+  postman,
+  quartz,
+  selenium,
+  kubernetes,
+  kafka,
+  azure,
+  gitlab,
+  liferay,
+  python,
+  fastapi,
+  nextjs,
+  redis,
+  gcp,
+  cypress,
+  junit,
+  githubactions,
+  graphql,
 };

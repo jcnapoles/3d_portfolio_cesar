@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="16" fill="#1B1E2E"/>
+  <g transform="translate(64,58)">
+    <!-- Cypress shape -->
+    <circle cx="0" cy="0" r="32" fill="none" stroke="#69D3A7" stroke-width="6"/>
+    <path d="M-8,-12 L-8,8 Q-8,14 -2,14 L6,14" fill="none" stroke="#69D3A7" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="14" cy="-12" r="4" fill="#69D3A7"/>
+    <line x1="14" y1="-8" x2="14" y2="14" stroke="#69D3A7" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>
