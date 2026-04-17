@@ -26,7 +26,7 @@ const ProjectCard = ({
           scale: 1,
           speed: 450,
         }}
-        className={`p-5 rounded-2xl w-full ${isGrid ? 'sm:w-[400px]' : 'sm:w-[360px]'}`}
+        className={`p-5 rounded-2xl w-full ${isGrid ? 'sm:w-[340px]' : 'sm:w-[360px]'}`}
       >
         <div className='relative w-full h-[230px]'>
           <img
