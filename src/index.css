@@ -30,6 +30,27 @@
   animation-play-state: paused !important;
 }
 
+/* Mobile experience horizontal scroll */
+.experience-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.experience-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.experience-scroll::-webkit-scrollbar-thumb {
+  background: rgba(170, 166, 195, 0.35);
+  border-radius: 2px;
+}
+
+/* Hide scrollbar on logo bar */
+.experience-scroll-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.experience-scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+
 * {
   margin: 0;
   padding: 0;
