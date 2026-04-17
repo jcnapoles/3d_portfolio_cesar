@@ -494,6 +494,7 @@ const testimonials = [
 const projects = [
   {
     name: "Closevibe",
+    category: "SaaS",
     description:
   "AI-powered SaaS platform I founded that orchestrates multichannel sales and support across WhatsApp, Instagram, Messenger, and Email. Features trainable conversational assistants, automated lead follow-up, and context-aware AI responses—built to increase conversion at scale.",
     tags: [
@@ -524,6 +525,7 @@ const projects = [
   },
   {
     name: "My Portfolio",
+    category: "Portfolio",
     description:
   "Immersive 3D portfolio built with Three.js and React, featuring GPU-accelerated animations, responsive design, and interactive micro-interactions. Showcases my projects and experience in a high-performance, visually engaging format.",
     tags: [
@@ -550,6 +552,7 @@ const projects = [
   },
   {
     name: "Invest Analysis",
+    category: "Web App",
     description:
   "Full-stack investment analytics platform with real-time stock screening, portfolio tracking, and curated market news. Features data-driven dashboards, advanced filters, and actionable trading signals powered by financial APIs.",
     tags: [
@@ -580,6 +583,7 @@ const projects = [
   },
   {
     name: "Suneidis' Portfolio",
+    category: "Portfolio",
     description:
   "Performance-optimized portfolio site built with Astro for a QA Engineer. Achieves 95+ Lighthouse scores through static-site generation, minimal JS, and semantic HTML—demonstrating my focus on accessibility and web performance.",
     tags: [
@@ -606,6 +610,7 @@ const projects = [
   },
   {
     name: "Tic Tac Toe Game",
+    category: "Game",
     description:
   "Interactive React game showcasing clean component architecture, hooks-based state management, and testable logic. Features score tracking, game history, and responsive UI—a compact demo of React best practices.",
     tags: [
@@ -628,6 +633,7 @@ const projects = [
   },
   {
     name: "Dret i Mediació",
+    category: "Web App",
     description:
   "Professional website for a Barcelona-based law firm specializing in immigration and family law. Features appointment booking, multilingual support, and an admin panel — built with a modern stack focused on performance and SEO.",
     tags: [
@@ -658,6 +664,7 @@ const projects = [
   },
   {
     name: "Fullstack Questions",
+    category: "Web App",
     description:
   "Technical interview preparation platform with 500+ curated full-stack questions, detailed explanations, and real-world examples. Built with Nextra and MDX for fast static-site generation, featuring tag-based filtering and structured study flow.",
     tags: [

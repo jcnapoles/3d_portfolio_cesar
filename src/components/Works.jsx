@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import { styles } from "../styles";
 import { github } from "../assets";
@@ -16,6 +16,7 @@ const ProjectCard = ({
   image,
   link,
   source_code_link,
+  isGrid,
 }) => {
   return (
     <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}>
@@ -25,7 +26,7 @@ const ProjectCard = ({
           scale: 1,
           speed: 450,
         }}
-        className='p-5 rounded-2xl sm:w-[360px] w-full'
+        className={`p-5 rounded-2xl w-full ${isGrid ? 'sm:w-[400px]' : 'sm:w-[360px]'}`}
       >
         <div className='relative w-full h-[230px]'>
           <img
@@ -63,7 +64,7 @@ const ProjectCard = ({
 
         <div className='mt-5'>
           <h3 className='text-white font-bold text-[24px]'>{name}</h3>
-          <p className='mt-2 text-secondary text-[14px]'>{description}</p>
+          <p className={`mt-2 text-secondary text-[14px] ${isGrid ? '' : 'line-clamp-4'}`}>{description}</p>
         </div>
 
         <div className='mt-4 flex flex-wrap gap-2'>
@@ -82,6 +83,21 @@ const ProjectCard = ({
 };
 
 const Works = () => {
+  const [activeFilter, setActiveFilter] = useState("All");
+
+  const categories = useMemo(() => {
+    const cats = [...new Set(projects.map((p) => p.category))];
+    return ["All", ...cats];
+  }, []);
+
+  const filteredProjects = useMemo(
+    () =>
+      activeFilter === "All"
+        ? projects
+        : projects.filter((p) => p.category === activeFilter),
+    [activeFilter]
+  );
+
   // Build duplicated list for seamless marquee
   const firstHalfRef = useRef(null);
   const firstCardRef = useRef(null);
@@ -128,17 +144,9 @@ const Works = () => {
         const pxPerSec = 80; // tune speed here (pixels per second)
         const dur = Math.max(10, Math.round(w / pxPerSec));
         setDurationSec(dur);
-        // Center on the middle copy by shifting -w so there is content on both sides
-        if (offsetPx === 0) {
-          setOffsetPx(-w);
-          dragStartOffsetRef.current = -w;
-        } else {
-          // If offset exists, normalize into (-w, 0]
-          const norm = ((offsetPx % w) + w) % w; // [0, w)
-          const wrapped = norm === 0 ? 0 : norm - w; // (-w, 0]
-          setOffsetPx(wrapped);
-          dragStartOffsetRef.current = wrapped;
-        }
+        // Reset offset to center on the middle copy
+        setOffsetPx(-w);
+        dragStartOffsetRef.current = -w;
       }
       // Measure step as first card width + flex gap
       const cardEl = firstCardRef.current;
@@ -155,6 +163,19 @@ const Works = () => {
     window.addEventListener('resize', calc);
     return () => window.removeEventListener('resize', calc);
   }, []);
+
+  // Pause/resume marquee animation when switching filters
+  useEffect(() => {
+    if (activeFilter !== "All") {
+      setPaused(true);
+      if (inertiaRafRef.current) {
+        cancelAnimationFrame(inertiaRafRef.current);
+        inertiaRafRef.current = null;
+      }
+    } else {
+      setPaused(false);
+    }
+  }, [activeFilter]);
 
   const nudge = (dir) => {
     // dir: +1 forward (to the right visually), -1 backward
@@ -293,8 +314,30 @@ const Works = () => {
         </motion.p>
       </div>
 
+      {/* Filter buttons */}
+      <motion.div
+        variants={fadeIn("up", "", 0.2, 0.6)}
+        className='mt-8 flex flex-wrap gap-3 justify-center sm:justify-start'
+      >
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveFilter(cat)}
+            className={`px-5 py-2 rounded-full text-[14px] font-medium transition-all duration-300 border ${
+              activeFilter === cat
+                ? 'bg-[#915EFF] border-[#915EFF] text-white shadow-[0_0_12px_rgba(145,94,255,0.4)]'
+                : 'bg-transparent border-secondary/30 text-secondary hover:border-[#915EFF]/60 hover:text-white'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </motion.div>
+
+      {/* Carousel – always mounted, hidden when filter is active */}
       <div
         className={`mt-10 relative overflow-hidden group ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} select-none`}
+        style={{ display: activeFilter === "All" ? undefined : 'none' }}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onFocus={() => setPaused(true)}
@@ -335,9 +378,25 @@ const Works = () => {
             </div>
           </div>
         </div>
-
-  {/* Removed arrow controls; drag to move */}
       </div>
+
+      {/* Grid – shown only when a specific filter is active */}
+      {activeFilter !== "All" && (
+        <motion.div
+          key={activeFilter}
+          className='mt-10 flex flex-wrap gap-7 justify-center'
+          initial='hidden'
+          animate='show'
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.15 } },
+          }}
+        >
+          {filteredProjects.map((project, index) => (
+            <ProjectCard key={`project-${project.name}`} index={index} {...project} isGrid />
+          ))}
+        </motion.div>
+      )}
     </>
   );
 };
