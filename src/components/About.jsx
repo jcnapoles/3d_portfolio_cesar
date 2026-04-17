@@ -58,11 +58,12 @@ const About = () => {
       alt={personalImageAlt} 
       className="float-right mt-auto ml-auto mr-auto order-1 object-cover w-64 h-full p-1 md:order-2 rotate-3 lg:p-2 lg:w-64 aspect-square rounded-2xl bg-black/20 dark:bg-yellow-500/5 ring-1 ring-black/70 dark:ring-white/20 "  
     /> 
-        I’m a strategic and hands-on tech leader with deep experience in Java, JavaScript, 
-        and modern frameworks like Spring, Angular, and React. As a Fractional CTO, I help startups build scalable, 
-        user-centric products, align tech with business goals, and accelerate their growth. 
-        I thrive in fast-paced environments, working closely with founders to turn ideas 
-        into reliable, real-world solutions.        
+        I'm a hands-on tech leader and founder with 12+ years of experience shipping production 
+        software at scale. I've driven digital transformation in insurance (FIATC Seguros), 
+        scaled platforms to 250K+ users (Sttok), and currently build banking systems at 
+        CaixaBank Tech while running Closevibe — my AI-powered SaaS startup. As a Fractional CTO, 
+        I help companies go from idea to scalable product, aligning technology with business outcomes 
+        and building teams that deliver.
       </motion.p> 
       </div>
                 

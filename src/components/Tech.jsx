@@ -13,7 +13,7 @@ const Tech = () => {
     <>
       <motion.div variants={textVariant()}>
         <p className={`${styles.sectionSubText}`}>
-          I can say I’m quite good at
+          Technologies I work with daily
         </p>
         <h2 className={`${styles.sectionHeadText} mb-20`}>
           Tech Skills.

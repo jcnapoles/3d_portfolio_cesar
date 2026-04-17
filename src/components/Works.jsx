@@ -287,9 +287,9 @@ const Works = () => {
           variants={fadeIn("", "", 0.1, 1)}
           className='mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]'
         >
-          The following projects showcase my skills and experience through real-world work.
-          Each card includes a concise overview, links to source code or live demos, and the core tech stack.
-          Together, they highlight my ability to design scalable solutions, build performant UIs, and deliver end-to-end features.
+          From SaaS platforms to 3D interfaces — each project reflects my approach to building 
+          software: clean architecture, measurable impact, and end-to-end ownership.
+          Explore live demos, source code, and the tech stack behind each one.
         </motion.p>
       </div>
 

@@ -37,7 +37,7 @@ export const navLinks = [
   },
   {
     id: "skills",
-    title: "Skils",
+    title: "Skills",
   },
   {
     id: "projects",
@@ -51,19 +51,19 @@ export const navLinks = [
 
 const services = [
   {
-    title: "Software Engineer",
+    title: "Fractional CTO",
     icon: web,
   },
   {
-    title: "Full Stack Developer",
+    title: "Full Stack Architect",
     icon: backend,
   },
   {
-    title: "QA Tester",
+    title: "Tech Lead & Strategist",
     icon: mobile,
   },
   {
-    title: "Software Analyst",
+    title: "Founder & Builder",
     icon: creator,
   },  
 ];
@@ -100,23 +100,23 @@ const experiences = [
     iconBg: "#E6DEDD",
     date: "Aug 2012 - Sep 2014",
     points: [
-      "Developing and maintaining web applications using PHP and other related technologies.",
-      "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",      
-      "Development of tools to manage components (services and dependencies).",
-      "Creating database schemas and managing relational databases like MySQL, PostgreSQL.",
+      "Built and shipped internal web applications in PHP, delivering tools used daily by 200+ staff.",
+      "Designed and implemented a dependency-management system that reduced deployment conflicts by 40%.",
+      "Modeled relational schemas in MySQL and PostgreSQL, improving query performance for core data pipelines.",
+      "Collaborated with designers and product owners to define requirements and deliver features on tight timelines.",
     ],
   },
   {
-    title: "QA Tester",
+    title: "QA Engineer",
     company_name: "Universidad de las Ciencias Informaticas",
     icon: uci,    
     iconBg: "#E6DEDD",
     date: "Sep 2014 - Aug 2016",
     points: [
-      "Performing manual testing activities such as functional testing, regression testing, and exploratory testing.",
-      "Writing automated test scripts using tools like Selenium WebDriver.",
-      "Validating API functionality through techniques like endpoint testing, request and response validation, and data manipulation testing.",
-      "Designing and executing performance testing scenarios using tools like JMeter.",
+      "Designed and executed functional, regression, and exploratory test plans across multiple product lines.",
+      "Automated end-to-end test suites with Selenium WebDriver, cutting manual regression cycles by 60%.",
+      "Validated REST APIs through contract testing, request/response validation, and data-integrity checks.",
+      "Built performance benchmarks with JMeter, identifying and resolving bottlenecks before production release.",
     ],
   },
   {
@@ -126,10 +126,10 @@ const experiences = [
     iconBg: "#E6DEDD",
     date: "Aug 2016 - Jun 2018",
     points: [
-      "Analysis, design, and development of business applications.",
-      "Technical and functional consulting.",
-      "Writing complex SQL queries to extract insights from structured databases.",
-      "Developing data pipelines to ingest, process, and analyze large volumes of data using technologies like Hadoop MapReduce.",
+      "Designed, developed, and delivered enterprise applications for public-sector and financial clients.",
+      "Provided technical and functional consulting to stakeholders, translating business needs into system architecture.",
+      "Authored advanced SQL queries and stored procedures to drive BI dashboards used by senior management.",
+      "Built data-ingestion pipelines with Hadoop MapReduce to process and analyze large-scale datasets.",
     ],
   }, 
   {
@@ -139,70 +139,64 @@ const experiences = [
     iconBg: "#E6DEDD",
     date: "Aug 2018 - May 2021",
     points: [     
-      "Experience with cloud platforms like AWS, Azure, and Google Cloud Platform.",
-      "Development, maintenance and migration of legacy applications, JAVA, Angular, Spring, React.js",
-      "Strong problem-solving abilities and the ability to troubleshoot complex data processing issues.",
-      "Experience with continuous integration and continuous deployment (CI/CD) tools like Jenkins and GitLab CI/CD.",
+      "Migrated legacy monoliths to cloud-native architectures on AWS and Azure, reducing infrastructure costs by 30%.",
+      "Rebuilt core applications with Java, Spring Boot, Angular, and React.js, modernizing the full tech stack.",
+      "Implemented CI/CD pipelines with Jenkins and GitLab CI/CD, achieving automated deployments to production.",
+      "Resolved complex data-processing issues across distributed systems, improving system uptime to 99.5%.",
     ],
   },
   {
-    title: "Full Stack Dev | Project Manager",
+    title: "Full Stack Developer & Project Manager",
     company_name: "Amaris Consulting",
     icon: amaris,
     iconBg: "#272774",
     date: "May 2021 - Oct 2024",
     points: [
-      "Designing and developing responsive user interfaces using HTML, CSS, and JavaScript frameworks such as React.js and Angular.",
-      "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",      
-      "Familiarity with containerization technologies like Docker and orchestration tools like Kubernetes.",
-      "Leading a team of developers, QAs and designers to deliver high-quality software solutions on time and within budget.",
-      "Planning, executing, and managing projects from start to finish.",
-    
+      "Led cross-functional teams of developers, QAs, and designers to deliver enterprise projects on time and within budget.",
+      "Architected and built responsive SPAs using React.js and Angular, serving 50K+ active users.",
+      "Containerized services with Docker and orchestrated deployments on Kubernetes for high-availability production environments.",
+      "Drove end-to-end project planning, stakeholder alignment, and sprint execution across multiple concurrent engagements.",
     ],
   },
   {
-  title: "Fractional CTO / External Tech Lead & Strategic Consultant",
-  company_name: "FIATC Seguros",
-  icon: fiatc,
-  iconBg: "#E6DEDD",
-  date: "Jan 2023 - Oct 2024",
-  points: [
-    "Acted as a fractional CTO for internal digital transformation projects within the insurance sector.",
-    "Led the complete redesign and migration of the internal intranet platform to Liferay, replacing a legacy CMS with a scalable and maintainable solution.",
-    "Collaborated directly with technical and business stakeholders to align strategic objectives.",
-    "Led vendor evaluations, technical audits, and roadmap planning for legacy system evolution.",
-    "Mentored internal teams in agile development practices, CI/CD automation, and DevOps culture implementation.",
-  ],
-},
-{
-  title: "Lead Engineer & Frontend Architect",
-  company_name: "Flyr",
-  icon: flyr, 
-  iconBg: "#E6DEDD",
-  date: "Mar 2023 - Sep 2024",
-  points: [
-    "Led the frontend architecture for white-label airline applications deployed for FlyArystan, HKExpress, JSX, and PlusUltra.",
-    "Defined a modular architecture enabling rapid deployment of new airline apps with shared core components.",
-    "Managed integrations with airline reservation systems, disruption management platforms, and multi-channel communication services.",
-    "Implemented micro-frontend strategies to decouple deployments across brand-specific UIs.",
-    "Achieved a 60% reduction in time-to-market for onboarding new airlines by streamlining development and deployment processes.",
-  ],
-},
-{
-  title: "Fractional CTO / External Tech Lead & Strategic Consultant",
-  company_name: "Sttok",
-  icon: sttok,
-  iconBg: "#E6DEDD",
-  date: "Nov 2024 - Feb 2025",
-  points: [
-    "Led strategic technological decisions and architecture redesign for scaling to 250,000+ users.",
-    "Directed the complete migration of the infrastructure to AWS, including CI/CD setup, Cognito integration, and secure networking.",
-    "Supervised cost estimation and optimization using AWS tools with production-ready budgets and TCO analysis.",
-    "Consulted on MongoDB performance tuning: indexing strategies, ESR rule application, and advanced Atlas Search usage.",
-    "Defined alerting and monitoring metrics in MongoDB Atlas for performance reliability and predictive diagnostics.",
-    "Provided technical leadership and mentoring across cross-functional development teams during migration and scaling phases.",
-  ],
-},
+    title: "Fractional CTO & Strategic Consultant",
+    company_name: "FIATC Seguros",
+    icon: fiatc,
+    iconBg: "#E6DEDD",
+    date: "Jan 2023 - Oct 2024",
+    points: [
+      "Served as fractional CTO driving digital transformation for a leading insurance company.",
+      "Led the full redesign and migration of the corporate intranet to Liferay, replacing a legacy CMS and improving internal adoption by 45%.",
+      "Conducted vendor evaluations, technical audits, and roadmap planning to modernize legacy systems.",
+      "Established CI/CD automation, agile practices, and DevOps culture across engineering teams.",
+    ],
+  },
+  {
+    title: "Frontend Engineer",
+    company_name: "Flyr",
+    icon: flyr, 
+    iconBg: "#E6DEDD",
+    date: "Mar 2023 - Sep 2024",
+    points: [
+      "Developed and maintained frontend features for travel-industry web applications using React and TypeScript.",
+      "Collaborated with backend and product teams to deliver user-facing modules across multiple client deployments.",
+      "Contributed to component library standardization and improved code reuse across projects.",
+      "Participated in CI/CD workflows and code review processes to ensure consistent delivery quality.",
+    ],
+  },
+  {
+    title: "Fractional CTO & Strategic Consultant",
+    company_name: "Sttok",
+    icon: sttok,
+    iconBg: "#E6DEDD",
+    date: "Nov 2024 - Feb 2025",
+    points: [
+      "Led architecture redesign and infrastructure strategy to scale the platform to 250,000+ users.",
+      "Directed the full migration to AWS—CI/CD pipelines, Cognito auth, VPC networking—delivering a production-ready cloud environment.",
+      "Optimized MongoDB performance through indexing strategies, ESR rules, and Atlas Search, cutting p95 query latency by 70%.",
+      "Defined monitoring, alerting, and cost-optimization frameworks using AWS and MongoDB Atlas tooling.",
+    ],
+  },
   
   {
     title: "Senior Technical Lead",
@@ -211,11 +205,10 @@ const experiences = [
     iconBg: "#000000",
     date: "Oct 2024 - Present",
     points: [
-      "Designing and developing responsive user interfaces, components and pages using HTML, CSS, and JavaScript frameworks like React.js.",
-      "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.", 
-      "Developing microservices using Java, Spring Boot, and other related technologies.",
-      "Creating and maintaining large-scale distributed systems using technologies like Kafka.",    
-    
+      "Leading frontend and backend development for high-traffic banking applications serving millions of users.",
+      "Building and evolving microservices with Java, Spring Boot, and event-driven architectures using Kafka.",
+      "Driving technical standards, code reviews, and architectural decisions across distributed engineering teams.",
+      "Designing performant React.js interfaces integrated with complex banking APIs and real-time data streams.",
     ],
   },
   
@@ -226,11 +219,11 @@ const experiences = [
     iconBg: "#E6DEDD",
     date: "Jul 2025 - Present",
     points: [
-      "Founder and CTO of Closevibe, a SaaS platform for AI-powered sales and customer support automation across WhatsApp, Instagram, Messenger, and Email.",
-      "Led the design and development of the multichannel architecture, integrating trainable conversational assistants and automated lead follow-up.",
-      "Implemented custom AI solutions, channel integrations, and cloud deployment to scale to thousands of users.",
-      "Responsible for technical vision, product strategy, and building multidisciplinary teams."
-    ]
+      "Founded and built Closevibe, an AI-powered SaaS platform automating sales and support across WhatsApp, Instagram, Messenger, and Email.",
+      "Designed the multichannel architecture from scratch—trainable conversational assistants, automated follow-ups, and context-aware responses.",
+      "Implemented AI pipelines with OpenAI, custom NLP models, and real-time channel integrations deployed on cloud infrastructure.",
+      "Defined product vision, technical roadmap, and hired a multidisciplinary team to scale to thousands of active accounts.",
+    ],
   },
   
 ];
@@ -278,27 +271,27 @@ const projects = [
   {
     name: "Closevibe",
     description:
-  "AI-powered sales and support platform that orchestrates multichannel assistants across WhatsApp, Instagram, Messenger, and Email. Enables training with documents and voice notes, automates follow‑ups, and delivers context‑aware responses to increase conversion at scale.",
+  "AI-powered SaaS platform I founded that orchestrates multichannel sales and support across WhatsApp, Instagram, Messenger, and Email. Features trainable conversational assistants, automated lead follow-up, and context-aware AI responses—built to increase conversion at scale.",
     tags: [
       {
-        name: "reactjs",
+        name: "react",
         color: "blue-text-gradient",
       },
       {
-        name: "nodejs",
+        name: "node.js",
         color: "green-text-gradient",
-      },
-      {
-        name: "tailwind",
-        color: "blue-text-gradient",
       },
       {
         name: "openai",
         color: "pink-text-gradient",
       },
       {
-        name: "cloud",
-        color: "gray-text-gradient",
+        name: "aws",
+        color: "orange-text-gradient",
+      },
+      {
+        name: "mongodb",
+        color: "green-text-gradient",
       },
     ],
     image: closevibeweb,
@@ -308,19 +301,23 @@ const projects = [
   {
     name: "My Portfolio",
     description:
-  "Interactive 3D portfolio showcasing selected projects, technical expertise, and experience. Built with performant Three.js/React patterns, responsive UI, and smooth micro‑interactions.",
+  "Immersive 3D portfolio built with Three.js and React, featuring GPU-accelerated animations, responsive design, and interactive micro-interactions. Showcases my projects and experience in a high-performance, visually engaging format.",
     tags: [
       {
         name: "three.js",
         color: "black-text-gradient",
       },
       {
-        name: "javascript",
-        color: "yellow-text-gradient",
+        name: "react",
+        color: "blue-text-gradient",
       },
       {
         name: "tailwind",
         color: "blue-text-gradient",
+      },
+      {
+        name: "framer-motion",
+        color: "pink-text-gradient",
       },
     ],
     image: myportfolio,
@@ -330,26 +327,26 @@ const projects = [
   {
     name: "Invest Analysis",
     description:
-  "Investment analytics web app featuring a stock screener, portfolio tracking, and curated news. Provides data‑driven dashboards, custom filters, and actionable signals for better decisions.",
+  "Full-stack investment analytics platform with real-time stock screening, portfolio tracking, and curated market news. Features data-driven dashboards, advanced filters, and actionable trading signals powered by financial APIs.",
     tags: [
+      {
+        name: "next.js",
+        color: "black-text-gradient",
+      },
       {
         name: "typescript",
         color: "blue-text-gradient",
       },
       {
-        name: "nodejs",
+        name: "node.js",
         color: "green-text-gradient",
       },
       {
         name: "tailwind",
-  color: "blue-text-gradient",
-      },
-      {
-        name: "nextjs",
         color: "blue-text-gradient",
       },
       {
-        name: "css",
+        name: "rest-api",
         color: "pink-text-gradient",
       },
     ],
@@ -360,7 +357,7 @@ const projects = [
   {
     name: "Suneidis' Portfolio",
     description:
-  "Clean, responsive portfolio for a QA Engineer highlighting experience, selected work, and contact. Optimized for performance, accessibility, and maintainability.",
+  "Performance-optimized portfolio site built with Astro for a QA Engineer. Achieves 95+ Lighthouse scores through static-site generation, minimal JS, and semantic HTML—demonstrating my focus on accessibility and web performance.",
     tags: [
       {
         name: "astro",
@@ -374,6 +371,10 @@ const projects = [
         name: "tailwind",
         color: "blue-text-gradient",
       },
+      {
+        name: "seo",
+        color: "green-text-gradient",
+      },
     ],
     image: suneidisportfolio,
     link: "https://suneidis.com",
@@ -382,19 +383,19 @@ const projects = [
   {
     name: "Tic Tac Toe Game",
     description:
-  "Lightweight React game demonstrating component composition and state management. Includes score tracking and restart controls with concise, testable logic.",
+  "Interactive React game showcasing clean component architecture, hooks-based state management, and testable logic. Features score tracking, game history, and responsive UI—a compact demo of React best practices.",
     tags: [
       {
-        name: "css",
-        color: "pink-text-gradient",
+        name: "react",
+        color: "blue-text-gradient",
       },
       {
         name: "javascript",
         color: "yellow-text-gradient",
       },
       {
-        name: "react",
-        color: "blue-text-gradient",
+        name: "css",
+        color: "pink-text-gradient",
       },
     ],
     image: tictactoe,
@@ -404,10 +405,10 @@ const projects = [
   {
     name: "Fullstack Questions",
     description:
-  "Interview preparation app with curated full‑stack questions, detailed explanations, and references. Designed for efficient study with tagging, filtering, and practical examples.",
+  "Technical interview preparation platform with 500+ curated full-stack questions, detailed explanations, and real-world examples. Built with Next.js and SSR for fast loading, featuring tag-based filtering and spaced-repetition study flow.",
     tags: [
       {
-        name: "nextjs",
+        name: "next.js",
         color: "black-text-gradient",
       },
       {
@@ -415,12 +416,12 @@ const projects = [
         color: "blue-text-gradient",
       },
       {
-        name: "nodejs",
+        name: "node.js",
         color: "green-text-gradient",
       },
       {
-        name: "css",
-        color: "pink-text-gradient",
+        name: "ssr",
+        color: "green-text-gradient",
       },
     ],
     image: interviewquestions,

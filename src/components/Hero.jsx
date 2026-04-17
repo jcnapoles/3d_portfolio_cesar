@@ -22,8 +22,8 @@ const Hero = () => {
               Hi, I'm <span className='text-[#915EFF]'>Cesar</span>
             </h1>
             <p className={`${styles.heroSubText} mt-2 text-white-100`}>
-              Fractional CTO empowering startups <br className='sm:block hidden' />
-              with scalable, user-focused tech leadership
+              Fractional CTO & Founder — I build, scale, <br className='sm:block hidden' />
+              and lead high-impact tech from zero to product-market fit
             </p>   
            
           </div>
