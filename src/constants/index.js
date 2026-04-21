@@ -24,6 +24,7 @@ import {
   tictactoe,
   closevibeweb,
   dretimediacio,
+  vcdetectius,
   css,
   docker,
   figma,
@@ -660,6 +661,37 @@ const projects = [
     ],
     image: dretimediacio,
     link: "https://dretimediacio.vercel.app/",
+    source_code_link: "",
+  },
+  {
+    name: "VC Detectius",
+    category: "Web App",
+    description:
+  "Private detective agency website focused on trust, discretion, and conversion. Includes multilingual navigation, service-focused sections, and clear contact pathways for individuals and businesses.",
+    tags: [
+      {
+        name: "react",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "tailwind",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "i18n",
+        color: "green-text-gradient",
+      },
+      {
+        name: "seo",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "vercel",
+        color: "black-text-gradient",
+      },
+    ],
+    image: vcdetectius,
+    link: "https://vcdetectius.vercel.app/en",
     source_code_link: "",
   },
   {

@@ -30,11 +30,12 @@ import closevibe from "./company/closevibe.png";
 
 import myportfolio from "./projects/myportfolio.jpg";
 import investanalysis from "./projects/investanalysis.jpg";
-import interviewquestions from "./projects/interviewquestions.jpg";
+import interviewquestions from "./projects/interviewquestions.png";
 import suneidisportfolio from "./projects/suneidisportfolio.jpg";
 import tictactoe from "./projects/tic-tac-toe.jpg";
 import closevibeweb from "./projects/closevibeweb.jpg";
-import dretimediacio from "./projects/dretimediacio.jpg";
+import dretimediacio from "./projects/dretimediacio.png";
+import vcdetectius from "./projects/vcdetectius.png";
 import java from "./tech/java.svg";
 import spring from "./tech/spring.svg";
 import angular from "./tech/angular.svg";
@@ -114,6 +115,7 @@ export {
   suneidisportfolio,
   closevibeweb,
   dretimediacio,
+  vcdetectius,
   tictactoe, 
   spring,
   angular,
