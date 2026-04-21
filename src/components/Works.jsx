@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import { styles } from "../styles";
 import { github } from "../assets";
@@ -97,6 +97,8 @@ const Works = () => {
         : projects.filter((p) => p.category === activeFilter),
     [activeFilter]
   );
+  const isAllFilter = activeFilter === "All";
+  const shouldLoopFiltered = filteredProjects.length > 2;
 
   // Build duplicated list for seamless marquee
   const firstHalfRef = useRef(null);
@@ -164,18 +166,14 @@ const Works = () => {
     return () => window.removeEventListener('resize', calc);
   }, []);
 
-  // Pause/resume marquee animation when switching filters
+  // Keep carousel running when switching filters
   useEffect(() => {
-    if (activeFilter !== "All") {
-      setPaused(true);
-      if (inertiaRafRef.current) {
-        cancelAnimationFrame(inertiaRafRef.current);
-        inertiaRafRef.current = null;
-      }
-    } else {
-      setPaused(false);
+    setPaused(!isAllFilter);
+    if (inertiaRafRef.current) {
+      cancelAnimationFrame(inertiaRafRef.current);
+      inertiaRafRef.current = null;
     }
-  }, [activeFilter]);
+  }, [activeFilter, isAllFilter]);
 
   const nudge = (dir) => {
     // dir: +1 forward (to the right visually), -1 backward
@@ -334,10 +332,10 @@ const Works = () => {
         ))}
       </motion.div>
 
-      {/* Carousel – always mounted, hidden when filter is active */}
+      {/* Carousel – shared by All and category filters */}
       <div
         className={`mt-10 relative overflow-hidden group ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} select-none`}
-        style={{ display: activeFilter === "All" ? undefined : 'none' }}
+        style={{ display: isAllFilter ? undefined : 'none' }}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onFocus={() => setPaused(true)}
@@ -380,22 +378,47 @@ const Works = () => {
         </div>
       </div>
 
-      {/* Grid – shown only when a specific filter is active */}
-      {activeFilter !== "All" && (
+      {/* Filtered categories */}
+      {activeFilter !== "All" && shouldLoopFiltered && (
         <motion.div
-          key={activeFilter}
-          className='mt-10 flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 sm:flex-wrap sm:overflow-visible sm:snap-none sm:gap-7 sm:justify-center scrollbar-hide'
+          key={`filtered-loop-${activeFilter}`}
+          className='mt-10 relative overflow-hidden group select-none'
           initial='hidden'
           animate='show'
-          variants={{
-            hidden: {},
-            show: { transition: { staggerChildren: 0.15 } },
-          }}
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05 } } }}
+        >
+          <div className='will-change-transform animate-marquee' style={{ ['--duration']: '20s' }}>
+            <div className='flex flex-nowrap gap-2'>
+              <div className='flex flex-nowrap gap-2'>
+                {filteredProjects.map((project) => (
+                  <ProjectCard key={`filtered-a-${project.name}`} index={0} {...project} />
+                ))}
+              </div>
+              <div className='flex flex-nowrap gap-2' aria-hidden='true'>
+                {filteredProjects.map((project) => (
+                  <ProjectCard key={`filtered-b-${project.name}`} index={0} {...project} />
+                ))}
+              </div>
+              <div className='flex flex-nowrap gap-2' aria-hidden='true'>
+                {filteredProjects.map((project) => (
+                  <ProjectCard key={`filtered-c-${project.name}`} index={0} {...project} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeFilter !== "All" && !shouldLoopFiltered && (
+        <motion.div
+          key={`filtered-static-${activeFilter}`}
+          className='mt-10 flex flex-nowrap gap-2 overflow-x-auto pb-3 scrollbar-hide'
+          initial='hidden'
+          animate='show'
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
         >
           {filteredProjects.map((project, index) => (
-            <div key={`project-${project.name}`} className='snap-center shrink-0'>
-              <ProjectCard index={index} {...project} isGrid />
-            </div>
+            <ProjectCard key={`filtered-static-${project.name}`} index={index} {...project} />
           ))}
         </motion.div>
       )}
