@@ -17,73 +17,72 @@ const ProjectCard = ({
   link,
   source_code_link,
   isGrid,
+  imageFit,
+  noAnimation = false,
 }) => {
-  return (
-    <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}>
-      <Tilt
-        options={{
-          max: 45,
-          scale: 1,
-          speed: 450,
-        }}
-        className={`p-5 rounded-2xl w-[280px] sm:w-[340px] ${isGrid ? '' : 'sm:w-[360px]'}`}
-      >
-        <div className='relative w-full h-[180px] sm:h-[230px]'>
-          <img
-            src={image}
-            alt='project_image'
-            className='w-full h-full object-cover rounded-2xl'
-            draggable={false}
-          />
-
-          <div className='absolute inset-0 flex justify-end m-3 space-x-3 card-img_hover'>
+  const inner = (
+    <Tilt
+      options={{ max: 45, scale: 1, speed: 450 }}
+      className={`p-5 rounded-2xl w-[280px] sm:w-[340px] ${isGrid ? '' : 'sm:w-[360px]'}`}
+    >
+      <div className='relative w-full h-[180px] sm:h-[230px]'>
+        <img
+          src={image}
+          alt='project_image'
+          className={`w-full h-full rounded-2xl ${imageFit === "contain" ? "object-contain bg-tertiary" : "object-cover"}`}
+          draggable={false}
+        />
+        <div className='absolute inset-0 flex justify-end m-3 space-x-3 card-img_hover'>
+          <div
+            onClick={() => window.open(link, "_blank")}
+            className='black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer transform transition duration-500 ease-in-out hover:scale-110'
+            title='Open preview'
+            data-no-drag='true'
+          >
+            <FiEye className='w-1/2 h-1/2' />
+          </div>
+          {source_code_link && (
             <div
-              onClick={() => window.open(link, "_blank")}
+              onClick={() => window.open(source_code_link, "_blank")}
               className='black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer transform transition duration-500 ease-in-out hover:scale-110'
-              title='Open preview'
+              title='Open source code'
               data-no-drag='true'
             >
-              <FiEye className='w-1/2 h-1/2' />
+              <img src={github} alt='source code' className='w-1/2 h-1/2 object-contain' />
             </div>
-            {source_code_link && (
-              <div
-                onClick={() => window.open(source_code_link, "_blank")}
-                className='black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer transform transition duration-500 ease-in-out hover:scale-110'
-                title='Open source code'
-                data-no-drag='true'
-              >
-                <img
-                  src={github}
-                  alt='source code'
-                  className='w-1/2 h-1/2 object-contain'
-                />
-              </div>
-            )}
-          </div>
+          )}
         </div>
+      </div>
+      <div className='mt-5'>
+        <h3 className='text-white font-bold text-[24px]'>{name}</h3>
+        <p className='mt-2 text-secondary text-[14px] line-clamp-3 sm:line-clamp-4'>{description}</p>
+      </div>
+      <div className='mt-4 flex flex-wrap gap-2'>
+        {tags.map((tag) => (
+          <p key={`${name}-${tag.name}`} className={`text-[14px] ${tag.color}`}>
+            #{tag.name}
+          </p>
+        ))}
+      </div>
+    </Tilt>
+  );
 
-        <div className='mt-5'>
-          <h3 className='text-white font-bold text-[24px]'>{name}</h3>
-          <p className={`mt-2 text-secondary text-[14px] line-clamp-3 sm:line-clamp-4`}>{description}</p>
-        </div>
+  if (noAnimation) return inner;
 
-        <div className='mt-4 flex flex-wrap gap-2'>
-          {tags.map((tag) => (
-            <p
-              key={`${name}-${tag.name}`}
-              className={`text-[14px] ${tag.color}`}
-            >
-              #{tag.name}
-            </p>
-          ))}
-        </div>
-      </Tilt>
+  return (
+    <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}>
+      {inner}
     </motion.div>
   );
 };
 
+const SCROLL_SPEED = 60; // px per second
+
 const Works = () => {
   const [activeFilter, setActiveFilter] = useState("All");
+  const [paused, setPaused] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [stepPx, setStepPx] = useState(0);
 
   const categories = useMemo(() => {
     const cats = [...new Set(projects.map((p) => p.category))];
@@ -97,28 +96,34 @@ const Works = () => {
         : projects.filter((p) => p.category === activeFilter),
     [activeFilter]
   );
-  const isAllFilter = activeFilter === "All";
-  const shouldLoopFiltered = filteredProjects.length > 2;
+  const activeProjects = activeFilter === "All" ? projects : filteredProjects;
+  const shouldLoopCarousel = activeProjects.length > 2;
 
-  // Build duplicated list for seamless marquee
+  // Carousel refs
   const firstHalfRef = useRef(null);
   const firstCardRef = useRef(null);
-  const [durationSec, setDurationSec] = useState(30); // default duration
-  const [paused, setPaused] = useState(false);
-  const [offsetPx, setOffsetPx] = useState(0);
-  const [stepPx, setStepPx] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
+  const trackInnerRef = useRef(null);
+
+  // Animation state via refs (avoids 60fps re-renders)
+  const dragOffsetRef = useRef(0);
+  const autoScrollOffsetRef = useRef(0);
+  const pausedRef = useRef(false);
+  const autoRafRef = useRef(null);
+  const inertiaRafRef = useRef(null);
+
+  // Drag tracking refs
   const dragStartXRef = useRef(0);
   const dragStartOffsetRef = useRef(0);
-  const trackInnerRef = useRef(null);
   const lastXRef = useRef(0);
   const lastTRef = useRef(0);
-  const velRef = useRef(0); // px per ms
-  const inertiaRafRef = useRef(null);
+  const velRef = useRef(0);
   const dragStartedRef = useRef(false);
-  const DRAG_THRESHOLD = 6; // px
   const dragBlockRef = useRef(false);
   const pointerDownRef = useRef(false);
+  const DRAG_THRESHOLD = 6;
+
+  // Keep pausedRef in sync for use inside RAF callbacks
+  useEffect(() => { pausedRef.current = paused; }, [paused]);
 
   const isInteractiveTarget = (el) => {
     let node = el;
@@ -138,112 +143,140 @@ const Works = () => {
     return false;
   };
 
-  // Recalculate duration based on content width for consistent speed
+  // Calculate step size for nudge
   useEffect(() => {
     const calc = () => {
-      const w = firstHalfRef.current?.scrollWidth || 0;
-      if (w > 0) {
-        const pxPerSec = 80; // tune speed here (pixels per second)
-        const dur = Math.max(10, Math.round(w / pxPerSec));
-        setDurationSec(dur);
-        // Reset offset to center on the middle copy
-        setOffsetPx(-w);
-        dragStartOffsetRef.current = -w;
-      }
-      // Measure step as first card width + flex gap
       const cardEl = firstCardRef.current;
       if (cardEl) {
-        const gapParent = cardEl.parentElement; // firstHalfRef container
-        const styles = gapParent ? window.getComputedStyle(gapParent) : null;
-        const gapStr = styles?.getPropertyValue('column-gap') || styles?.getPropertyValue('gap') || '8px';
+        const gapParent = cardEl.parentElement;
+        const computedStyles = gapParent ? window.getComputedStyle(gapParent) : null;
+        const gapStr = computedStyles?.getPropertyValue('column-gap') || computedStyles?.getPropertyValue('gap') || '8px';
         const gap = parseFloat(gapStr) || 8;
         const step = Math.round(cardEl.getBoundingClientRect().width + gap);
         setStepPx(step);
       }
     };
     calc();
+    window.requestAnimationFrame(calc);
     window.addEventListener('resize', calc);
     return () => window.removeEventListener('resize', calc);
-  }, []);
+  }, [activeFilter, activeProjects.length]);
 
-  // Keep carousel running when switching filters
+  // Reset all offsets when filter changes
   useEffect(() => {
-    setPaused(!isAllFilter);
+    pausedRef.current = false;
+    setPaused(false);
+    dragOffsetRef.current = 0;
+    autoScrollOffsetRef.current = 0;
+    dragStartOffsetRef.current = 0;
+    if (trackInnerRef.current) {
+      trackInnerRef.current.style.transform = 'translateX(0px)';
+    }
     if (inertiaRafRef.current) {
       cancelAnimationFrame(inertiaRafRef.current);
       inertiaRafRef.current = null;
     }
-  }, [activeFilter, isAllFilter]);
+  }, [activeFilter]);
+
+  // Auto-scroll RAF loop — direct DOM mutation, no React state at 60fps
+  useEffect(() => {
+    if (!shouldLoopCarousel) return;
+
+    let prevTime = null;
+
+    const frame = (now) => {
+      if (!pausedRef.current) {
+        if (prevTime !== null) {
+          const dt = now - prevTime;
+          const w = firstHalfRef.current?.scrollWidth || 0;
+          if (w > 0) {
+            autoScrollOffsetRef.current -= (SCROLL_SPEED * dt) / 1000;
+            // Wrap: keep within one copy width
+            if (Math.abs(autoScrollOffsetRef.current) >= w) {
+              autoScrollOffsetRef.current += w;
+            }
+          }
+        }
+      }
+      prevTime = now;
+
+      if (trackInnerRef.current) {
+        const total = autoScrollOffsetRef.current + dragOffsetRef.current;
+        trackInnerRef.current.style.transform = `translateX(${total}px)`;
+      }
+
+      autoRafRef.current = requestAnimationFrame(frame);
+    };
+
+    autoRafRef.current = requestAnimationFrame(frame);
+    return () => {
+      if (autoRafRef.current) cancelAnimationFrame(autoRafRef.current);
+    };
+  }, [shouldLoopCarousel]);
 
   const nudge = (dir) => {
-    // dir: +1 forward (to the right visually), -1 backward
+    pausedRef.current = true;
     setPaused(true);
-    const thirdWidth = firstHalfRef.current?.scrollWidth || 0;
-    if (thirdWidth === 0 || stepPx === 0) return;
-    setOffsetPx((prev) => {
-      const next = prev + dir * stepPx;
-      // wrap within one-third width
-      const mod = ((next % thirdWidth) + thirdWidth) % thirdWidth;
-      return mod;
-    });
-    // Optional: auto resume after a short delay
-    window.clearTimeout((nudge._t));
-    nudge._t = window.setTimeout(() => setPaused(false), 1500);
+    if (stepPx === 0) return;
+    dragOffsetRef.current += dir * stepPx;
+    window.clearTimeout(nudge._t);
+    nudge._t = window.setTimeout(() => {
+      pausedRef.current = false;
+      setPaused(false);
+    }, 1500);
   };
 
-  // Drag handlers for manual scroll
   const onPointerDown = (e) => {
-    // Cancel inertia if running
     if (inertiaRafRef.current) {
       cancelAnimationFrame(inertiaRafRef.current);
       inertiaRafRef.current = null;
     }
-  // If starting from an interactive element, don't initiate drag
-  dragBlockRef.current = isInteractiveTarget(e.target);
-  setPaused(true);
-  setIsDragging(false);
-  dragStartedRef.current = false;
+    dragBlockRef.current = isInteractiveTarget(e.target);
+    pausedRef.current = true;
+    setPaused(true);
+    setIsDragging(false);
+    dragStartedRef.current = false;
     dragStartXRef.current = e.clientX ?? (e.touches ? e.touches[0]?.clientX : 0);
-    dragStartOffsetRef.current = offsetPx;
+    dragStartOffsetRef.current = dragOffsetRef.current;
     lastXRef.current = dragStartXRef.current;
     lastTRef.current = performance.now();
     velRef.current = 0;
-  pointerDownRef.current = true;
+    pointerDownRef.current = true;
   };
 
   const onPointerMove = (e) => {
     if (!pointerDownRef.current) return;
-  if (dragBlockRef.current) return;
-  const x = e.clientX ?? (e.touches ? e.touches[0]?.clientX : 0);
+    if (dragBlockRef.current) return;
+    const x = e.clientX ?? (e.touches ? e.touches[0]?.clientX : 0);
     const now = performance.now();
     const dx = x - dragStartXRef.current;
     if (!dragStartedRef.current) {
-      if (Math.abs(dx) < DRAG_THRESHOLD) return; // not dragging yet; allow click
+      if (Math.abs(dx) < DRAG_THRESHOLD) return;
       dragStartedRef.current = true;
       setIsDragging(true);
     }
-    const thirdWidth = firstHalfRef.current?.scrollWidth || 0;
-    if (thirdWidth === 0) return;
-  const next = dragStartOffsetRef.current + dx;
-  // wrap into (-thirdWidth, 0]
-  const norm = ((next % thirdWidth) + thirdWidth) % thirdWidth; // [0, w)
-  const wrapped = norm === 0 ? 0 : norm - thirdWidth; // (-w, 0]
-  setOffsetPx(wrapped);
 
-    // Update velocity from last sample
+    const w = firstHalfRef.current?.scrollWidth || 0;
+    if (w > 0) {
+      const raw = dragStartOffsetRef.current + dx;
+      const norm = ((raw % w) + w) % w;
+      dragOffsetRef.current = norm === 0 ? 0 : norm - w;
+    } else {
+      dragOffsetRef.current = dragStartOffsetRef.current + dx;
+    }
+
     const dt = now - lastTRef.current;
     if (dt > 0) {
-      const instDx = x - lastXRef.current;
-      velRef.current = instDx / dt; // px per ms
+      velRef.current = (x - lastXRef.current) / dt;
       lastXRef.current = x;
       lastTRef.current = now;
     }
   };
 
   const endDrag = () => {
-  pointerDownRef.current = false;
-    // If a drag never started (click), just resume immediately
+    pointerDownRef.current = false;
     if (!dragStartedRef.current || dragBlockRef.current) {
+      pausedRef.current = false;
       setPaused(false);
       dragBlockRef.current = false;
       return;
@@ -251,41 +284,39 @@ const Works = () => {
     setIsDragging(false);
     dragStartedRef.current = false;
     dragBlockRef.current = false;
-    // Start inertia if sufficient velocity, else resume immediately
     const v0 = velRef.current;
-    const minV = 0.05; // px/ms ~ 50 px/s
-    if (Math.abs(v0) > minV) {
+    if (Math.abs(v0) > 0.05) {
       startInertia(v0);
     } else {
+      pausedRef.current = false;
       setPaused(false);
     }
   };
 
   const startInertia = (v0) => {
+    pausedRef.current = true;
     setPaused(true);
-    // Cancel if already running
     if (inertiaRafRef.current) cancelAnimationFrame(inertiaRafRef.current);
     let v = v0;
     let prev = performance.now();
-    const k = 0.005; // friction factor for exponential decay
+    const k = 0.005;
     const step = (now) => {
       const w = firstHalfRef.current?.scrollWidth || 0;
       if (!w) {
-        setPaused(false);
         inertiaRafRef.current = null;
+        pausedRef.current = false;
+        setPaused(false);
         return;
       }
       const dt = now - prev;
       prev = now;
-      // Update offset by velocity
-      const next = offsetPx + v * dt;
-      const norm = ((next % w) + w) % w; // [0, w)
-      const wrapped = norm === 0 ? 0 : norm - w; // (-w, 0]
-      setOffsetPx(wrapped);
-      // Exponential decay of velocity
+      dragOffsetRef.current += v * dt;
+      const norm = ((dragOffsetRef.current % w) + w) % w;
+      dragOffsetRef.current = norm === 0 ? 0 : norm - w;
       v = v * Math.exp(-k * dt);
       if (Math.abs(v) < 0.01) {
         inertiaRafRef.current = null;
+        pausedRef.current = false;
         setPaused(false);
         return;
       }
@@ -306,7 +337,7 @@ const Works = () => {
           variants={fadeIn("", "", 0.1, 1)}
           className='mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]'
         >
-          From SaaS platforms to 3D interfaces — each project reflects my approach to building 
+          From SaaS platforms to 3D interfaces — each project reflects my approach to building
           software: clean architecture, measurable impact, and end-to-end ownership.
           Explore live demos, source code, and the tech stack behind each one.
         </motion.p>
@@ -332,84 +363,50 @@ const Works = () => {
         ))}
       </motion.div>
 
-      {/* Carousel – shared by All and category filters */}
-      <div
-        className={`mt-10 relative overflow-hidden group ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} select-none`}
-        style={{ display: isAllFilter ? undefined : 'none' }}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onFocus={() => setPaused(true)}
-        onBlur={() => setPaused(false)}
-        onTouchStart={() => setPaused(true)}
-        onTouchEnd={() => setPaused(false)}
-      >
+      {shouldLoopCarousel && (
         <div
-          className={`will-change-transform animate-marquee ${paused ? 'paused' : ''}`}
-          style={{ ['--duration']: `${durationSec}s` }}
-          tabIndex={0}
+          key={`loop-${activeFilter}`}
+          className={`mt-10 relative overflow-hidden group ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} select-none`}
+          onMouseEnter={() => { pausedRef.current = true; setPaused(true); }}
+          onMouseLeave={() => { pausedRef.current = false; setPaused(false); }}
+          onFocus={() => { pausedRef.current = true; setPaused(true); }}
+          onBlur={() => { pausedRef.current = false; setPaused(false); }}
+          onTouchStart={() => { pausedRef.current = true; setPaused(true); }}
+          onTouchEnd={() => { pausedRef.current = false; setPaused(false); }}
         >
-          <div
-            ref={trackInnerRef}
-            className='flex flex-nowrap gap-2'
-            style={{ transform: `translateX(${offsetPx}px)`, touchAction: 'pan-y' }}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={endDrag}
-            onPointerCancel={endDrag}
-          >
-            <div className='flex flex-nowrap gap-2' ref={firstHalfRef}>
-              {projects.map((project, i) => (
-                <div key={`project-a-${project.name}`} ref={i === 0 ? firstCardRef : null}>
-                  <ProjectCard index={0} {...project} />
-                </div>
-              ))}
-            </div>
-            <div className='flex flex-nowrap gap-2' aria-hidden='true'>
-              {projects.map((project) => (
-                <ProjectCard key={`project-b-${project.name}`} index={0} {...project} />
-              ))}
-            </div>
-            <div className='flex flex-nowrap gap-2' aria-hidden='true'>
-              {projects.map((project) => (
-                <ProjectCard key={`project-c-${project.name}`} index={0} {...project} />
-              ))}
+          <div className='will-change-transform' tabIndex={0}>
+            <div
+              ref={trackInnerRef}
+              className='flex flex-nowrap gap-2'
+              style={{ touchAction: 'pan-y' }}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={endDrag}
+              onPointerCancel={endDrag}
+            >
+              <div className='flex flex-nowrap gap-2' ref={firstHalfRef}>
+                {activeProjects.map((project, i) => (
+                  <div key={`project-a-${activeFilter}-${project.name}`} ref={i === 0 ? firstCardRef : null}>
+                    <ProjectCard index={0} {...project} noAnimation />
+                  </div>
+                ))}
+              </div>
+              <div className='flex flex-nowrap gap-2' aria-hidden='true'>
+                {activeProjects.map((project) => (
+                  <ProjectCard key={`project-b-${activeFilter}-${project.name}`} index={0} {...project} noAnimation />
+                ))}
+              </div>
+              <div className='flex flex-nowrap gap-2' aria-hidden='true'>
+                {activeProjects.map((project) => (
+                  <ProjectCard key={`project-c-${activeFilter}-${project.name}`} index={0} {...project} noAnimation />
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Filtered categories */}
-      {activeFilter !== "All" && shouldLoopFiltered && (
-        <motion.div
-          key={`filtered-loop-${activeFilter}`}
-          className='mt-10 relative overflow-hidden group select-none'
-          initial='hidden'
-          animate='show'
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05 } } }}
-        >
-          <div className='will-change-transform animate-marquee' style={{ ['--duration']: '20s' }}>
-            <div className='flex flex-nowrap gap-2'>
-              <div className='flex flex-nowrap gap-2'>
-                {filteredProjects.map((project) => (
-                  <ProjectCard key={`filtered-a-${project.name}`} index={0} {...project} />
-                ))}
-              </div>
-              <div className='flex flex-nowrap gap-2' aria-hidden='true'>
-                {filteredProjects.map((project) => (
-                  <ProjectCard key={`filtered-b-${project.name}`} index={0} {...project} />
-                ))}
-              </div>
-              <div className='flex flex-nowrap gap-2' aria-hidden='true'>
-                {filteredProjects.map((project) => (
-                  <ProjectCard key={`filtered-c-${project.name}`} index={0} {...project} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </motion.div>
       )}
 
-      {activeFilter !== "All" && !shouldLoopFiltered && (
+      {!shouldLoopCarousel && (
         <motion.div
           key={`filtered-static-${activeFilter}`}
           className='mt-10 flex flex-nowrap gap-2 overflow-x-auto pb-3 scrollbar-hide'
@@ -417,7 +414,7 @@ const Works = () => {
           animate='show'
           variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
         >
-          {filteredProjects.map((project, index) => (
+          {activeProjects.map((project, index) => (
             <ProjectCard key={`filtered-static-${project.name}`} index={index} {...project} />
           ))}
         </motion.div>

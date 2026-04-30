@@ -25,6 +25,7 @@ import {
   closevibeweb,
   dretimediacio,
   vcdetectius,
+  fiatbrav,
   css,
   docker,
   figma,
@@ -692,6 +693,37 @@ const projects = [
     ],
     image: vcdetectius,
     link: "https://vcdetectius.vercel.app/en",
+    source_code_link: "",
+  },
+  {
+    name: "FiatBrav",
+    category: "Web App",
+    description:
+  "Corporate website for an auto parts distributor in Venezuela, built to showcase product lines, categories, and brand partnerships with a clear conversion path toward quotes and contact requests.",
+    tags: [
+      {
+        name: "react",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "tailwind",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "i18n",
+        color: "green-text-gradient",
+      },
+      {
+        name: "seo",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "vercel",
+        color: "black-text-gradient",
+      },
+    ],
+    image: fiatbrav,
+    link: "https://fiatbrav.vercel.app/en",
     source_code_link: "",
   },
   {
