@@ -82,16 +82,10 @@ const Contact = () => {
     setLoading(true);
 
     try {
-      const formspreeId = import.meta.env.VITE_APP_FORMSPREE_ID;
-      if (!formspreeId) {
-        throw { status: 500, message: 'missing environment variables' };
-      }
-
-      const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Accept: 'application/json',
         },
         body: JSON.stringify({
           name: form.name,
