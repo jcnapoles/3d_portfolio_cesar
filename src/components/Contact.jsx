@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import confetti from 'canvas-confetti';
 import { motion } from "framer-motion";
-import emailjs from "@emailjs/browser";
 
 import { styles } from "../styles";
 import { EarthCanvas } from "./canvas";
@@ -18,7 +17,37 @@ const Contact = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState({ message: '', type: '' });
+  const [notification, setNotification] = useState({
+    message: '',
+    type: '',
+    linkText: '',
+    linkHref: '',
+  });
+
+  const buildMailtoLink = () => {
+    const toEmail = import.meta.env.VITE_APP_EMAIL_FROM || '';
+    const subject = encodeURIComponent(`Portfolio contact from ${form.name || 'visitor'}`);
+    const body = encodeURIComponent(
+      `Name: ${form.name || ''}\nEmail: ${form.email || ''}\n\nMessage:\n${form.message || ''}`
+    );
+
+    return `mailto:${toEmail}?subject=${subject}&body=${body}`;
+  };
+
+  const getResendErrorMessage = (error) => {
+    const details = `${error?.message || ''} ${error?.error || ''}`.toLowerCase();
+
+    if (details.includes('missing environment variables')) {
+      return 'Contact form is not configured yet. Please try again later or use the email app button.';
+    }
+
+    if (error?.status >= 500) {
+      return 'Email service is temporarily unavailable. You can send the message directly from your email app.';
+    }
+
+    return 'Ahh, something went wrong. Please try again.';
+  };
+
   const handleChange = (e) => {
     const { target } = e;
     const { name, value } = target;
@@ -29,67 +58,75 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => { 
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.name || !form.email || !form.message) {
-      setNotification({ message: 'Please fill in all fields.', type: 'error' });
+      setNotification({ message: 'Please fill in all fields.', type: 'error', linkText: '', linkHref: '' });
       return;
     }
-     
-    const confettiConfig = {
-      angle: 45, // Ángulo en el que se disparará el confetti
-      spread: 5000, // Qué tan lejos se esparcirá el confetti
-      startVelocity: 50, // Qué tan rápido saldrá el confetti
-      elementCount: 70, // Cantidad de piezas de confetti
-      dragFriction: 0.4, // Fricción que ralentiza el movimiento del confetti
-      duration: 10000, // Cuánto tiempo (en milisegundos) estará el confetti en el aire
-      stagger: 4, // Retraso entre cada pieza de confetti
-      width: "100px", // Ancho de cada pieza de confetti
-      height: "100px", // Altura de cada pieza de confetti
-      colors: ['#a864fd', '#29cdff', '#78ff44', '#ff718d', '#fdff6a'], // Colores del confetti
-    };
-    setLoading(true);
-    let message = `
-      Name: ${form.name}
-      Email: ${form.email}
-      Message: ${form.message}
-    `;
-    emailjs
-      .send(
-        import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID,
-        {
-          from_name: form.name,
-          to_name: "Cesar",
-          from_email: form.email,
-          to_email: import.meta.env.VITE_APP_EMAIL_FROM,
-          message: message,
-        },
-        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
-      )
-      .then(
-        () => {
-          setLoading(false);
-          setNotification({ message: "Thank you. I will get back to you as soon as possible.", type: 'success' });
-          confetti(confettiConfig);
-          setForm({
-            name: "",
-            email: "",
-            message: "",
-          });
-        },
-        (error) => {
-          setLoading(false);
-          console.error(error);
 
-          setNotification({message: "Ahh, something went wrong. Please try again.", type: 'error' } );
-        }
-      );
+    const confettiConfig = {
+      angle: 45,
+      spread: 5000,
+      startVelocity: 50,
+      elementCount: 70,
+      dragFriction: 0.4,
+      duration: 10000,
+      stagger: 4,
+      width: "100px",
+      height: "100px",
+      colors: ['#a864fd', '#29cdff', '#78ff44', '#ff718d', '#fdff6a'],
+    };
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: form.message,
+        }),
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw { status: response.status, ...result };
+      }
+
+      setNotification({
+        message: 'Thank you. I will get back to you as soon as possible.',
+        type: 'success',
+        linkText: '',
+        linkHref: '',
+      });
+      confetti(confettiConfig);
+      setForm({
+        name: '',
+        email: '',
+        message: '',
+      });
+    } catch (error) {
+      console.error(error);
+      setNotification({
+        message: getResendErrorMessage(error),
+        type: 'error',
+        linkText: 'Open email app',
+        linkHref: buildMailtoLink(),
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const closeNotification = () => {
-    setNotification({ message: '', type: '' });
+    setNotification({ message: '', type: '', linkText: '', linkHref: '' });
   };
 
   return (
@@ -176,7 +213,15 @@ const Contact = () => {
           {notification.message && (
             <div className={`text-white py-2 px-4 rounded-md mb-4 ${notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
               {notification.message}
-              <button onClick={closeNotification} className='float-right'>
+              {notification.linkHref && (
+                <a
+                  href={notification.linkHref}
+                  className='underline font-semibold ml-2'
+                >
+                  {notification.linkText}
+                </a>
+              )}
+              <button type='button' onClick={closeNotification} className='float-right'>
                 &times;
               </button>
             </div>
