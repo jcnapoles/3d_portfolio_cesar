@@ -37,6 +37,7 @@ import closevibeweb from "./projects/closevibeweb.jpg";
 import dretimediacio from "./projects/dretimediacio.png";
 import vcdetectius from "./projects/vcdetectius.png";
 import fiatbrav from "./projects/fiatbrav.png";
+import quinque from "./projects/quinque.png";
 import java from "./tech/java.svg";
 import spring from "./tech/spring.svg";
 import angular from "./tech/angular.svg";
@@ -118,6 +119,7 @@ export {
   dretimediacio,
   vcdetectius,
   fiatbrav,
+  quinque,
   tictactoe, 
   spring,
   angular,

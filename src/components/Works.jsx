@@ -85,7 +85,7 @@ const Works = () => {
   const [stepPx, setStepPx] = useState(0);
 
   const categories = useMemo(() => {
-    const cats = [...new Set(projects.map((p) => p.category))];
+    const cats = [...new Set(projects.map((p) => p.sector))];
     return ["All", ...cats];
   }, []);
 
@@ -93,7 +93,7 @@ const Works = () => {
     () =>
       activeFilter === "All"
         ? projects
-        : projects.filter((p) => p.category === activeFilter),
+        : projects.filter((p) => p.sector === activeFilter),
     [activeFilter]
   );
   const activeProjects = activeFilter === "All" ? projects : filteredProjects;

@@ -26,6 +26,7 @@ import {
   dretimediacio,
   vcdetectius,
   fiatbrav,
+  quinque,
   css,
   docker,
   figma,
@@ -495,8 +496,41 @@ const testimonials = [
 
 const projects = [
   {
+    name: "Quinque",
+    category: "Web App",
+    sector: "Productivity",
+    description:
+      "Decision journal web app based on the Cynefin framework and critical thinking. Guides users through a 5-step method to structure important decisions, featuring AI-powered assistance from Claude, prediction calibration, custom tags, personal dashboard, dark/light mode, and multi-language support.",
+    tags: [
+      {
+        name: "react",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "node.js",
+        color: "green-text-gradient",
+      },
+      {
+        name: "postgresql",
+        color: "green-text-gradient",
+      },
+      {
+        name: "docker",
+        color: "orange-text-gradient",
+      },
+      {
+        name: "claude",
+        color: "pink-text-gradient",
+      },
+    ],
+    image: quinque,
+    link: "https://quinque.cesarnapoles.com/",
+    source_code_link: "",
+  },
+  {
     name: "Closevibe",
     category: "SaaS",
+    sector: "SaaS",
     description:
   "AI-powered SaaS platform I founded that orchestrates multichannel sales and support across WhatsApp, Instagram, Messenger, and Email. Features trainable conversational assistants, automated lead follow-up, and context-aware AI responses—built to increase conversion at scale.",
     tags: [
@@ -528,6 +562,7 @@ const projects = [
   {
     name: "My Portfolio",
     category: "Portfolio",
+    sector: "Portfolio",
     description:
   "Immersive 3D portfolio built with Three.js and React, featuring GPU-accelerated animations, responsive design, and interactive micro-interactions. Showcases my projects and experience in a high-performance, visually engaging format.",
     tags: [
@@ -555,6 +590,7 @@ const projects = [
   {
     name: "Invest Analysis",
     category: "Web App",
+    sector: "Finance",
     description:
   "Full-stack investment analytics platform with real-time stock screening, portfolio tracking, and curated market news. Features data-driven dashboards, advanced filters, and actionable trading signals powered by financial APIs.",
     tags: [
@@ -586,6 +622,7 @@ const projects = [
   {
     name: "Suneidis' Portfolio",
     category: "Portfolio",
+    sector: "Portfolio",
     description:
   "Performance-optimized portfolio site built with Astro for a QA Engineer. Achieves 95+ Lighthouse scores through static-site generation, minimal JS, and semantic HTML—demonstrating my focus on accessibility and web performance.",
     tags: [
@@ -613,6 +650,7 @@ const projects = [
   {
     name: "Tic Tac Toe Game",
     category: "Game",
+    sector: "Gaming",
     description:
   "Interactive React game showcasing clean component architecture, hooks-based state management, and testable logic. Features score tracking, game history, and responsive UI—a compact demo of React best practices.",
     tags: [
@@ -636,6 +674,7 @@ const projects = [
   {
     name: "Dret i Mediació",
     category: "Web App",
+    sector: "Legal",
     description:
   "Professional website for a Barcelona-based law firm specializing in immigration and family law. Features appointment booking, multilingual support, and an admin panel — built with a modern stack focused on performance and SEO.",
     tags: [
@@ -667,6 +706,7 @@ const projects = [
   {
     name: "VC Detectius",
     category: "Web App",
+    sector: "Services",
     description:
   "Private detective agency website focused on trust, discretion, and conversion. Includes multilingual navigation, service-focused sections, and clear contact pathways for individuals and businesses.",
     tags: [
@@ -698,6 +738,7 @@ const projects = [
   {
     name: "FiatBrav",
     category: "Web App",
+    sector: "Automotive",
     description:
   "Corporate website for an auto parts distributor in Venezuela, built to showcase product lines, categories, and brand partnerships with a clear conversion path toward quotes and contact requests.",
     tags: [
@@ -729,6 +770,7 @@ const projects = [
   {
     name: "Fullstack Questions",
     category: "Web App",
+    sector: "Education",
     description:
   "Technical interview preparation platform with 500+ curated full-stack questions, detailed explanations, and real-world examples. Built with Nextra and MDX for fast static-site generation, featuring tag-based filtering and structured study flow.",
     tags: [
