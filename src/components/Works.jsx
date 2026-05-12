@@ -346,13 +346,13 @@ const Works = () => {
       {/* Filter buttons */}
       <motion.div
         variants={fadeIn("up", "", 0.2, 0.6)}
-        className='mt-8 flex flex-wrap gap-3 justify-center sm:justify-start'
+        className='mt-8 flex flex-nowrap gap-2 sm:gap-3 justify-start overflow-x-auto pb-2 scrollbar-hide'
       >
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveFilter(cat)}
-            className={`px-5 py-2 rounded-full text-[14px] font-medium transition-all duration-300 border ${
+            className={`shrink-0 px-3 py-1.5 sm:px-5 sm:py-2 rounded-full text-[12px] sm:text-[14px] font-medium transition-all duration-300 border ${
               activeFilter === cat
                 ? 'bg-[#915EFF] border-[#915EFF] text-white shadow-[0_0_12px_rgba(145,94,255,0.4)]'
                 : 'bg-transparent border-secondary/30 text-secondary hover:border-[#915EFF]/60 hover:text-white'
