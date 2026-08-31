@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import confetti from 'canvas-confetti';
 import { motion } from "framer-motion";
 
@@ -7,6 +7,34 @@ import { EarthCanvas } from "./canvas";
 import { SectionWrapper } from "../hoc";
 import { slideIn } from "../utils/motion";
 import { FaLinkedin, FaGithub, FaRegCalendarAlt } from 'react-icons/fa';
+import { HONEYPOT_FIELD, TURNSTILE_TOKEN_FIELD } from '../../netlify/shared/form-fields.js';
+
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+const TURNSTILE_SCRIPT_SRC =
+  'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+
+let turnstileScriptPromise = null;
+
+/** Loads the Turnstile API once, however many times a component asks for it. */
+const loadTurnstileScript = () => {
+  if (window.turnstile) return Promise.resolve();
+  if (turnstileScriptPromise) return turnstileScriptPromise;
+
+  turnstileScriptPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = TURNSTILE_SCRIPT_SRC;
+    script.async = true;
+    script.defer = true;
+    script.onload = resolve;
+    script.onerror = () => {
+      turnstileScriptPromise = null;
+      reject(new Error('Failed to load Turnstile'));
+    };
+    document.head.appendChild(script);
+  });
+
+  return turnstileScriptPromise;
+};
 
 const Contact = () => {
   const formRef = useRef();
@@ -14,7 +42,12 @@ const Contact = () => {
     name: "",
     email: "",
     message: "",
+    [HONEYPOT_FIELD]: "",
   });
+
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileRef = useRef(null);
+  const turnstileWidgetId = useRef(null);
 
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({
@@ -23,6 +56,51 @@ const Contact = () => {
     linkText: '',
     linkHref: '',
   });
+
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) return undefined;
+
+    let widgetId = null;
+    let cancelled = false;
+
+    loadTurnstileScript()
+      .then(() => {
+        if (cancelled || !turnstileRef.current || !window.turnstile) return;
+
+        widgetId = window.turnstile.render(turnstileRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          theme: 'dark',
+          // Stay out of the visitor's way unless Cloudflare actually wants them
+          // to do something.
+          appearance: 'interaction-only',
+          callback: (token) => setTurnstileToken(token),
+          'expired-callback': () => setTurnstileToken(''),
+          'error-callback': () => setTurnstileToken(''),
+        });
+
+        turnstileWidgetId.current = widgetId;
+      })
+      .catch(() => {
+        // Nothing to do here: submitting without a token surfaces the error.
+      });
+
+    // StrictMode mounts effects twice in development, so tear the widget down.
+    return () => {
+      cancelled = true;
+      if (widgetId !== null && window.turnstile) {
+        window.turnstile.remove(widgetId);
+      }
+      turnstileWidgetId.current = null;
+    };
+  }, []);
+
+  /** Turnstile tokens are single use, so each attempt needs a fresh one. */
+  const resetTurnstile = () => {
+    setTurnstileToken('');
+    if (turnstileWidgetId.current !== null && window.turnstile) {
+      window.turnstile.reset(turnstileWidgetId.current);
+    }
+  };
 
   const buildMailtoLink = () => {
     const toEmail = import.meta.env.VITE_APP_EMAIL_FROM || '';
@@ -36,6 +114,18 @@ const Contact = () => {
 
   const getResendErrorMessage = (error) => {
     const details = `${error?.message || ''} ${error?.error || ''}`.toLowerCase();
+
+    if (error?.status === 429) {
+      return 'You have already sent a few messages. Please wait a little while before trying again.';
+    }
+
+    if (error?.code === 'failed_verification') {
+      return 'We could not verify your submission. Please try sending it again.';
+    }
+
+    if (error?.status === 403) {
+      return 'This submission was blocked. Please send your message from your email app instead.';
+    }
 
     if (details.includes('missing environment variables')) {
       return 'Contact form is not configured yet. Please try again later or use the email app button.';
@@ -66,6 +156,16 @@ const Contact = () => {
       return;
     }
 
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setNotification({
+        message: 'Still checking you are human. Please try again in a moment.',
+        type: 'error',
+        linkText: '',
+        linkHref: '',
+      });
+      return;
+    }
+
     const confettiConfig = {
       angle: 45,
       spread: 5000,
@@ -91,6 +191,8 @@ const Contact = () => {
           name: form.name,
           email: form.email,
           message: form.message,
+          [HONEYPOT_FIELD]: form[HONEYPOT_FIELD],
+          [TURNSTILE_TOKEN_FIELD]: turnstileToken,
         }),
       });
 
@@ -111,6 +213,7 @@ const Contact = () => {
         name: '',
         email: '',
         message: '',
+        [HONEYPOT_FIELD]: '',
       });
     } catch (error) {
       console.error(error);
@@ -122,6 +225,7 @@ const Contact = () => {
       });
     } finally {
       setLoading(false);
+      resetTurnstile();
     }
   };
 
@@ -210,6 +314,33 @@ const Contact = () => {
             />
           </label>          
          
+          {/*
+            Honeypot. Sits off-screen and out of the tab order, so a real
+            visitor never sees it. Bots fill every input they find, and the API
+            silently discards any submission that arrives with this field set.
+          */}
+          <div
+            aria-hidden='true'
+            style={{
+              position: 'absolute',
+              left: '-9999px',
+              width: '1px',
+              height: '1px',
+              overflow: 'hidden',
+            }}
+          >
+            <label htmlFor={HONEYPOT_FIELD}>Leave this field empty</label>
+            <input
+              type='text'
+              id={HONEYPOT_FIELD}
+              name={HONEYPOT_FIELD}
+              value={form[HONEYPOT_FIELD]}
+              onChange={handleChange}
+              tabIndex={-1}
+              autoComplete='off'
+            />
+          </div>
+
           {notification.message && (
             <div className={`text-white py-2 px-4 rounded-md mb-4 ${notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
               {notification.message}
@@ -226,12 +357,24 @@ const Contact = () => {
               </button>
             </div>
           )}
-          <button
-            type='submit'
-            className='bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-md shadow-primary hover:bg-[#915EFF] transition'
-          >
-            {loading ? "Sending..." : "Send"}
-          </button>          
+          {/*
+            Turnstile mounts into the div below. With appearance
+            'interaction-only' it renders an empty, zero-height element unless
+            the visitor genuinely has to solve something.
+
+            It shares a gapless wrapper with the submit button on purpose: as a
+            direct child of the form it would claim a full gap slot even while
+            invisible, pushing the button down for everyone.
+          */}
+          <div className='flex flex-col'>
+            {TURNSTILE_SITE_KEY && <div ref={turnstileRef} />}
+            <button
+              type='submit'
+              className='bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-md shadow-primary hover:bg-[#915EFF] transition'
+            >
+              {loading ? "Sending..." : "Send"}
+            </button>
+          </div>
         </form>
       </motion.div>
 

@@ -2,30 +2,57 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { Resend } from 'resend'
 
+import {
+  TURNSTILE_TOKEN_FIELD,
+  getAllowedOrigins,
+  isHoneypotTripped,
+  isOriginAllowed,
+  verifyTurnstileToken,
+} from './netlify/shared/anti-spam.js'
+
+/**
+ * Local stand-in for netlify/functions/send-email.js. It mirrors that handler's
+ * origin check and honeypot so spam defences can be exercised in development.
+ *
+ * The per-IP rate limit is deliberately absent: it is backed by Netlify Blobs,
+ * which only exists in the Netlify runtime. Turnstile works locally through
+ * Cloudflare's dummy test keys.
+ */
 function createResendDevPlugin(env) {
   return {
     name: 'resend-dev-api',
     configureServer(server) {
       server.middlewares.use('/api/send-email', async (req, res) => {
-        if (req.method !== 'POST') {
-          res.statusCode = 405
+        const send = (statusCode, payload) => {
+          res.statusCode = statusCode
           res.setHeader('Content-Type', 'application/json')
-          res.end(JSON.stringify({ success: false, error: 'Method not allowed' }))
+          res.end(JSON.stringify(payload))
+        }
+
+        if (req.method !== 'POST') {
+          send(405, { success: false, error: 'Method not allowed' })
           return
         }
 
-        const requiredEnv = ['RESEND_API_KEY', 'RESEND_FROM_EMAIL', 'RESEND_TO_EMAIL']
+        // Fails open when ALLOWED_ORIGINS is unset, which is the normal local case.
+        if (!isOriginAllowed(req.headers, getAllowedOrigins(env))) {
+          send(403, { success: false, error: 'Forbidden origin' })
+          return
+        }
+
+        const requiredEnv = [
+          'RESEND_API_KEY',
+          'RESEND_FROM_EMAIL',
+          'RESEND_TO_EMAIL',
+          'TURNSTILE_SECRET_KEY',
+        ]
         const missing = requiredEnv.filter((key) => !env[key])
 
         if (missing.length > 0) {
-          res.statusCode = 500
-          res.setHeader('Content-Type', 'application/json')
-          res.end(
-            JSON.stringify({
-              success: false,
-              error: `Missing environment variables: ${missing.join(', ')}`,
-            })
-          )
+          send(500, {
+            success: false,
+            error: `Missing environment variables: ${missing.join(', ')}`,
+          })
           return
         }
 
@@ -36,12 +63,37 @@ function createResendDevPlugin(env) {
           try {
             const rawBody = Buffer.concat(chunks).toString('utf8')
             const body = rawBody ? JSON.parse(rawBody) : {}
+
+            // Answer 200 so bots treat the submission as delivered and move on.
+            if (isHoneypotTripped(body)) {
+              console.warn('Contact form: honeypot tripped, discarding submission')
+              send(200, { success: true })
+              return
+            }
+
             const { name, email, message } = body
 
             if (!name || !email || !message) {
-              res.statusCode = 400
-              res.setHeader('Content-Type', 'application/json')
-              res.end(JSON.stringify({ success: false, error: 'Missing required fields' }))
+              send(400, { success: false, error: 'Missing required fields' })
+              return
+            }
+
+            const verification = await verifyTurnstileToken(
+              env.TURNSTILE_SECRET_KEY,
+              body[TURNSTILE_TOKEN_FIELD],
+              null
+            )
+
+            if (!verification.success) {
+              console.warn(
+                'Contact form: Turnstile rejected submission:',
+                verification.errorCodes.join(', ')
+              )
+              send(403, {
+                success: false,
+                code: 'failed_verification',
+                error: 'Failed verification',
+              })
               return
             }
 
@@ -55,24 +107,16 @@ function createResendDevPlugin(env) {
             })
 
             if (error) {
-              res.statusCode = 502
-              res.setHeader('Content-Type', 'application/json')
-              res.end(JSON.stringify({ success: false, error: error.message || 'Resend failed' }))
+              send(502, { success: false, error: error.message || 'Resend failed' })
               return
             }
 
-            res.statusCode = 200
-            res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify({ success: true }))
+            send(200, { success: true })
           } catch (error) {
-            res.statusCode = 500
-            res.setHeader('Content-Type', 'application/json')
-            res.end(
-              JSON.stringify({
-                success: false,
-                error: error?.message || 'Unexpected error while sending email',
-              })
-            )
+            send(500, {
+              success: false,
+              error: error?.message || 'Unexpected error while sending email',
+            })
           }
         })
       })
