@@ -1,0 +1,63 @@
+/* Services (spec 6.5): micro-visual loops.
+   - Every loop and entry animation below is gated with html:not([data-motion="reduced"]). Under reduced motion the
+     markup already shows the final state (A: paths only, B: fixed angles, C: all checked, D: satellite at the apex).
+   - ServiceTile drives each visual root's data-active ("true" | "false"). "false" freezes every animation inside it.
+   - <Section> adds the offscreen pause (data-offscreen) on top. */
+
+/* ---------- Shared ---------- */
+.svc-vis[data-active="false"] *,
+.svc-vis[data-active="false"] *::before,
+.svc-vis[data-active="false"] *::after { animation-play-state: paused !important; }
+
+/* Visual stage: a faint blueprint dot field that fades out radially (static). */
+.svc-stage { position: relative; }
+.svc-stage::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: 12px;
+  background-image: radial-gradient(var(--hud-dim) 1px, transparent 1.2px);
+  background-size: 24px 24px; background-position: center;
+  -webkit-mask-image: radial-gradient(closest-side, #000 35%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 35%, transparent 100%);
+}
+
+/* ---------- A. CommandNode: gold pulses into the CTO node, loops while in view ---------- */
+.svc-beam { stroke-dasharray: 10 110; stroke-dashoffset: 10; }
+@keyframes svc-beam { from { stroke-dashoffset: 10; } to { stroke-dashoffset: -110; } }
+html:not([data-motion="reduced"]) .svc-cmd .svc-beam {
+  animation: svc-beam 2.4s linear infinite;
+  animation-delay: calc(var(--i, 0) * 0.48s);
+}
+
+/* ---------- B. OrbitStack: counter-rotation keeps the icons upright ---------- */
+/* The carriers use motion-ok:animate-spin-40 / motion-ok:animate-spin-64-rev (Tailwind). */
+@keyframes svc-spin { to { transform: rotate(360deg); } }
+html:not([data-motion="reduced"]) .svc-upright-40 { animation: svc-spin 40s linear infinite reverse; }
+html:not([data-motion="reduced"]) .svc-upright-64 { animation: svc-spin 64s linear infinite; }
+
+/* ---------- C. Pipeline: an ion pulse runs BUILD > TEST > REVIEW > DEPLOY in 4 s ---------- */
+/* Nodes sit at 12.5 / 37.5 / 62.5 / 87.5 % of the track. The carrier is as wide as the track, so translateX(%) is
+   track-relative: it starts one node spacing before BUILD and reaches each node at 25 / 50 / 75 / 100 %. */
+.svc-pipe-head { opacity: 0; }
+.svc-pipe-on { opacity: 1; }
+@keyframes svc-pipe-travel { from { transform: translateX(-12.5%); } to { transform: translateX(87.5%); } }
+@keyframes svc-pipe-head { 0%, 10% { opacity: 0; } 18%, 95% { opacity: 1; } 100% { opacity: 0; } }
+/* Cycle edges (100% -> 0%) hold every node checked; checks clear at 8-14 %, then light up as the pulse lands. */
+@keyframes svc-pipe-on-0 { 0%, 8% { opacity: 1; } 14%, 23% { opacity: 0; } 25%, 100% { opacity: 1; } }
+@keyframes svc-pipe-on-1 { 0%, 8% { opacity: 1; } 14%, 48% { opacity: 0; } 50%, 100% { opacity: 1; } }
+@keyframes svc-pipe-on-2 { 0%, 8% { opacity: 1; } 14%, 73% { opacity: 0; } 75%, 100% { opacity: 1; } }
+@keyframes svc-pipe-on-3 { 0%, 8% { opacity: 1; } 14%, 98% { opacity: 0; } 100% { opacity: 1; } }
+html:not([data-motion="reduced"]) .svc-pipe .svc-pipe-carrier { animation: svc-pipe-travel 4s linear infinite; }
+html:not([data-motion="reduced"]) .svc-pipe .svc-pipe-head { animation: svc-pipe-head 4s linear infinite; }
+html:not([data-motion="reduced"]) .svc-pipe .svc-pipe-on-0 { animation: svc-pipe-on-0 4s linear infinite; }
+html:not([data-motion="reduced"]) .svc-pipe .svc-pipe-on-1 { animation: svc-pipe-on-1 4s linear infinite; }
+html:not([data-motion="reduced"]) .svc-pipe .svc-pipe-on-2 { animation: svc-pipe-on-2 4s linear infinite; }
+html:not([data-motion="reduced"]) .svc-pipe .svc-pipe-on-3 { animation: svc-pipe-on-3 4s linear infinite; }
+
+/* ---------- D. LaunchTrajectory: SMIL (paused with svg.pauseAnimations), nothing in CSS ---------- */
+
+/* ---------- Accessibility modes ---------- */
+@media (prefers-contrast: more) {
+  .svc-stage::before { display: none; }
+}
+@media (forced-colors: active) {
+  .svc-stage::before { display: none; }
+}

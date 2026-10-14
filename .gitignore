@@ -28,3 +28,7 @@ package-lock.json
 
 # vscode
 .vscode
+
+# One-off local Python tooling (rembg) and its model cache
+scripts/.pylib/
+__pycache__/

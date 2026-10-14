@@ -1,0 +1,167 @@
+import { useMemo } from "react";
+import { ArrowDownRight, ArrowRight } from "lucide-react";
+import Section from "@/components/ui/Section";
+import SectionHeading from "@/components/ui/SectionHeading";
+import NumberTicker from "@/components/ui/NumberTicker";
+import ScrambleText from "@/components/ui/ScrambleText";
+import Ticks from "@/components/ui/Ticks";
+import Reveal from "@/components/ui/Reveal";
+import useMediaQuery from "@/hooks/useMediaQuery";
+import { cn } from "@/lib/cn";
+import { fadeUp, STAGGER } from "@/lib/motion";
+import { FACTS, verifiedClaims } from "@/constants/claims";
+import "./telemetry.css";
+
+/** "12+", "250K+", "−30%": the plain-text value read by screen readers (the animated one is aria-hidden). */
+const displayOf = ({ display, value, prefix = "", suffix = "" }) =>
+  display ?? `${prefix}${String(value).replace(/^-/, "−")}${suffix}`;
+
+const numberCell = (key, item, caption = item.source) => ({
+  key,
+  kind: "number",
+  value: item.value,
+  format: item.format,
+  prefix: item.prefix,
+  suffix: item.suffix,
+  display: displayOf(item),
+  label: item.label,
+  caption,
+  href: item.href,
+});
+
+/**
+ * Cells are deterministic (spec 6.3): two facts, then two claim slots filled from verifiedClaims() in
+ * CLAIM_PRIORITY order, each falling back to a text stat. Flipping `verified` in claims.js is the only edit needed.
+ */
+function buildCells() {
+  const v = verifiedClaims();
+  return [
+    numberCell("yearsShipping", FACTS.yearsShipping),
+    numberCell("sttokUsers", FACTS.sttokUsers),
+    v[0]
+      ? numberCell(v[0].key, v[0])
+      : { key: "slot3", kind: "text", text: "Sr. Tech Lead", label: "CaixaBank Tech", caption: "Now" },
+    v[1]
+      ? numberCell(v[1].key, v[1])
+      : { key: "slot4", kind: "text", text: "Co-founder", label: "Closevibe, AI SaaS", caption: "Now · try the chat", captionIcon: "chat" },
+  ];
+}
+
+// Hairlines: a 2x2 cross below 1024, vertical dividers between 4 cells from 1024 (divide-x look).
+const CELL_EDGES = [
+  "border-r pb-8 pr-4 sm:pr-6 lg:border-r-0 lg:pb-0 lg:pl-0 lg:pr-8",
+  "pb-8 pl-4 sm:pl-6 lg:border-l lg:pb-0 lg:px-8",
+  "border-r border-t pt-8 pr-4 sm:pr-6 lg:border-l lg:border-r-0 lg:border-t-0 lg:pt-0 lg:px-8",
+  "border-t pt-8 pl-4 sm:pl-6 lg:border-l lg:border-t-0 lg:pt-0 lg:pl-8 lg:pr-0",
+];
+
+function StatValue({ cell }) {
+  if (cell.kind === "text") {
+    return (
+      <p className="mt-5 self-end text-ink-1">
+        <ScrambleText trigger="inview" text={cell.text} className="tlm-value-text block text-stat-text stretch-112" />
+      </p>
+    );
+  }
+  const negative = cell.value < 0;
+  const sign = negative ? "−" : cell.prefix;
+  return (
+    <p className="tlm-value mt-5 self-end whitespace-nowrap text-stat stretch-112 tabular text-ink-1">
+      <span className="sr-only">{cell.display}</span>
+      <span aria-hidden="true">
+        {sign ? <span className="text-ion">{sign}</span> : null}
+        <NumberTicker value={Math.abs(cell.value)} format={cell.format} />
+        {cell.suffix ? <span className="text-ion">{cell.suffix}</span> : null}
+      </span>
+    </p>
+  );
+}
+
+/** Caption text with the icon glued to the last word, so a wrapped caption never strands its arrow. */
+function CaptionText({ text, Icon, iconClassName }) {
+  if (!Icon) return text;
+  const cut = text.lastIndexOf(" ");
+  return (
+    <>
+      {cut >= 0 ? text.slice(0, cut + 1) : null}
+      <span className="whitespace-nowrap">
+        {cut >= 0 ? text.slice(cut + 1) : text}
+        <Icon size={12} strokeWidth={2} aria-hidden="true" className={cn("ml-1.5 inline-block align-[-1px]", iconClassName)} />
+      </span>
+    </>
+  );
+}
+
+// Same box for links and plain captions (44 px tall on coarse pointers), so footers line up across cells.
+const CAPTION_BASE = "inline-block font-mono text-[12px] leading-5 text-ink-3 coarse:py-3";
+
+function Caption({ cell }) {
+  if (cell.href) {
+    return (
+      <a
+        href={cell.href}
+        className={cn(
+          CAPTION_BASE,
+          "group/cap rounded-xs transition-colors duration-ui ease-ui hover:text-ink-1 focus-visible:text-ink-1 motion-off:transition-none"
+        )}
+      >
+        <CaptionText
+          text={cell.caption}
+          Icon={ArrowRight}
+          iconClassName="transition-transform duration-ui ease-ui motion-ok:group-hover/cap:translate-x-0.5 motion-ok:group-focus-visible/cap:translate-x-0.5"
+        />
+      </a>
+    );
+  }
+  return (
+    <span className={CAPTION_BASE}>
+      <CaptionText text={cell.caption} Icon={cell.captionIcon === "chat" ? ArrowDownRight : null} />
+    </span>
+  );
+}
+
+/**
+ * 6.3 Telemetry band (#telemetry, chapter 00). Four honest numbers under the hero.
+ * Each cell: HUD label (aria-hidden, repeats the caption) / value / label / ruler / source caption.
+ */
+export default function Telemetry() {
+  const cells = buildCells();
+  const fourUp = useMediaQuery("(min-width: 1024px)");
+  const isMobile = useMediaQuery("(max-width: 767px)");
+
+  // STAGGER.stats (120 ms) between cells. Each cell observes itself, so on the 2x2 phone/tablet grid a row
+  // reveals as soon as it enters instead of waiting for 30% of the whole (tall) band; across the 4-up desktop
+  // row the per-index delay gives exactly the staggerParent({ stagger: STAGGER.stats }) timing.
+  const cellVariants = useMemo(
+    () => cells.map((_, i) => fadeUp({ y: isMobile ? 16 : 24, delay: (fourUp ? i : i % 2) * STAGGER.stats })),
+    // cells.length is constant (4)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [fourUp, isMobile]
+  );
+
+  return (
+    <Section id="telemetry" chapter="00" tone="band" labelledBy="telemetry-title">
+      <SectionHeading srOnly id="telemetry-title" title="Track record in numbers" />
+      <ul role="list" className="tlm-grid">
+        {cells.map((cell, i) => (
+          <Reveal as="li" key={cell.key} variants={cellVariants[i]} className={cn("tlm-cell border-line", CELL_EDGES[i])}>
+            {/* HUD label "TLM-0n · CAPTION" set as two stacked lines (the line break is the separator), so a
+                long caption never breaks mid-label in a narrow cell. Decorative: the caption is repeated below. */}
+            <p aria-hidden="true" className="hud-label self-start">
+              <span className="block">TLM-{String(i + 1).padStart(2, "0")}</span>
+              <span className="mt-1.5 block">{cell.caption}</span>
+            </p>
+            <StatValue cell={cell} />
+            <p className="mt-3 max-w-[28ch] text-small text-ink-2">{cell.label}</p>
+            <div className="tlm-foot mt-6 self-start">
+              <Ticks count={40} />
+              <div className="mt-3">
+                <Caption cell={cell} />
+              </div>
+            </div>
+          </Reveal>
+        ))}
+      </ul>
+    </Section>
+  );
+}

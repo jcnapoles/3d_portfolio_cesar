@@ -1,0 +1,146 @@
+/* About + Flight log (spec 6.10, T7). Section-specific styles only.
+   Nothing here loops. State transitions are gated with html:not([data-motion="reduced"]).
+   Final state first (M-2): the line is full and every node is lit until GSAP arms the log. */
+
+/* ---------- 6a: porthole ---------- */
+.about-porthole {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  flex: none;
+}
+
+/* Static corona: an eclipse rim hugging the disc (fixed angle, never rotates). */
+.about-corona {
+  position: absolute;
+  inset: -16px;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: conic-gradient(
+    from 218deg,
+    transparent 0 54%,
+    rgba(255, 208, 138, 0.8) 69%,
+    rgba(116, 212, 255, 0.5) 82%,
+    transparent 95%
+  );
+  -webkit-mask: radial-gradient(closest-side, transparent 84%, #000 89%, #000 93%, transparent 100%);
+  mask: radial-gradient(closest-side, transparent 84%, #000 89%, #000 93%, transparent 100%);
+  filter: blur(5px);
+  opacity: 0.75;
+}
+
+/* Instrument bezel around the porthole (decorative SVG). */
+.about-bezel {
+  position: absolute;
+  inset: -30px;
+  width: 300px;
+  height: 300px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* ---------- 6b: flight log ---------- */
+.fl-log {
+  position: relative;
+}
+
+/* The line sits 4 px in from the log's left edge (centre x = 4.5 px), so the 9 px nodes stay inside
+   their rows: the earlier rows live in a <details> whose ::details-content clips overflow. */
+.fl-track {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 4px;
+  width: 1px;
+  background: var(--line-strong);
+  pointer-events: none;
+}
+
+.fl-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 0;
+  background: linear-gradient(to bottom, rgba(244, 184, 96, 0.25), var(--gold) 96px);
+}
+
+/* Comet head: hidden until GSAP arms the log (autoAlpha), then rides the fill end. */
+.fl-head {
+  position: absolute;
+  top: -6px;
+  left: -5.5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: var(--gold-hot);
+  box-shadow: 0 0 0 2px rgba(255, 208, 138, 0.25), 0 0 12px 2px rgba(244, 184, 96, 0.8);
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform;
+}
+
+/* Row rhythm: 24 px padding on mobile, 16 px on desktop (88 px collapsed with a one-line impact). */
+.fl-body {
+  padding-block: 24px;
+}
+
+/* Node on the line, centred on the 56 px logo tile. Lit = final state. */
+.fl-node {
+  position: absolute;
+  left: 0;
+  top: calc(24px + 28px - 4.5px);
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  border: 1px solid var(--gold);
+  background: var(--gold);
+  box-shadow: inset 0 0 0 2px var(--void);
+  pointer-events: none;
+}
+.fl-log.is-armed .fl-node:not(.is-lit) {
+  border-color: var(--line-strong);
+  background: var(--void);
+}
+html:not([data-motion="reduced"]) .fl-node {
+  transition: border-color var(--t-ui) var(--ease-ui), background-color var(--t-ui) var(--ease-ui);
+}
+
+/* Company logos: monochrome white at .7 (every source logo has a transparent background).
+   A fixed width + height:auto (ratio from the width/height attributes) keeps SVGs without intrinsic
+   size from collapsing to 0; object-fit contains square marks inside the 28 px height cap. */
+.fl-logo-img {
+  display: block;
+  width: 44px;
+  height: auto;
+  max-height: 28px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+}
+
+@media (min-width: 1024px) {
+  .fl-body {
+    padding-block: 16px;
+  }
+  .fl-node {
+    top: calc(16px + 28px - 4.5px);
+  }
+  /* "Details" sits at the right end of the role line; its panel still opens under the impact line. */
+  .fl-details-summary {
+    position: absolute;
+    top: 17px;
+    right: 0;
+  }
+}
+/* Touch laptops / tablets in landscape: the 44 px hit area stays centred on the role line. */
+@media (min-width: 1024px) and (pointer: coarse) {
+  .fl-details-summary {
+    top: 7px;
+  }
+}
+
+@media (forced-colors: active) {
+  .fl-track { background: CanvasText; }
+  .fl-fill, .fl-head { display: none; }
+  .fl-node { border-color: CanvasText; background: Canvas; }
+  .fl-logo-img { filter: none; opacity: 1; }
+}

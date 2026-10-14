@@ -1,0 +1,108 @@
+/* Missions (spec 6.6). Owned by T5.
+   - Plain stack everywhere by default (mobile, tablet, short desktops, reduced motion).
+   - Sticky stack only on desktop >= 1024 x 800, motion on, and when every card fits the viewport
+     (Missions.jsx measures and sets data-stacked="true").
+   - Never overflow:hidden / content-visibility on the list or its ancestors (sticky). */
+
+.missions-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  .missions-stack { gap: 2rem; }
+}
+
+/* Opaque card surface: later cards must fully cover earlier ones in the stack. */
+.mission-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--space-800);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--hi-top), 0 30px 80px -40px rgba(0, 0, 0, 0.8);
+}
+
+@media (min-width: 1024px) and (min-height: 800px) {
+  html:not([data-motion="reduced"]) .missions-stack[data-stacked="true"] {
+    display: block;
+  }
+  html:not([data-motion="reduced"]) .missions-stack[data-stacked="true"] > .missions-item {
+    position: sticky;
+    top: calc(96px + var(--i, 0) * 20px);
+  }
+  html:not([data-motion="reduced"]) .missions-stack[data-stacked="true"] > .missions-item + .missions-item {
+    margin-top: 10vh;
+  }
+  /* Every card grows towards the tallest card's height (--mission-stack-h, measured in Missions.jsx), capped at
+     the viewport bottom while stuck (100vh - its sticky top). A card's bottom edge is then never above the
+     bottom edge of the (smaller, scaled) card beneath it, so a taller card behind (e.g. one with a quote) never
+     peeks out under the front card; and the cap keeps a bottom-anchored quote on screen while the card is stuck. */
+  html:not([data-motion="reduced"]) .missions-stack[data-stacked="true"] .mission-card {
+    min-height: max(
+      min(78vh, 720px),
+      min(var(--mission-stack-h, 0px), calc(100vh - 96px - var(--i, 0) * 20px))
+    );
+    will-change: transform;
+  }
+  /* The dim overlay changes opacity on every scroll frame: on its own layer that is a compositor-only change,
+     so the (large, SVG-heavy) card is not repainted while the stack scrolls. */
+  html:not([data-motion="reduced"]) .missions-stack[data-stacked="true"] .mission-dim {
+    will-change: opacity;
+  }
+  /* For one frame around an in-page anchor click, cards sit at their natural positions so
+     Lenis / native fragment scrolling measure the real offset of a stuck card (see Missions.jsx). */
+  .missions-stack[data-unstick] > .missions-item {
+    position: relative !important;
+    top: auto !important;
+  }
+}
+
+/* ---------- Diagram panel ---------- */
+/* Nothing a diagram draws may paint outside its rounded blueprint panel (the SVGs are overflow: visible so
+   strokes and glows near the viewBox edge are not cut; the panel is the clip). Own stacking context too. */
+.mission-fig {
+  overflow: hidden; /* fallback: Safari < 16 */
+  overflow: clip;
+  isolation: isolate;
+}
+/* The stage is a size container; the 7:5 box (viewBox 560 x 400) is fitted inside it with
+   container units, so the SVG and the HTML labels share one coordinate system. */
+.mission-fig-stage {
+  container-type: size;
+}
+.mission-fig-box {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  width: min(100cqw, 140cqh);
+  height: min(100cqh, calc(100cqw * 5 / 7));
+}
+
+/* One moving satellite: only the active card's diagram shows (and runs) it. Its glow is an SVG
+   radial-gradient halo (.mission-sat-halo), never a CSS filter (see Satellite in MissionCard.jsx). */
+.mission-sat {
+  opacity: 0;
+  transition: opacity 600ms var(--ease-ui) 200ms;
+}
+.mission-fig[data-active="true"] .mission-sat {
+  opacity: 1;
+}
+/* Reduced motion: no SMIL, every satellite is parked (static) on its orbit. */
+html[data-motion="reduced"] .mission-sat {
+  opacity: 1;
+  transition: none;
+}
+
+@media (prefers-contrast: more) {
+  .mission-sat-halo { display: none; }
+}
+@media (forced-colors: active) {
+  .mission-card { border-color: CanvasText; }
+  .mission-sat-halo { display: none; }
+}

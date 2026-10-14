@@ -1,0 +1,40 @@
+/* 6.3 Telemetry band (T3). No loops or entry animations live here: the cells reveal through Motion,
+   the numbers through NumberTicker and the rulers through Ticks (all reduced-motion aware). */
+
+/* 2x2 below 1024, 4 across from 1024. Each cell is a 4-row subgrid (HUD label, value, label, footer),
+   so values, labels and rulers line up across a row even when a HUD label or a label wraps. */
+.tlm-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* The grid is the size container: every cell derives the same stat size from the narrowest cell's
+     content width, so all four numbers share one size. */
+  container-type: inline-size;
+  /* Content width of the narrowest cell: half the grid minus the inner gutter (pl/pr-4, sm:6). */
+  --tlm-cell: calc(50cqi - 1rem);
+}
+@media (min-width: 640px) {
+  .tlm-grid { --tlm-cell: calc(50cqi - 1.5rem); }
+}
+@media (min-width: 1024px) {
+  /* A quarter of the grid minus px-8 on both sides (the middle cells). */
+  .tlm-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); --tlm-cell: calc(25cqi - 4rem); }
+}
+
+.tlm-cell {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  min-width: 0;
+}
+@supports not (grid-template-rows: subgrid) {
+  .tlm-cell { display: flex; flex-direction: column; }
+  .tlm-foot { margin-top: auto; }
+}
+
+/* Same scale as text-stat / text-stat-text (tailwind.config.cjs), capped by the cell width.
+   Measured in Mona Sans 600 / stretch 112 / tabular: "250K+" (the widest value) is 3.09 em, so 0.31 x width
+   always fits. "Co-founder" (the widest text stat, Geist Mono) is 5.7 em, so 0.17 x width.
+   Two classes deep so the cap wins over the single-class Tailwind font-size utilities. */
+.tlm-cell .tlm-value { font-size: min(clamp(3rem, 1.5rem + 4vw, 5.5rem), calc(var(--tlm-cell) * 0.31)); }
+.tlm-cell .tlm-value-text { font-size: min(clamp(1.75rem, 1.2rem + 1.6vw, 2.75rem), calc(var(--tlm-cell) * 0.17)); }

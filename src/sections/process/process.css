@@ -1,0 +1,34 @@
+/* 6.8 Process (T6). The step-5 CTA glints once when the comet reaches step 5 (Process.jsx sets
+   data-glint="true" on .process-cta once, when that has happened and the CTA is in view).
+   Transform-only sweep inside a pill-shaped clip; gated by motion (R-own-4) and hidden with the other glows
+   in prefers-contrast / forced-colors ([data-glow]). */
+
+.process-glint {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.process-glint::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 46%;
+  background: linear-gradient(105deg, transparent 12%, rgba(255, 246, 232, 0.72) 50%, transparent 88%);
+  opacity: 0;
+  transform: translateX(-110%);
+}
+
+html:not([data-motion="reduced"]) .process-cta[data-glint="true"] .process-glint::before {
+  animation: process-glint 1100ms var(--ease-in-out) 120ms 1 both;
+}
+
+@keyframes process-glint {
+  0% { opacity: 1; transform: translateX(-110%); }
+  100% { opacity: 1; transform: translateX(240%); }
+}

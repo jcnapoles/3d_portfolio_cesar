@@ -1,0 +1,256 @@
+/* Version switch (T-D): the "time warp" between the 2024 and 2026 sites (View Transitions + curtain fallback).
+   Lazy: imported by VersionSwitchWarp.jsx, which VersionProvider loads when a switch starts. Motion rules (spec 4.1 / M-3):
+   only transform, opacity and clip-path animate. Under reduced motion only the 200 ms crossfade rules (data-warp="fade") apply.  */
+
+/* ---------- View Transition wiring (html[data-warp] exists only while a switch runs) ---------- */
+/* Warp: the root snapshots are driven by WAAPI from runWarp() (clip-path circle on the new one,
+   scale + dim on the old one), so the default crossfade (and its plus-lighter blend) is switched off. */
+html[data-warp="vt"]::view-transition-old(root),
+html[data-warp="vt"]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+/* The warp overlay is its own group, painted above both eras. Its live snapshot plays the overlay's own CSS
+   animation, so the default group / fade animations are disabled. */
+html[data-warp="vt"]::view-transition-group(cn-warp),
+html[data-warp="vt"]::view-transition-image-pair(cn-warp),
+html[data-warp="vt"]::view-transition-old(cn-warp),
+html[data-warp="vt"]::view-transition-new(cn-warp) {
+  animation: none;
+}
+/* Reduced motion: the default crossfade, 200 ms. */
+html[data-warp="fade"]::view-transition-old(root),
+html[data-warp="fade"]::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+html[data-warp="fade"]::view-transition-group(root) {
+  animation-duration: 200ms;
+}
+
+/* ---------- Warp overlay ---------- */
+.cn-warp {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+}
+.cn-warp[data-phase="vt"] {
+  view-transition-name: cn-warp;
+}
+.cn-warp > * {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+/* Fallback curtain (no View Transitions): a void disc grows from the click point, the swap happens under it,
+   then it closes like an iris towards the centre while fading. */
+.cn-warp-curtain {
+  background: radial-gradient(circle at var(--wx) var(--wy), #0e1222 0, var(--void) 60%);
+  clip-path: circle(0px at var(--wx) var(--wy));
+}
+
+/* Tunnel: darkens the edges so the streaks read on any era. */
+.cn-warp-tunnel {
+  background: radial-gradient(circle at var(--wx) var(--wy), rgba(5, 6, 10, 0) 0, rgba(5, 6, 10, 0) 22%, rgba(5, 6, 10, 0.62) 100%);
+}
+
+/* Star streaks: two repeating conic fans centred on the click point, masked to a ring that is pushed outwards
+   (scale) so the rays rush past the viewer. Different periods keep the pattern from looking regular. */
+.cn-warp-streaks {
+  transform-origin: var(--wx) var(--wy);
+  -webkit-mask-image: radial-gradient(circle at var(--wx) var(--wy), transparent 0, transparent 7%, #000 26%, #000 56%, transparent 90%);
+  mask-image: radial-gradient(circle at var(--wx) var(--wy), transparent 0, transparent 7%, #000 26%, #000 56%, transparent 90%);
+  will-change: transform, opacity;
+}
+.cn-warp-streaks-a {
+  background: repeating-conic-gradient(
+    from 0deg at var(--wx) var(--wy),
+    transparent 0deg 2.55deg,
+    rgba(237, 238, 243, 0.6) 2.75deg,
+    transparent 2.95deg 4.7deg
+  );
+}
+.cn-warp-streaks-b {
+  background: repeating-conic-gradient(
+    from 1.7deg at var(--wx) var(--wy),
+    transparent 0deg 5.5deg,
+    rgba(116, 212, 255, 0.5) 5.7deg,
+    transparent 5.95deg 8.3deg
+  );
+}
+.cn-warp[data-to="new"] .cn-warp-streaks-b {
+  background: repeating-conic-gradient(
+    from 1.7deg at var(--wx) var(--wy),
+    transparent 0deg 5.5deg,
+    rgba(255, 208, 138, 0.62) 5.7deg,
+    transparent 5.95deg 8.3deg
+  );
+}
+
+/* The flash where the warp opens. */
+.cn-warp-flash {
+  transform-origin: var(--wx) var(--wy);
+  background: radial-gradient(circle at var(--wx) var(--wy), rgba(255, 246, 232, 0.95) 0, rgba(255, 208, 138, 0.4) 3.5%, rgba(244, 184, 96, 0) 16%);
+}
+.cn-warp[data-to="legacy"] .cn-warp-flash {
+  background: radial-gradient(circle at var(--wx) var(--wy), rgba(255, 255, 255, 0.95) 0, rgba(116, 212, 255, 0.35) 3.5%, rgba(116, 212, 255, 0) 16%);
+}
+
+/* Centred label: WARPING TO / RETURNING TO + a year odometer (2026 2025 2024, or the reverse). */
+.cn-warp-label {
+  inset: auto;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  transform: translate(-50%, -50%);
+  font-family: "Geist Mono Variable", "Geist Mono Fallback", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 0 24px var(--void), 0 0 8px var(--void), 0 0 2px var(--void);
+}
+/* A soft void pool behind the label keeps it legible over either era. */
+.cn-warp-label::before {
+  content: "";
+  position: absolute;
+  inset: -64px -128px;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(5, 6, 10, 0.86), rgba(5, 6, 10, 0.5) 55%, rgba(5, 6, 10, 0));
+}
+.cn-warp-kicker {
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.24em;
+  font-weight: 500;
+  color: var(--text-2);
+}
+.cn-warp-year {
+  display: block;
+  height: 1em;
+  overflow: hidden;
+  font-size: clamp(48px, 7vw + 16px, 112px);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+.cn-warp[data-to="new"] .cn-warp-year {
+  color: var(--gold-hot);
+}
+.cn-warp-years {
+  display: flex;
+  flex-direction: column;
+}
+.cn-warp-years > span {
+  display: block;
+  height: 1em;
+}
+
+/* --- VT phase: one 1000 ms timeline, in step with the clip-path reveal (peaks mid-transition) --- */
+.cn-warp[data-phase="vt"] .cn-warp-tunnel { animation: cn-warp-tunnel 1000ms linear both; }
+.cn-warp[data-phase="vt"] .cn-warp-streaks-a { animation: cn-warp-streaks 1000ms linear both; }
+.cn-warp[data-phase="vt"] .cn-warp-streaks-b { animation: cn-warp-streaks-b 1000ms linear both; }
+.cn-warp[data-phase="vt"] .cn-warp-flash { animation: cn-warp-flash 1000ms linear both; }
+.cn-warp[data-phase="vt"] .cn-warp-label { animation: cn-warp-label 1000ms linear both; }
+.cn-warp[data-phase="vt"] .cn-warp-years { animation: cn-warp-years 1000ms cubic-bezier(0.76, 0, 0.24, 1) both; }
+
+@keyframes cn-warp-tunnel {
+  0% { opacity: 0; }
+  40%, 58% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes cn-warp-streaks {
+  0% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+  28% { opacity: 1; transform: scale(0.78) rotate(1.5deg); }
+  56% { opacity: 1; transform: scale(1.18) rotate(3deg); }
+  100% { opacity: 0; transform: scale(2.6) rotate(6deg); }
+}
+@keyframes cn-warp-streaks-b {
+  0% { opacity: 0; transform: scale(0.42) rotate(0deg); }
+  32% { opacity: 0.9; transform: scale(0.7) rotate(-1deg); }
+  60% { opacity: 0.9; transform: scale(1.12) rotate(-2.5deg); }
+  100% { opacity: 0; transform: scale(2.9) rotate(-5deg); }
+}
+@keyframes cn-warp-flash {
+  0% { opacity: 0; transform: scale(0.3); }
+  16% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.2); }
+}
+@keyframes cn-warp-label {
+  0%, 12% { opacity: 0; transform: translate(-50%, calc(-50% + 10px)) scale(0.98); }
+  32%, 66% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, calc(-50% - 8px)) scale(1.01); }
+}
+@keyframes cn-warp-years {
+  0%, 22% { transform: translateY(0); }
+  64%, 100% { transform: translateY(-2em); }
+}
+
+/* --- Fallback phases (no View Transitions) --- */
+.cn-warp[data-phase="cover"] .cn-warp-curtain {
+  opacity: 1;
+  animation: cn-warp-cover 560ms cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+.cn-warp[data-phase="cover"] .cn-warp-streaks-a { animation: cn-warp-streaks-in 560ms cubic-bezier(0.7, 0, 0.84, 0) both; }
+.cn-warp[data-phase="cover"] .cn-warp-streaks-b { animation: cn-warp-streaks-in 560ms cubic-bezier(0.7, 0, 0.84, 0) both; }
+.cn-warp[data-phase="cover"] .cn-warp-flash { animation: cn-warp-flash-in 560ms ease-out both; }
+.cn-warp[data-phase="cover"] .cn-warp-label { animation: cn-warp-label-in 560ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.cn-warp[data-phase="cover"] .cn-warp-years { animation: cn-warp-years-cover 560ms cubic-bezier(0.76, 0, 0.24, 1) both; }
+
+.cn-warp[data-phase="reveal"] .cn-warp-curtain {
+  opacity: 1;
+  animation: cn-warp-iris 600ms cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+.cn-warp[data-phase="reveal"] .cn-warp-streaks-a { animation: cn-warp-streaks-out 600ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.cn-warp[data-phase="reveal"] .cn-warp-streaks-b { animation: cn-warp-streaks-out 600ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.cn-warp[data-phase="reveal"] .cn-warp-flash { animation: cn-warp-flash-out 320ms ease-out both; }
+.cn-warp[data-phase="reveal"] .cn-warp-label { animation: cn-warp-label-out 420ms cubic-bezier(0.7, 0, 0.84, 0) both; }
+.cn-warp[data-phase="reveal"] .cn-warp-years { transform: translateY(-2em); }
+
+@keyframes cn-warp-cover {
+  from { clip-path: circle(0px at var(--wx) var(--wy)); }
+  to { clip-path: circle(var(--wr) at var(--wx) var(--wy)); }
+}
+@keyframes cn-warp-iris {
+  0% { clip-path: circle(75vmax at 50% 50%); opacity: 1; }
+  100% { clip-path: circle(0px at 50% 50%); opacity: 0; }
+}
+@keyframes cn-warp-streaks-in {
+  from { opacity: 0; transform: scale(0.45); }
+  to { opacity: 1; transform: scale(1.05); }
+}
+@keyframes cn-warp-streaks-out {
+  from { opacity: 1; transform: scale(1.05); }
+  to { opacity: 0; transform: scale(2.6); }
+}
+@keyframes cn-warp-flash-in {
+  0% { opacity: 0; transform: scale(0.3); }
+  40% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.35; transform: scale(1.6); }
+}
+@keyframes cn-warp-flash-out {
+  from { opacity: 0.35; transform: scale(1.6); }
+  to { opacity: 0; transform: scale(2); }
+}
+@keyframes cn-warp-label-in {
+  0%, 30% { opacity: 0; transform: translate(-50%, calc(-50% + 10px)); }
+  100% { opacity: 1; transform: translate(-50%, -50%); }
+}
+@keyframes cn-warp-label-out {
+  from { opacity: 1; transform: translate(-50%, -50%); }
+  to { opacity: 0; transform: translate(-50%, calc(-50% - 8px)); }
+}
+@keyframes cn-warp-years-cover {
+  0%, 30% { transform: translateY(0); }
+  100% { transform: translateY(-2em); }
+}
+
+@media (forced-colors: active) {
+  .cn-warp { display: none; }
+}

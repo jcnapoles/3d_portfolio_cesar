@@ -1,0 +1,155 @@
+/* T1 Chrome: Navbar, MobileMenu, MissionRail, MobileStickyCta, LiveDemoChip (spec 6.1, 6.16).
+   Rule R-own-4: every looping or entry animation here is gated with html:not([data-motion="reduced"]).
+   Rule M-3: only transform / opacity are animated; the scrolled navbar surface (background, border,
+   shadows, backdrop blur) lives on its own layer and crossfades by opacity. */
+
+/* ---------- Navbar shell: hide on scroll down, show on scroll up ---------- */
+/* The shell is the full-width fixed strip (it carries the 16 px top inset on >= 768, so -120% clears the pill).
+   It stays visible while focus is inside it (:focus-within), and never moves under reduced motion. */
+html:not([data-motion="reduced"]) .nav-shell {
+  transition: transform 420ms var(--ease-out);
+}
+html:not([data-motion="reduced"]) .nav-shell[data-hidden="true"]:not(:focus-within) {
+  transform: translate3d(0, -120%, 0);
+  transition: transform 320ms var(--ease-in);
+}
+
+/* ---------- Bar / pill geometry (shared by the navbar and the mobile menu's header row) ---------- */
+.nav-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 56px;
+  width: 100%;
+  padding-inline: 16px;
+  pointer-events: auto;
+}
+@media (min-width: 768px) {
+  .nav-frame {
+    width: calc(100% - 2rem);
+    max-width: 1120px;
+    margin-inline: auto;
+    border-radius: 9999px;
+    padding-left: 20px;
+    padding-right: 8px;
+  }
+}
+
+/* Scrolled surface: transparent until scrollY > 24, then glass. Crossfaded by opacity (240 ms). */
+.nav-surface {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  background: rgba(10, 12, 20, 0.72);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--hi-top), 0 24px 60px -24px rgba(0, 0, 0, 0.8);
+  transition: opacity var(--t-ui) var(--ease-ui), visibility 0s linear var(--t-ui);
+}
+@media (min-width: 768px) {
+  .nav-surface { border: 1px solid var(--line); }
+}
+.nav-shell[data-scrolled="true"] .nav-surface {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--t-ui) var(--ease-ui), visibility 0s linear 0s;
+}
+
+/* Progress line: clipped to the bar / pill radius. */
+.nav-progress {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: clip;
+  pointer-events: none;
+}
+.nav-progress-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, rgba(244, 184, 96, 0.3), var(--gold) 70%, var(--gold-hot));
+}
+.nav-progress-head {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1.5px;
+  height: 4px;
+}
+/* Static glow behind the 4 px star head (a gradient, not a filter: crisp at 1x and cheap). */
+.nav-progress-head::before {
+  content: "";
+  position: absolute;
+  right: -7px;
+  top: -5px;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(255, 236, 205, 0.95), rgba(255, 208, 138, 0.55) 45%, rgba(244, 184, 96, 0) 100%);
+}
+.nav-progress-star {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  color: #fff6e8;
+}
+
+/* Desktop links: the 4 px gold "active" dot (static per link, opacity only). */
+.nav-dot {
+  opacity: 0;
+  transition: opacity var(--t-ui) var(--ease-ui);
+}
+[aria-current="true"] > .nav-dot { opacity: 1; }
+
+/* ---------- Mobile menu ---------- */
+.menu-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("/img/stars-c.svg"), url("/img/stars-b.svg"), url("/img/stars-a.svg");
+  background-size: 560px 560px, 380px 380px, 240px 240px;
+  background-repeat: repeat;
+  opacity: 0.9;
+}
+.menu-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(70% 45% at 85% 0%, rgba(43, 58, 140, 0.35), transparent 70%);
+}
+
+/* ---------- Mission rail ---------- */
+.rail-body {
+  transition: opacity var(--t-panel) var(--ease-out), visibility 0s linear 0s;
+}
+html:not([data-motion="reduced"]) .rail-body {
+  transition: opacity var(--t-panel) var(--ease-out), transform var(--t-panel) var(--ease-out), visibility 0s linear 0s;
+}
+.rail-body[data-hidden="true"]:not(:focus-within) {
+  opacity: 0;
+  pointer-events: none;
+}
+html:not([data-motion="reduced"]) .rail-body[data-hidden="true"]:not(:focus-within) {
+  transform: translate3d(8px, 0, 0);
+}
+.rail-tick {
+  transition: background-color var(--t-ui) var(--ease-ui);
+}
+.rail-label {
+  /* Vertical "spine" label: it lives in the page margin beside the ticks instead of over section content.
+     A void halo keeps it legible over the starfield. */
+  writing-mode: vertical-rl;
+  text-shadow: 0 0 10px var(--void), 0 0 4px var(--void), 0 0 2px var(--void);
+}
+html:not([data-motion="reduced"]) .rail-label-track {
+  transition: transform var(--t-panel) var(--ease-out);
+}

@@ -1,0 +1,353 @@
+/* Legacy (2024) site styles, restored from `main:src/index.css` + `main:src/components/buttons/ButtonStyles.css`.
+   Loaded only with the lazy legacy chunk. Every rule is scoped so nothing reaches the 2026 site:
+   - component rules live under `.legacy-root` (the LegacyApp wrapper);
+   - document-level rules key off `html[data-version="legacy"]`, which VersionProvider sets only while the
+     legacy site is mounted (it flips back to "new" before the 2026 site renders);
+   - keyframes carry a `legacy-` prefix.
+   The Google Fonts @import and the @tailwind directives are gone: Poppins comes from @fontsource (imported in
+   LegacyApp) and the Tailwind utilities come from the shared build (legacy tokens live in tailwind.config.cjs). */
+
+/* ---------- Document while the legacy site is shown ---------- */
+html[data-version="legacy"],
+html[data-version="legacy"] body {
+  background: #121212;
+}
+html[data-version="legacy"] {
+  /* The 2024 site scrolled smoothly to its anchors and had no fixed-navbar padding (it used .hash-span). */
+  scroll-behavior: smooth;
+  scroll-padding-top: 0;
+}
+html[data-version="legacy"][data-motion="reduced"] {
+  scroll-behavior: auto;
+}
+/* The 2026 film grain is not part of the 2024 look. */
+html[data-version="legacy"] body::after {
+  display: none;
+}
+
+/* ---------- Root ---------- */
+.legacy-root {
+  position: relative;
+  z-index: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  background: #121212;
+  color: #fff;
+  color-scheme: dark;
+  font-family: "Poppins", sans-serif;
+  outline: none;
+}
+/* The 2024 global reset (`* { … }`), scoped. :where() keeps it at zero specificity, exactly like the original
+   universal selector, so Tailwind utilities (p-5, mt-2, font-*) still win over it. */
+:where(.legacy-root, .legacy-root *, .legacy-root *::before, .legacy-root *::after) {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  color-scheme: dark;
+}
+html:not([data-motion="reduced"]) :where(.legacy-root, .legacy-root *) {
+  scroll-behavior: smooth;
+}
+/* The 2026 base layer balances/prettifies headings and paragraphs; the 2024 site used plain wrapping. */
+.legacy-root :where(h1, h2, h3, p, li, dd, blockquote) {
+  text-wrap: wrap;
+}
+.legacy-root ::selection {
+  background: #915eff;
+  color: #fff;
+}
+
+/* ---------- Scrollbars ---------- */
+/* Hide scrollbar on horizontal service cards */
+.legacy-root .flex.flex-nowrap.overflow-x-auto {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.legacy-root .flex.flex-nowrap.overflow-x-auto::-webkit-scrollbar {
+  display: none;
+}
+.legacy-root .experience-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.legacy-root .experience-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.legacy-root .experience-scroll::-webkit-scrollbar-thumb {
+  background: rgba(170, 166, 195, 0.35);
+  border-radius: 2px;
+}
+.legacy-root .experience-scroll-hidden,
+.legacy-root .scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.legacy-root .experience-scroll-hidden::-webkit-scrollbar,
+.legacy-root .scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Testimonials marquee ---------- */
+@keyframes legacy-marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-33.333333%); }
+}
+html:not([data-motion="reduced"]) .legacy-root .animate-marquee {
+  animation: legacy-marquee-scroll var(--duration, 30s) linear infinite;
+}
+.legacy-root .group:hover .animate-marquee,
+.legacy-root .group:focus-within .animate-marquee,
+.legacy-root .animate-marquee:hover,
+.legacy-root .animate-marquee:focus-within {
+  animation-play-state: paused;
+}
+.legacy-root .paused {
+  animation-play-state: paused !important;
+}
+
+.legacy-root .hash-span {
+  margin-top: -100px;
+  padding-bottom: 100px;
+  display: block;
+}
+
+/* ---------- Gradients ----------
+   The 2024 CSS declared a standard gradient followed by a -webkit- one; browsers applied the last valid
+   declaration. Prefixed angles run counter-clockwise from east (standard = 90deg - legacy), so the values
+   below are the standard equivalents of what actually rendered. */
+.legacy-root .black-gradient {
+  background: #000000;
+  background: linear-gradient(to right, #434343, #000000);
+}
+.legacy-root .violet-gradient {
+  background: #804dee;
+  background: linear-gradient(180deg, #804dee 0%, rgba(60, 51, 80, 0) 100%);
+}
+.legacy-root .green-pink-gradient {
+  background: #00cea8;
+  background: linear-gradient(180.13deg, #00cea8 1.9%, #bf61ff 97.5%);
+}
+.legacy-root .orange-text-gradient,
+.legacy-root .green-text-gradient,
+.legacy-root .blue-text-gradient,
+.legacy-root .pink-text-gradient,
+.legacy-root .black-text-gradient,
+.legacy-root .yellow-text-gradient {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.legacy-root .orange-text-gradient {
+  background-color: #f12711;
+  background-image: linear-gradient(to top, #f12711, #f5af19);
+}
+.legacy-root .green-text-gradient {
+  background-color: #11998e;
+  background-image: linear-gradient(to top, #11998e, #38ef7d);
+}
+.legacy-root .blue-text-gradient {
+  background-color: #56ccf2;
+  background-image: linear-gradient(to top, #2f80ed, #56ccf2);
+}
+.legacy-root .pink-text-gradient {
+  background-color: #ec008c;
+  background-image: linear-gradient(to top, #ec008c, #fc6767);
+}
+.legacy-root .black-text-gradient {
+  background-color: #111111;
+  background-image: linear-gradient(to top, #343333, white);
+}
+.legacy-root .yellow-text-gradient {
+  background-color: #e9f008;
+  background-image: linear-gradient(to top, #e9f008, #e7eaa0);
+}
+
+/* ---------- Service card: sphere <-> card ---------- */
+.legacy-root .service-sphere-wrapper {
+  perspective: 800px;
+  width: 250px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.legacy-root .service-sphere-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  transition: width 0.55s cubic-bezier(0.4, 0, 0.2, 1), height 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+    border-radius 0.55s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.55s ease, background 0.55s ease;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1d1836 0%, #2a1f4e 100%);
+  box-shadow: 0 0 30px rgba(0, 206, 168, 0.25), 0 0 60px rgba(191, 97, 255, 0.15),
+    inset 0 -20px 40px rgba(0, 0, 0, 0.45), inset 0 20px 40px rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+}
+.legacy-root .service-sphere-container.is-expanded {
+  width: 250px;
+  height: 280px;
+  border-radius: 20px;
+  background: #151030;
+  box-shadow: 0 10px 40px rgba(0, 206, 168, 0.15), 0 0 0 1px rgba(191, 97, 255, 0.2);
+}
+html[data-motion="reduced"] .legacy-root .service-sphere-container {
+  transition: none;
+}
+.legacy-root .service-sphere-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  opacity: 1;
+  transition: opacity 0.3s ease 0.15s;
+  z-index: 2;
+  pointer-events: auto;
+}
+.legacy-root .service-sphere-container.is-expanded .service-sphere-face {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.legacy-root .service-sphere-icon {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(0, 206, 168, 0.4));
+}
+.legacy-root .service-sphere-label {
+  color: #aaa6c3;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  max-width: 160px;
+  line-height: 1.3;
+}
+.legacy-root .service-card-face {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 280px;
+  padding: 20px 12px;
+}
+.legacy-root .service-sphere-container.is-expanded .service-card-face {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.45s ease 0.18s;
+}
+@keyframes legacy-service-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+html:not([data-motion="reduced"]) .legacy-root .service-sphere-wrapper {
+  animation: legacy-service-float 3.5s ease-in-out infinite;
+}
+.legacy-root .service-sphere-wrapper:hover {
+  animation-play-state: paused;
+}
+.legacy-root .service-sphere-wrapper:nth-child(2) { animation-delay: -0.8s; }
+.legacy-root .service-sphere-wrapper:nth-child(3) { animation-delay: -1.6s; }
+.legacy-root .service-sphere-wrapper:nth-child(4) { animation-delay: -2.4s; }
+
+/* ---------- Badge ring (was an arbitrary Tailwind animate-[spin_2s…]) ---------- */
+html:not([data-motion="reduced"]) .legacy-root .legacy-badge-ring {
+  animation: legacy-spin 2s linear infinite;
+}
+@keyframes legacy-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Ripple button (was components/buttons/ButtonStyles.css) ---------- */
+.legacy-root .ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+.legacy-root .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(0);
+  animation: legacy-ripple 0.6s linear;
+}
+@keyframes legacy-ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ---------- Canvas loader ---------- */
+.legacy-root .canvas-loader {
+  font-size: 10px;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  position: relative;
+  text-indent: -9999em;
+  transform: translateZ(0);
+  box-shadow: 0em -2.6em 0em 0em #ffffff, 1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
+    2.5em 0em 0 0em rgba(255, 255, 255, 0.2), 1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
+    0em 2.5em 0 0em rgba(255, 255, 255, 0.2), -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
+    -2.6em 0em 0 0em rgba(255, 255, 255, 0.5), -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.7);
+}
+html:not([data-motion="reduced"]) .legacy-root .canvas-loader {
+  animation: legacy-mulShdSpin 1.1s infinite ease;
+}
+@keyframes legacy-mulShdSpin {
+  0%,
+  100% {
+    box-shadow: 0em -2.6em 0em 0em #ffffff, 1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
+      2.5em 0em 0 0em rgba(255, 255, 255, 0.2), 1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
+      0em 2.5em 0 0em rgba(255, 255, 255, 0.2), -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
+      -2.6em 0em 0 0em rgba(255, 255, 255, 0.5), -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.7);
+  }
+  12.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.7), 1.8em -1.8em 0 0em #ffffff,
+      2.5em 0em 0 0em rgba(255, 255, 255, 0.2), 1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
+      0em 2.5em 0 0em rgba(255, 255, 255, 0.2), -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
+      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2), -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.5);
+  }
+  25% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.5), 1.8em -1.8em 0 0em rgba(255, 255, 255, 0.7),
+      2.5em 0em 0 0em #ffffff, 1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
+      0em 2.5em 0 0em rgba(255, 255, 255, 0.2), -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
+      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2), -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+  }
+  37.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2), 1.8em -1.8em 0 0em rgba(255, 255, 255, 0.5),
+      2.5em 0em 0 0em rgba(255, 255, 255, 0.7), 1.75em 1.75em 0 0em #ffffff,
+      0em 2.5em 0 0em rgba(255, 255, 255, 0.2), -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
+      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2), -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2), 1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
+      2.5em 0em 0 0em rgba(255, 255, 255, 0.5), 1.75em 1.75em 0 0em rgba(255, 255, 255, 0.7),
+      0em 2.5em 0 0em #ffffff, -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
+      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2), -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+  }
+  62.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2), 1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
+      2.5em 0em 0 0em rgba(255, 255, 255, 0.2), 1.75em 1.75em 0 0em rgba(255, 255, 255, 0.5),
+      0em 2.5em 0 0em rgba(255, 255, 255, 0.7), -1.8em 1.8em 0 0em #ffffff,
+      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2), -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+  }
+  75% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2), 1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
+      2.5em 0em 0 0em rgba(255, 255, 255, 0.2), 1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
+      0em 2.5em 0 0em rgba(255, 255, 255, 0.5), -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.7),
+      -2.6em 0em 0 0em #ffffff, -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+  }
+  87.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2), 1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
+      2.5em 0em 0 0em rgba(255, 255, 255, 0.2), 1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
+      0em 2.5em 0 0em rgba(255, 255, 255, 0.2), -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.5),
+      -2.6em 0em 0 0em rgba(255, 255, 255, 0.7), -1.8em -1.8em 0 0em #ffffff;
+  }
+}
