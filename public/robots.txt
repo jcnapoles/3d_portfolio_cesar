@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://cesarnapoles.com/sitemap.xml

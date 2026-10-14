@@ -1,0 +1,278 @@
+/* Builds (spec 6.11, T7; iteration 2: sticky preview). Section-specific styles only.
+   < 1024 px: a card list with inline screenshots.
+   >= 1024 px: the typographic index list (7/12) + a sticky preview panel (5/12, top 120 px).
+   Hover effects only on fine pointers in tiers A and B (data-tier is "C" whenever motion is reduced).
+   Nothing here loops; transitions are gated with html:not([data-motion="reduced"]). */
+
+/* ---------- Card (base, < 1024) ---------- */
+.build-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "media  media  media"
+    "name   name   arrow"
+    "meta   .      status"
+    "desc   desc   desc"
+    "code   code   code";
+  align-content: start;
+  column-gap: 12px;
+  height: 100%;
+  padding: 12px 12px 22px;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  background: linear-gradient(var(--space-800), var(--space-800)) padding-box, var(--g-hairline) border-box;
+  box-shadow: var(--hi-top);
+}
+
+.build-index,
+.build-stack {
+  display: none;
+}
+
+.build-media {
+  grid-area: media;
+  aspect-ratio: 16 / 10;
+  margin-bottom: 18px;
+  overflow: clip;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--space-900);
+}
+.build-name {
+  grid-area: name;
+  align-self: center;
+  padding-left: 8px;
+}
+.build-arrow {
+  grid-area: arrow;
+  align-self: center;
+  justify-self: end;
+  margin-right: 8px;
+}
+.build-meta {
+  grid-area: meta;
+  align-self: center;
+  margin-top: 12px;
+  padding-left: 8px;
+}
+.build-status {
+  grid-area: status;
+  align-self: center;
+  justify-self: end;
+  margin-top: 12px;
+  margin-right: 8px;
+}
+.build-desc {
+  grid-area: desc;
+  margin-top: 12px;
+  padding-inline: 8px;
+}
+.build-code {
+  grid-area: code;
+  margin-top: 10px;
+  padding-inline: 8px;
+}
+
+.build-name-text {
+  display: inline-block;
+}
+
+/* The main link's overlay carries the focus ring for the whole card / row. */
+.build-link::after {
+  border-radius: 20px;
+}
+.build-link:focus-visible {
+  outline: none;
+}
+.build-link:focus-visible::after {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ---------- Index list + sticky preview (>= 1024) ---------- */
+@media (min-width: 1024px) {
+  .builds-layout {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 40px;
+    align-items: stretch;
+  }
+  .builds-list {
+    grid-column: 1 / span 7;
+    min-width: 0;
+  }
+  .builds-preview {
+    grid-column: 8 / span 5;
+    min-width: 0;
+    padding-top: 30px; /* level with the first row, below the list header */
+  }
+  .builds-preview-sticky {
+    position: sticky;
+    top: 120px;
+  }
+
+  .builds-head,
+  .build-row {
+    grid-template-columns: 40px minmax(0, 1fr) 104px 20px;
+    column-gap: 20px;
+  }
+  .builds-head {
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .build-row {
+    grid-template-areas:
+      "index name status arrow"
+      ".     desc desc   desc"
+      ".     meta meta   meta"
+      ".     code code   code";
+    align-content: start;
+    height: auto;
+    padding: 22px 0 24px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .build-index,
+  .build-stack {
+    display: block;
+  }
+  .build-index {
+    grid-area: index;
+    align-self: center;
+    padding-left: 12px;
+    transition: color var(--t-ui) var(--ease-ui);
+  }
+  .build-media {
+    display: none;
+  }
+  .build-name,
+  .build-meta,
+  .build-status,
+  .build-arrow,
+  .build-desc,
+  .build-code {
+    margin: 0;
+    padding: 0;
+  }
+  .build-name,
+  .build-status,
+  .build-arrow {
+    align-self: center;
+  }
+  .build-status {
+    justify-self: start;
+  }
+  .build-arrow {
+    justify-self: end;
+  }
+  .build-desc {
+    margin-top: 8px;
+  }
+  .build-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+  }
+  .build-code {
+    margin-top: 10px;
+  }
+  .build-link::after {
+    border-radius: 0;
+  }
+  .build-link:focus-visible::after {
+    outline-offset: -2px;
+  }
+
+  /* Active row (the one the preview shows): gold index + a 2 px gold tick level with the name. */
+  .build-row::before {
+    content: "";
+    position: absolute;
+    top: 28px;
+    left: 0;
+    width: 2px;
+    height: 26px;
+    border-radius: 2px;
+    background: var(--gold);
+    transform: scaleY(0);
+    pointer-events: none;
+  }
+  .build-row[data-active="true"]::before {
+    transform: scaleY(1);
+  }
+  .build-row[data-active="true"] .build-index {
+    color: var(--gold);
+  }
+  .build-row[data-active="true"] .build-arrow {
+    color: var(--text);
+  }
+
+  /* Preview progress: one segment per project, the shown one in gold. */
+  .builds-preview-seg {
+    height: 2px;
+    border-radius: 2px;
+    background: var(--line-strong);
+    transition: background-color var(--t-ui) var(--ease-ui);
+  }
+  .builds-preview-seg[data-on="true"] {
+    background: var(--gold);
+  }
+}
+
+@media (min-width: 1280px) {
+  .builds-layout {
+    column-gap: 64px;
+  }
+  /* No right padding for the fixed chapter rail: it only shows from 1360 px (MissionRail), where the page
+     margin beside the 1200 px container already holds it. */
+}
+
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .build-row:hover .build-arrow {
+    color: var(--text);
+  }
+
+  /* Tiers A/B: dim the other rows, nudge the hovered name. */
+  /* A keyboard-focused row never dims, even while the pointer rests on another row. */
+  html[data-tier="A"] .builds-list:has(.build-row:hover) .build-row:not(:hover):not(:has(.build-link:focus-visible)),
+  html[data-tier="B"] .builds-list:has(.build-row:hover) .build-row:not(:hover):not(:has(.build-link:focus-visible)) {
+    opacity: 0.4;
+  }
+  html[data-tier="A"] .build-row:hover .build-name-text,
+  html[data-tier="B"] .build-row:hover .build-name-text {
+    transform: translateX(12px);
+  }
+}
+
+html:not([data-motion="reduced"]) .build-row {
+  transition: opacity var(--t-ui) var(--ease-ui);
+}
+html:not([data-motion="reduced"]) .build-row::before {
+  transition: transform var(--t-ui) var(--ease-ui);
+}
+html:not([data-motion="reduced"]) .build-name-text {
+  transition: transform var(--t-ui) var(--ease-ui);
+}
+html[data-motion="reduced"] .build-index,
+html[data-motion="reduced"] .builds-preview-seg {
+  transition: none;
+}
+
+@media (forced-colors: active) {
+  .build-row {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+  .build-link:focus-visible::after {
+    outline-color: Highlight;
+  }
+  .build-row::before,
+  .builds-preview-seg[data-on="true"] {
+    background: Highlight;
+  }
+}

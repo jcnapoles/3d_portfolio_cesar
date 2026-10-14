@@ -1,0 +1,69 @@
+/* ---------- 10 OPEN CHANNEL (spec 6.14, iteration 2) ---------- */
+
+/* 10a Launch window: the portrait in orbit in front of an eclipse afterglow (LaunchPortrait + ambient Eclipse).
+   The stage reserves the frame-breaking head (9 %) above the disc and the corona's bright inner reach below it,
+   so the headline only ever sits over the faint outer corona. Capped at 190 px on phones so the form stays close. */
+.launch-stage {
+  --p: clamp(190px, 24vw, 300px);
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding-block: calc(var(--p) * 0.2) calc(var(--p) * 0.3);
+}
+
+/* Afterglow: a warm, static radial behind the corona with a hint of nebula (never animated, data-glow). */
+.launch-afterglow {
+  width: calc(var(--p) * 2.6);
+  height: calc(var(--p) * 2.6);
+  translate: -50% -50%;
+  border-radius: 9999px;
+  background: radial-gradient(
+    closest-side,
+    rgba(244, 184, 96, 0.12) 0%,
+    rgba(244, 184, 96, 0.05) 32%,
+    rgba(43, 58, 140, 0.05) 55%,
+    rgba(43, 58, 140, 0.018) 78%,
+    rgba(43, 58, 140, 0) 100%
+  );
+}
+
+/* Static rim light on the cut-out (gold key light, ion fill). Never animated. */
+.launch-portrait-img {
+  filter: drop-shadow(-2px 0 0 rgba(244, 184, 96, 0.55)) drop-shadow(2px 0 0 rgba(116, 212, 255, 0.35))
+    drop-shadow(0 0 24px rgba(244, 184, 96, 0.22));
+  -webkit-user-drag: none;
+}
+
+/* Entry: the portrait rises into place (scroll-driven, motion on only). Without support the final state renders. */
+@keyframes cn-launch-rise {
+  from { transform: translateY(8vh); }
+  to { transform: none; }
+}
+@supports (animation-timeline: view()) and (animation-range: entry 0% entry 100%) {
+  .launch-stage { view-timeline: --cn-launch block; }
+  html:not([data-motion="reduced"]) .launch-portrait {
+    animation: cn-launch-rise linear both;
+    animation-timeline: --cn-launch;
+    animation-range: entry 0% entry 100%;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .launch-portrait-img { filter: none; }
+}
+@media (forced-colors: active) {
+  .launch-portrait-img { filter: none; }
+}
+
+/* ---------- 10b form fields ---------- */
+/* Keep Chrome/Safari autofill on the dark surface. */
+.contact-input:-webkit-autofill,
+.contact-input:-webkit-autofill:hover,
+.contact-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px var(--space-900) inset;
+          box-shadow: 0 0 0 1000px var(--space-900) inset;
+  transition: background-color 600000s 0s, color 600000s 0s;
+}

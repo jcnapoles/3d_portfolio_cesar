@@ -1,0 +1,7 @@
+<svg width="256" height="256" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="16" fill="#424242"/>
+  <g transform="translate(16,12) scale(0.28)">
+    <path fill="#ffffff" fill-rule="evenodd" d="M273.47,240.41A149.89,149.89,0,0,0,302.91,151c0-83.24-68-151-151.46-151S0,67.8,0,151s67.91,151,151.45,151a150.65,150.65,0,0,0,88.11-28.27l38,37.85,33.71-33.58-37.76-37.67Zm-34.26-34.16-56-55.81-33.67,33.63,55.68,55.5a103.52,103.52,0,0,1-53.79,15c-57.27,0-103.81-46.41-103.81-103.51S94.2,47.54,151.47,47.54,255.24,94,255.24,151.05a102.82,102.82,0,0,1-16,55.2Z"/>
+  </g>
+  <text x="64" y="118" text-anchor="middle" fill="#ffffff" font-family="Arial,sans-serif" font-size="14" font-weight="bold">QUARTZ</text>
+</svg>

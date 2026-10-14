@@ -1,0 +1,23 @@
+/* T1 Chrome: Footer + Wordmark (spec 6.15).
+   Rule R-own-4: entry / looping animation is gated with html:not([data-motion="reduced"]).
+   Rule M-3 exception: the wordmark letters animate font-variation-settings (width / weight) inside
+   an isolated, fixed-height, overflow-clipped box, so no layout shift escapes it. */
+
+.wordmark-box {
+  /* Edge-to-edge fit. Measured: NAPOLES at wdth 125 / wght 800 / -0.05em tracking is 5.02em wide, so the spec's
+     22vw (desktop) and 26vw (mobile) would render it at 110-130% of the viewport and crop the N and S.
+     19.2vw spans ~97% of the width; 22rem keeps the spec's cap on very wide screens. */
+  font-size: min(19.2vw, 22rem);
+  /* Fixed height (one 0.8em line) + clip: the letters rise into it and breathe inside it. */
+  height: 0.8em;
+  overflow: clip;
+  contain: layout paint;
+}
+
+.wordmark-letter {
+  /* Same as stretch-125 + font-extrabold, expressed as axes so the proximity effect can interpolate. */
+  font-variation-settings: "wdth" 125, "wght" 800;
+}
+html:not([data-motion="reduced"]) .wordmark-letter {
+  transition: font-variation-settings 380ms var(--ease-out);
+}

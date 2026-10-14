@@ -1,0 +1,29 @@
+/* 6.7 Kinetic word strip (T6). Scroll-linked only: it never auto-plays, so it needs no pause control.
+   Fallback (no scroll-driven animations, or reduced motion): both rows static, centered, clipped by the strip. */
+
+.kinetic-row {
+  margin-inline-start: 50%;
+  transform: translateX(-50%);
+}
+
+@keyframes kinetic-row-l {
+  from { transform: translateX(0); }
+  to { transform: translateX(-35%); }
+}
+@keyframes kinetic-row-r {
+  from { transform: translateX(-35%); }
+  to { transform: translateX(0); }
+}
+
+@supports ((animation-timeline: view()) and (animation-range: entry)) {
+  html:not([data-motion="reduced"]) .kinetic-row {
+    margin-inline-start: 0;
+    animation: kinetic-row-l linear both;
+    /* After the shorthand, which resets the timeline to auto. */
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+  }
+  html:not([data-motion="reduced"]) .kinetic-row--2 {
+    animation-name: kinetic-row-r;
+  }
+}

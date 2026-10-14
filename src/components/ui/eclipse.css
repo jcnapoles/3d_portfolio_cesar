@@ -1,0 +1,260 @@
+/* Eclipse (src/components/ui/Eclipse.jsx), owner T-A.
+   Only transform and opacity are ever animated: Eclipse.jsx writes them on its own nodes (intro, scroll, flare),
+   CSS animates other nodes (corona rays and streamers spin, breathing, bead twinkle, rare glint).
+   Every loop is gated by html:not([data-motion="reduced"]) and by .ecl:not([data-still]) (tier C), and pauses
+   with [data-paused] (offscreen). Under reduced motion / tier C the markup is a static totality. */
+
+.ecl {
+  --ecl-d: 320px; /* sun diameter (the visual weight of the disc) */
+  --r: calc(var(--ecl-d) / 2);
+  position: relative;
+  width: var(--ecl-d);
+  height: var(--ecl-d);
+  flex-shrink: 0;
+  pointer-events: none;
+  isolation: isolate;
+}
+
+/* A square layer of k suns, centred on the sun. */
+.ecl-l {
+  position: absolute;
+  width: calc(var(--ecl-d) * var(--k, 1));
+  height: calc(var(--ecl-d) * var(--k, 1));
+  left: calc(50% - var(--ecl-d) * var(--k, 1) / 2);
+  top: calc(50% - var(--ecl-d) * var(--k, 1) / 2);
+}
+.ecl-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+}
+
+/* ---------- Corona (behind the moon) ---------- */
+.ecl-corona {
+  --k: 2.8;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+.ecl--ambient .ecl-corona { --k: 2.3; }
+
+/* CTA hovered / focused (data-cta-active): the corona brightens (opacity) and swells 4 %. Never box-shadow. */
+.ecl-boost {
+  transition: opacity 560ms var(--ease-ui), transform 560ms var(--ease-ui);
+}
+.ecl--ambient .ecl-boost { opacity: 0.74; }
+.ecl[data-cta-active="true"] .ecl-boost { opacity: 1; }
+html:not([data-motion="reduced"]) .ecl[data-cta-active="true"] .ecl-boost { transform: scale(1.04); }
+
+/* K-corona: pearly white at the limb, falling off steeply (about r^-3), gold in the middle, a faint ion edge. */
+.ecl-k {
+  background: radial-gradient(
+    circle closest-side,
+    rgba(255, 246, 232, 0.95) 0,
+    rgba(255, 246, 232, 0.95) calc(var(--r) * 1),
+    rgba(255, 238, 208, 0.78) calc(var(--r) * 1.04),
+    rgba(255, 226, 178, 0.52) calc(var(--r) * 1.1),
+    rgba(255, 212, 148, 0.32) calc(var(--r) * 1.2),
+    rgba(250, 198, 124, 0.17) calc(var(--r) * 1.36),
+    rgba(244, 184, 96, 0.085) calc(var(--r) * 1.62),
+    rgba(200, 196, 170, 0.036) calc(var(--r) * 1.92),
+    rgba(116, 212, 255, 0.016) calc(var(--r) * 2.1),
+    rgba(116, 212, 255, 0) calc(var(--r) * 2.28)
+  );
+  /* Fades out inside the smallest corona box (ambient: 2.3 suns), so no layer edge ever shows. */
+}
+
+/* Fine radial plumes: three incommensurate repeating conic sweeps (an irregular beat pattern), masked to a ring
+   that fades outward and modulated by angle so the poles and the equatorial streamers read differently. */
+.ecl-rays {
+  will-change: transform;
+  background:
+    repeating-conic-gradient(from 3deg, rgba(255, 240, 214, 0) 0deg, rgba(255, 240, 214, 0.5) 1.1deg, rgba(255, 240, 214, 0) 2.9deg, rgba(255, 240, 214, 0) 5.3deg),
+    repeating-conic-gradient(from 0deg, rgba(255, 226, 178, 0) 0deg, rgba(255, 226, 178, 0.34) 2deg, rgba(255, 226, 178, 0) 4.6deg, rgba(255, 226, 178, 0) 8.9deg),
+    repeating-conic-gradient(from 11deg, rgba(255, 250, 240, 0) 0deg, rgba(255, 250, 240, 0.3) 0.6deg, rgba(255, 250, 240, 0) 1.5deg, rgba(255, 250, 240, 0) 13.7deg);
+  -webkit-mask-image:
+    radial-gradient(circle closest-side, transparent calc(var(--r) * 0.97), #000 calc(var(--r) * 1.03), rgba(0, 0, 0, 0.5) calc(var(--r) * 1.35), rgba(0, 0, 0, 0.16) calc(var(--r) * 1.8), transparent calc(var(--r) * 2.3)),
+    conic-gradient(from -20deg, rgba(0, 0, 0, 0.5), #000 40deg, rgba(0, 0, 0, 0.35) 80deg, rgba(0, 0, 0, 0.7) 120deg, rgba(0, 0, 0, 0.2) 165deg, #000 215deg, rgba(0, 0, 0, 0.4) 255deg, rgba(0, 0, 0, 0.85) 300deg, rgba(0, 0, 0, 0.3) 335deg, rgba(0, 0, 0, 0.5) 360deg);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    radial-gradient(circle closest-side, transparent calc(var(--r) * 0.97), #000 calc(var(--r) * 1.03), rgba(0, 0, 0, 0.5) calc(var(--r) * 1.35), rgba(0, 0, 0, 0.16) calc(var(--r) * 1.8), transparent calc(var(--r) * 2.3)),
+    conic-gradient(from -20deg, rgba(0, 0, 0, 0.5), #000 40deg, rgba(0, 0, 0, 0.35) 80deg, rgba(0, 0, 0, 0.7) 120deg, rgba(0, 0, 0, 0.2) 165deg, #000 215deg, rgba(0, 0, 0, 0.4) 255deg, rgba(0, 0, 0, 0.85) 300deg, rgba(0, 0, 0, 0.3) 335deg, rgba(0, 0, 0, 0.5) 360deg);
+  mask-composite: intersect;
+  opacity: 0.62;
+}
+
+/* Helmet streamers: static blurred SVG petals, rasterised once; only the wrapper rotates. */
+.ecl-streamers {
+  will-change: transform;
+}
+.ecl-streamers svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ---------- Photosphere glow (glare): dims with the visible sun area, slides onto the crescent ---------- */
+.ecl-glare {
+  --k: 2.4;
+  border-radius: 9999px;
+  will-change: transform, opacity;
+  background: radial-gradient(
+    circle closest-side,
+    rgba(255, 250, 240, 0.95) 0,
+    rgba(255, 242, 220, 0.9) calc(var(--r) * 0.9),
+    rgba(255, 222, 164, 0.55) calc(var(--r) * 1.08),
+    rgba(255, 208, 138, 0.3) calc(var(--r) * 1.3),
+    rgba(244, 184, 96, 0.14) calc(var(--r) * 1.65),
+    rgba(244, 184, 96, 0.05) calc(var(--r) * 2.05),
+    rgba(244, 184, 96, 0) calc(var(--r) * 2.4)
+  );
+}
+
+/* ---------- Sun: gold-hot core to gold, limb-darkened ---------- */
+.ecl-sun {
+  --k: 1;
+  border-radius: 9999px;
+  /* White-hot photosphere; the limb darkens to gold-hot (what the last crescent and the beads show). */
+  background: radial-gradient(
+    circle closest-side,
+    #fffefa 0%,
+    #fff8ea 55%,
+    #ffefd2 78%,
+    #ffe4b4 90%,
+    var(--gold-hot) 97%,
+    #f8c779 100%
+  );
+}
+
+/* ---------- Moon: a void disc with a faint ion earthshine rim ---------- */
+.ecl-moon {
+  --k: 1.045;
+  border-radius: 9999px;
+  will-change: transform;
+  background: radial-gradient(circle closest-side, var(--void) 0, var(--void) 84%, #070a11 94%, #0a111a 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(116, 212, 255, 0.07),
+    inset calc(var(--ecl-d) * -0.02) calc(var(--ecl-d) * 0.018) calc(var(--ecl-d) * 0.06) calc(var(--ecl-d) * -0.03) rgba(116, 212, 255, 0.16);
+}
+/* Ambient: the moon is the portrait disc (same surface and hairline as the hero disc used to have). */
+.ecl--ambient .ecl-moon {
+  --k: 1;
+  background: radial-gradient(circle at 50% 35%, var(--space-700) 0%, var(--space-900) 60%, var(--void) 100%);
+  border: 1px solid var(--line-strong);
+  box-shadow: inset 0 0 0 1px rgba(255, 208, 138, 0.1);
+}
+
+/* ---------- Baily's beads (on the sun's limb, above the moon) ---------- */
+.ecl-beads { --k: 1; }
+.ecl-bead {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+.ecl-bead-i {
+  position: absolute;
+  width: calc(var(--ecl-d) * 0.032 * var(--s, 1));
+  height: calc(var(--ecl-d) * 0.032 * var(--s, 1));
+  left: calc(var(--ecl-d) * -0.016 * var(--s, 1));
+  top: calc(var(--ecl-d) * -0.016 * var(--s, 1));
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, #fff 0%, rgba(255, 246, 232, 0.95) 22%, rgba(255, 208, 138, 0.55) 48%, rgba(244, 184, 96, 0) 100%);
+}
+
+/* ---------- Diamond-ring flare: radial bloom + long faint spikes + StarGlyph + white-hot core ---------- */
+.ecl-flare {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.ecl-flare-m {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  will-change: transform, opacity;
+}
+.ecl-flare-m > * {
+  position: absolute;
+  left: 0;
+  top: 0;
+  translate: -50% -50%;
+}
+.ecl-flare-bloom {
+  width: calc(var(--ecl-d) * 0.9);
+  height: calc(var(--ecl-d) * 0.9);
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(255, 252, 245, 0.95) 0%, rgba(255, 240, 210, 0.62) 9%, rgba(255, 208, 138, 0.3) 24%, rgba(244, 184, 96, 0.1) 48%, rgba(244, 184, 96, 0) 100%);
+}
+.ecl-flare-spike {
+  height: max(1px, calc(var(--ecl-d) * 0.0036));
+  width: calc(var(--ecl-d) * 1.25);
+  background: linear-gradient(90deg, rgba(255, 246, 232, 0), rgba(255, 246, 232, 0.5) 40%, #fff 50%, rgba(255, 246, 232, 0.5) 60%, rgba(255, 246, 232, 0));
+  opacity: 0.55;
+}
+.ecl-flare-spike--v {
+  width: max(1px, calc(var(--ecl-d) * 0.0036));
+  height: calc(var(--ecl-d) * 0.8);
+  background: linear-gradient(180deg, rgba(255, 246, 232, 0), rgba(255, 246, 232, 0.45) 40%, #fff 50%, rgba(255, 246, 232, 0.45) 60%, rgba(255, 246, 232, 0));
+}
+.ecl-flare-star {
+  display: grid;
+  place-items: center;
+  color: #fffaf0;
+}
+.ecl-flare-glint {
+  display: grid;
+  place-items: center;
+}
+.ecl-flare-glint svg {
+  width: calc(var(--ecl-d) * var(--star, 0.15));
+  height: calc(var(--ecl-d) * var(--star, 0.15));
+}
+.ecl-flare-core {
+  width: calc(var(--ecl-d) * 0.05);
+  height: calc(var(--ecl-d) * 0.05);
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, #fff 0%, #fff 30%, rgba(255, 246, 232, 0.7) 55%, rgba(255, 246, 232, 0) 100%);
+}
+.ecl--ambient .ecl-flare-bloom {
+  width: calc(var(--ecl-d) * 0.4);
+  height: calc(var(--ecl-d) * 0.4);
+}
+.ecl--ambient .ecl-flare-spike,
+.ecl--ambient .ecl-flare-core { display: none; }
+.ecl--ambient .ecl-flare-star { color: var(--gold-hot); }
+
+/* ---------- Idle loops (motion on, not tier C, on screen) ---------- */
+@keyframes ecl-spin { to { transform: rotate(360deg); } }
+@keyframes ecl-breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.88; } }
+@keyframes ecl-glint {
+  0%, 90%, 100% { transform: none; }
+  93.5% { transform: scale(1.38) rotate(14deg); }
+}
+@keyframes ecl-twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  45% { opacity: 0.3; transform: scale(0.72); }
+}
+@keyframes ecl-in { from { opacity: 0; } to { opacity: 1; } }
+
+html:not([data-motion="reduced"]) .ecl:not([data-still]) .ecl-rays { animation: ecl-spin 96s linear infinite; }
+html:not([data-motion="reduced"]) .ecl:not([data-still]) .ecl-streamers { animation: ecl-spin 280s linear infinite; }
+html:not([data-motion="reduced"]) .ecl:not([data-still]) .ecl-breathe { animation: ecl-breathe 8s ease-in-out infinite; }
+html:not([data-motion="reduced"]) .ecl[data-phase="idle"]:not([data-still]) .ecl-flare-glint {
+  animation: ecl-glint 14s var(--ease-in-out) 5s infinite;
+}
+html:not([data-motion="reduced"]) .ecl[data-beads]:not([data-still]) .ecl-bead-i {
+  animation: ecl-twinkle var(--tw, 420ms) ease-in-out infinite;
+}
+html:not([data-motion="reduced"]) .ecl[data-intro] { animation: ecl-in 700ms var(--ease-out) 60ms both; }
+
+.ecl[data-paused],
+.ecl[data-paused] * { animation-play-state: paused !important; }
+
+/* ---------- Contrast modes ---------- */
+@media (forced-colors: active) {
+  .ecl-moon { border: 1px solid CanvasText; }
+  .ecl-sun { forced-color-adjust: none; }
+}

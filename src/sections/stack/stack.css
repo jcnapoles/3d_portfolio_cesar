@@ -1,0 +1,99 @@
+/* ---------- 08 SYSTEMS: sky chart (spec 6.12). CSS-only motion, triggered by data-inview on .sky ---------- */
+
+/* Edge tick rulers (no numbers): a tick every 24 px (on the blueprint dot grid), a long tick every 120 px. */
+.sky-ruler { position: absolute; pointer-events: none; opacity: .9; }
+.sky-ruler-x {
+  left: 0; right: 0; top: -22px; height: 8px;
+  background:
+    repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 120px) 0 0 / 100% 100% no-repeat,
+    repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 24px) 0 100% / 100% 50% no-repeat;
+}
+.sky-ruler-y {
+  top: 0; bottom: 0; left: -22px; width: 8px;
+  background:
+    repeating-linear-gradient(180deg, var(--line-strong) 0 1px, transparent 1px 120px) 0 0 / 100% 100% no-repeat,
+    repeating-linear-gradient(180deg, var(--line-strong) 0 1px, transparent 1px 24px) 100% 0 / 50% 100% no-repeat;
+}
+@media (min-width: 1280px) {
+  .sky-ruler-x { top: -26px; }
+  .sky-ruler-y { left: -26px; }
+}
+
+/* Layers */
+.sky-group { position: absolute; inset: 0; pointer-events: none; transition: opacity var(--t-ui) var(--ease-ui); }
+.sky-edges { transition: opacity var(--t-ui) var(--ease-ui); }
+
+.sky-edge {
+  fill: none;
+  stroke: var(--hud);
+  stroke-width: 1.15;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition:
+    stroke-dashoffset 900ms var(--ease-draw) calc(var(--g, 0) * 200ms),
+    stroke var(--t-ui) var(--ease-ui) 0ms;
+}
+
+.sky-name {
+  position: absolute;
+  translate: -50% -50%;
+  white-space: nowrap;
+  transition: opacity 600ms var(--ease-out) calc(var(--g, 0) * 200ms + 120ms);
+}
+
+.sky-star {
+  position: absolute;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  transition:
+    opacity 600ms var(--ease-out) calc(var(--g, 0) * 200ms + var(--i, 0) * 60ms),
+    scale 600ms var(--ease-out) calc(var(--g, 0) * 200ms + var(--i, 0) * 60ms);
+}
+
+/* Text stars: 8 px ion dot + mono 11 px label */
+.sky-dot {
+  width: 8px; height: 8px; border-radius: 9999px;
+  background: var(--ion);
+  box-shadow: 0 0 0 3px rgba(116, 212, 255, .12), 0 0 12px 1px rgba(116, 212, 255, .45);
+}
+.sky-star--text { width: 8px; height: 8px; }
+.sky-star-label {
+  position: absolute; left: calc(100% + 10px); top: 50%; translate: 0 -50%;
+  font-family: theme("fontFamily.mono"); font-size: 11px; line-height: 1; letter-spacing: .04em;
+  color: var(--text-2); white-space: nowrap;
+}
+
+/* Hover tooltip (fine pointer only) */
+.sky-tip {
+  position: absolute; left: 50%; bottom: calc(100% + 10px);
+  translate: -50% 4px; opacity: 0; pointer-events: none;
+  padding: 5px 8px; border-radius: 4px;
+  background: var(--space-700); border: 1px solid var(--line-strong); box-shadow: var(--hi-top);
+  font-family: theme("fontFamily.mono"); font-size: 11px; line-height: 1; letter-spacing: .04em;
+  color: var(--text); white-space: nowrap;
+  transition: opacity var(--t-micro) var(--ease-ui), translate var(--t-micro) var(--ease-ui);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sky-group[data-dim="true"], .sky-edges[data-dim="true"] { opacity: .5; }
+  .sky-edges[data-on="true"] .sky-edge { stroke: rgba(244, 184, 96, .6); }
+  .sky-star:hover { z-index: 3; }
+  .sky-star:hover .sky-tip { opacity: 1; translate: -50% 0; }
+}
+
+/* Entry from-state: only when motion is on and the chart has not been seen yet */
+html:not([data-motion="reduced"]) .sky[data-inview="false"] .sky-star { opacity: 0; scale: .9; }
+html:not([data-motion="reduced"]) .sky[data-inview="false"] .sky-name { opacity: 0; }
+html:not([data-motion="reduced"]) .sky[data-inview="false"] .sky-edge { stroke-dashoffset: 1; }
+
+/* Reduced motion: pre-drawn, nothing animates */
+html[data-motion="reduced"] .sky *,
+html[data-motion="reduced"] .sky *::before,
+html[data-motion="reduced"] .sky *::after { transition: none !important; }
+
+@media (forced-colors: active) {
+  .sky-edge { stroke: CanvasText; }
+  .sky-dot { background: CanvasText; box-shadow: none; }
+}

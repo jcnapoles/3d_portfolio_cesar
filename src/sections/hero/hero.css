@@ -1,0 +1,206 @@
+/* Hero (spec 6.2), owner T2.
+   Every entry, loop and scroll-linked animation below is gated by html:not([data-motion="reduced"]):
+   under reduced motion the markup is the final state (no masks, no rises, rings fully drawn). */
+
+/* ---------- Static styling ---------- */
+
+/* WebGL stage fades out toward the horizon so the hero never ends on a hard star edge. */
+.hero-galaxy {
+  -webkit-mask-image: linear-gradient(to bottom, #000 68%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 68%, transparent 100%);
+}
+
+/* Static nebula glow behind the eclipse (data-glow: hidden in contrast modes). */
+.hero-nebula {
+  translate: -50% -50%;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(43, 58, 140, 0.42), rgba(43, 58, 140, 0.14) 46%, transparent 72%);
+}
+
+/* Mobile (< 768): the eclipse sits behind the top-right of the content column, its moon centred 43 px below the
+   top of the badge row and its right limb on the gutter. The row keeps the moon (and the bright inner corona) clear
+   of the eyebrow, so no text crosses the limb; the CTA stays above the fold at 375 x 812. */
+.hero-eclipse-compact {
+  --cd: clamp(170px, 52vw, 210px);
+  right: calc(16px - var(--cd) * 0.02);
+  top: calc(55px - var(--cd) / 2);
+}
+@media (max-width: 767.98px) {
+  .hero-toprow {
+    min-height: calc(37px + clamp(170px, 52vw, 210px) * 0.5225);
+    align-items: flex-start;
+  }
+  /* The eyebrow may sit over the faint outer corona: a void halo around the glyphs keeps its contrast. */
+  .hero-scrim {
+    text-shadow: 0 0 10px var(--void), 0 0 3px var(--void);
+  }
+}
+
+/* Leader readouts sit over the lower corona: same void halo. */
+.hero-readout {
+  text-shadow: 0 0 10px var(--void), 0 0 3px var(--void);
+}
+
+/* Hairline tick ruler under the HUD row: base line, minor ticks every 24 px, major every 120 px. */
+.hero-ticks {
+  height: 6px;
+  background-image: linear-gradient(var(--line-strong), var(--line-strong)),
+    repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 120px),
+    repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 24px);
+  background-size: 100% 1px, 100% 6px, 100% 4px;
+  background-position: 0 100%, 0 100%, 0 100%;
+  background-repeat: no-repeat;
+}
+
+/* Trust strip logos: monochrome white, optical scale per logo (src/constants/hero.js). */
+.hero-logo {
+  filter: brightness(0) invert(1);
+  scale: var(--s, 1);
+}
+
+@media (forced-colors: active) {
+  .hero-logo {
+    filter: none;
+  }
+}
+
+/* ---------- First-paint choreography (CSS only; content is complete at about 1.1 s) ---------- */
+
+@keyframes hero-rise {
+  from { transform: translateY(105%); }
+  to { transform: translateY(0); }
+}
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hero-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes hero-pop {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+@keyframes hero-flash {
+  from { transform: scale(1.4); }
+  to { transform: scale(1); }
+}
+@keyframes hero-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes hero-rule {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* H1 word masks. The inline padding / negative margin pair widens the clip box without moving layout,
+   so tight letter-spacing and descenders are never shaved. */
+html:not([data-motion="reduced"]) .hero-mask {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: top;
+  padding: 0 0.06em 0.08em;
+  margin: 0 -0.06em -0.08em;
+}
+/* 120 + i x 70 ms: H1 span 1 words rise. */
+html:not([data-motion="reduced"]) .hero-word {
+  display: inline-block;
+  animation: hero-rise 1100ms var(--ease-out) both;
+  animation-delay: calc(120ms + var(--i, 0) * 70ms);
+}
+/* The full stop lands as the last word settles; at launch it flashes once (useFullStopLaunch). */
+html:not([data-motion="reduced"]) .hero-period {
+  animation: hero-pop 400ms var(--ease-out) 600ms both;
+}
+html:not([data-motion="reduced"]) .hero-period.is-launching {
+  animation: hero-flash 300ms var(--ease-out) both;
+}
+/* 450: H1 span 2. 900: badge + proof chips (60 ms apart). Delays come from --d on each element. */
+html:not([data-motion="reduced"]) .hero-in {
+  animation: hero-fade-up 800ms var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+/* Leader readouts: opacity only. (The eclipse runs its own totality intro: Eclipse.jsx.) */
+html:not([data-motion="reduced"]) .hero-in-soft {
+  animation: hero-fade-in 1200ms var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+/* 600: orbit rings draw in along the satellite's direction (front half, then back half). */
+html:not([data-motion="reduced"]) .hero-orbit .orbit-ring-path {
+  stroke-dasharray: 1;
+  animation: hero-draw 1200ms var(--ease-in-out) 600ms both;
+}
+/* HUD ruler draws once. */
+html:not([data-motion="reduced"]) .hero-ticks {
+  animation: hero-rule 900ms var(--ease-draw) 200ms both;
+}
+
+/* Below 1024 px and on repeat visits: the same choreography, compressed (words 600 ms, i x 40 ms from 0). */
+@media (max-width: 1023.98px) {
+  html:not([data-motion="reduced"]) .hero-word {
+    animation-duration: 600ms;
+    animation-delay: calc(var(--i, 0) * 40ms);
+  }
+  html:not([data-motion="reduced"]) .hero-period {
+    animation-delay: 340ms;
+  }
+  html:not([data-motion="reduced"]) .hero-in,
+  html:not([data-motion="reduced"]) .hero-in-soft {
+    animation-delay: var(--dm, var(--d, 0ms));
+  }
+  html:not([data-motion="reduced"]) .hero-orbit .orbit-ring-path {
+    animation-delay: 200ms;
+  }
+}
+html[data-visit="repeat"]:not([data-motion="reduced"]) .hero-word {
+  animation-duration: 600ms;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+html[data-visit="repeat"]:not([data-motion="reduced"]) .hero-period {
+  animation-delay: 340ms;
+}
+html[data-visit="repeat"]:not([data-motion="reduced"]) .hero-in,
+html[data-visit="repeat"]:not([data-motion="reduced"]) .hero-in-soft {
+  animation-delay: var(--dm, var(--d, 0ms));
+}
+html[data-visit="repeat"]:not([data-motion="reduced"]) .hero-orbit .orbit-ring-path {
+  animation-delay: 200ms;
+}
+
+/* ---------- Scroll-out (desktop, scroll-driven, progressive) ----------
+   One named view timeline on the hero, so the content column, the portrait and the 160vw horizon share the
+   same progress (an anonymous view() on the horizon disc would track the disc's own huge box). */
+@keyframes hero-out-content {
+  to { translate: 0 -60px; opacity: 0.2; }
+}
+@keyframes hero-out-portrait {
+  to { translate: 0 -40px; }
+}
+@keyframes hero-out-horizon {
+  to { translate: 0 10vh; opacity: 0.6; }
+}
+@supports ((animation-timeline: view()) and (animation-range: entry)) {
+  @media (min-width: 1024px) {
+    html:not([data-motion="reduced"]) #top {
+      view-timeline: --hero-out block;
+      view-timeline-inset: 0px;
+    }
+    html:not([data-motion="reduced"]) .hero-out-content {
+      animation: hero-out-content linear both;
+      animation-timeline: --hero-out;
+      animation-range: exit 0% exit 100%;
+    }
+    html:not([data-motion="reduced"]) .hero-out-portrait {
+      animation: hero-out-portrait linear both;
+      animation-timeline: --hero-out;
+      animation-range: exit 0% exit 100%;
+    }
+    html:not([data-motion="reduced"]) .hero-horizon-wrap {
+      animation: hero-out-horizon linear both;
+      animation-timeline: --hero-out;
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
