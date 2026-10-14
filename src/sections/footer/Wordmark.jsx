@@ -13,8 +13,8 @@ const RADIUS = 300; // px
 const REST = '"wdth" 125, "wght" 800';
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
-const parentVariants = staggerParent({ stagger: 0.05 });
-const letterVariants = fadeUp({ y: 40 });
+const parentVariants = staggerParent({ stagger: 0.04 });
+const letterVariants = fadeUp({ y: 32 });
 
 /**
  * Giant footer wordmark (spec 6.15): NAPOLES, ghost gradient, sinking under the footer's bottom edge.

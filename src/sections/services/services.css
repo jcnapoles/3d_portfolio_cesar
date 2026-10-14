@@ -19,13 +19,10 @@
   mask-image: radial-gradient(closest-side, #000 35%, transparent 100%);
 }
 
-/* ---------- A. CommandNode: gold pulses into the CTO node, loops while in view ---------- */
-.svc-beam { stroke-dasharray: 10 110; stroke-dashoffset: 10; }
-@keyframes svc-beam { from { stroke-dashoffset: 10; } to { stroke-dashoffset: -110; } }
-html:not([data-motion="reduced"]) .svc-cmd .svc-beam {
-  animation: svc-beam 2.4s linear infinite;
-  animation-delay: calc(var(--i, 0) * 0.48s);
-}
+/* ---------- A. CommandNode: gold pulses into the CTO node, loops while in view ----------
+   The pulses are WAAPI transform / opacity animations on HTML streaks (CommandNode.jsx), played and paused from
+   `active`: compositor-only. (They used to be stroke-dashoffset loops on 10 SVG paths: a main-thread restyle and
+   repaint of the tile every frame.) */
 
 /* ---------- B. OrbitStack: counter-rotation keeps the icons upright ---------- */
 /* The carriers use motion-ok:animate-spin-40 / motion-ok:animate-spin-64-rev (Tailwind). */

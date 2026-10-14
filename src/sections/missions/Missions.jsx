@@ -169,9 +169,15 @@ export default function Missions() {
     return bestRatio >= 0.2 ? best : -1;
   }, [stacked]);
 
-  useLenisScroll(() => {
-    if (nearRef.current) setActive(computeActive());
-  }, [computeActive]);
+  // Which satellite runs is a coarse question: answer it at most every 120 ms while scrolling (it reads a few
+  // rects), not on every scroll frame.
+  useLenisScroll(
+    () => {
+      if (nearRef.current) setActive(computeActive());
+    },
+    [computeActive],
+    { throttle: 120 }
+  );
 
   useEffect(() => {
     setActive(near ? computeActive() : -1);

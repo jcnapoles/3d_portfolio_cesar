@@ -10,7 +10,7 @@ export function scrollToId(id, lenis) {
   if (!id) return;
   const clean = String(id).replace(/^#/, "");
   if (lenis) {
-    lenis.scrollTo(`#${clean}`, { duration: 1.2, easing: easeOutQuart });
+    lenis.scrollTo(`#${clean}`, { duration: 0.8, easing: easeOutQuart });
     return;
   }
   document.getElementById(clean)?.scrollIntoView({ block: "start" });
@@ -19,7 +19,7 @@ export function scrollToId(id, lenis) {
 /** Scroll back to the top of the page. */
 export function scrollToTop(lenis) {
   if (lenis) {
-    lenis.scrollTo(0, { duration: 1.6, easing: easeOutQuart });
+    lenis.scrollTo(0, { duration: 0.9, easing: easeOutQuart });
     return;
   }
   window.scrollTo({ top: 0, left: 0, behavior: "auto" });

@@ -4,11 +4,8 @@
 
 /* ---------- Static styling ---------- */
 
-/* WebGL stage fades out toward the horizon so the hero never ends on a hard star edge. */
-.hero-galaxy {
-  -webkit-mask-image: linear-gradient(to bottom, #000 68%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 68%, transparent 100%);
-}
+/* The WebGL stage fades out toward the horizon (bottom 32 %) inside the shader (Galaxy `fade`), not with a CSS
+   mask: a mask over a canvas that redraws every frame costs the compositor an extra full-hero pass per frame. */
 
 /* Static nebula glow behind the eclipse (data-glow: hidden in contrast modes). */
 .hero-nebula {
@@ -64,7 +61,7 @@
   }
 }
 
-/* ---------- First-paint choreography (CSS only; content is complete at about 1.1 s) ---------- */
+/* ---------- First-paint choreography (CSS only; all copy is readable at about 1.1 s) ---------- */
 
 @keyframes hero-rise {
   from { transform: translateY(105%); }
@@ -104,69 +101,82 @@ html:not([data-motion="reduced"]) .hero-mask {
   padding: 0 0.06em 0.08em;
   margin: 0 -0.06em -0.08em;
 }
-/* 120 + i x 70 ms: H1 span 1 words rise. */
+/* 80 + i x 60 ms: H1 span 1 words rise (700 ms; the ease-out reads settled well before its end). */
 html:not([data-motion="reduced"]) .hero-word {
   display: inline-block;
-  animation: hero-rise 1100ms var(--ease-out) both;
-  animation-delay: calc(120ms + var(--i, 0) * 70ms);
+  animation: hero-rise 700ms var(--ease-out) both;
+  animation-delay: calc(80ms + var(--i, 0) * 60ms);
 }
-/* The full stop lands as the last word settles; at launch it flashes once (useFullStopLaunch). */
+/* The full stop lands as the last word settles; at launch it flashes once (useFullStopLaunch). The flash class
+   stays on afterwards: removing it would restart hero-pop and blink the full stop out and in again. */
 html:not([data-motion="reduced"]) .hero-period {
-  animation: hero-pop 400ms var(--ease-out) 600ms both;
+  animation: hero-pop 280ms var(--ease-out) 460ms both;
 }
 html:not([data-motion="reduced"]) .hero-period.is-launching {
   animation: hero-flash 300ms var(--ease-out) both;
 }
-/* 450: H1 span 2. 900: badge + proof chips (60 ms apart). Delays come from --d on each element. */
+/* 240: H1 span 2. 320: badge. 420 + i x 50: proof chips. Delays come from --d on each element; the chips build
+   theirs from the start / step below (ProofChips.jsx; --dm = below 1024 px and repeat visits). */
+#top {
+  --hero-chips-d: 420ms;
+  --hero-chips-dm: 240ms;
+  --hero-chips-step: 50ms;
+}
 html:not([data-motion="reduced"]) .hero-in {
-  animation: hero-fade-up 800ms var(--ease-out) both;
+  animation: hero-fade-up 560ms var(--ease-out) both;
   animation-delay: var(--d, 0ms);
 }
-/* Leader readouts: opacity only. (The eclipse runs its own totality intro: Eclipse.jsx.) */
+/* Leader readouts: opacity only, once the eclipse reaches totality. (The eclipse runs its own intro: Eclipse.jsx.) */
 html:not([data-motion="reduced"]) .hero-in-soft {
-  animation: hero-fade-in 1200ms var(--ease-out) both;
+  animation: hero-fade-in 600ms var(--ease-out) both;
   animation-delay: var(--d, 0ms);
 }
-/* 600: orbit rings draw in along the satellite's direction (front half, then back half). */
+/* 300: orbit rings draw in along the satellite's direction (front half, then back half). */
 html:not([data-motion="reduced"]) .hero-orbit .orbit-ring-path {
   stroke-dasharray: 1;
-  animation: hero-draw 1200ms var(--ease-in-out) 600ms both;
+  animation: hero-draw 800ms var(--ease-in-out) 300ms both;
 }
 /* HUD ruler draws once. */
 html:not([data-motion="reduced"]) .hero-ticks {
-  animation: hero-rule 900ms var(--ease-draw) 200ms both;
+  animation: hero-rule 600ms var(--ease-draw) 100ms both;
 }
 
-/* Below 1024 px and on repeat visits: the same choreography, compressed (words 600 ms, i x 40 ms from 0). */
+/* Below 1024 px and on repeat visits: the same choreography, compressed (words 480 ms, i x 35 ms from 0). */
 @media (max-width: 1023.98px) {
   html:not([data-motion="reduced"]) .hero-word {
-    animation-duration: 600ms;
-    animation-delay: calc(var(--i, 0) * 40ms);
+    animation-duration: 480ms;
+    animation-delay: calc(var(--i, 0) * 35ms);
   }
   html:not([data-motion="reduced"]) .hero-period {
-    animation-delay: 340ms;
+    animation-delay: 260ms;
+  }
+  html:not([data-motion="reduced"]) .hero-in {
+    animation-duration: 480ms;
   }
   html:not([data-motion="reduced"]) .hero-in,
   html:not([data-motion="reduced"]) .hero-in-soft {
     animation-delay: var(--dm, var(--d, 0ms));
   }
   html:not([data-motion="reduced"]) .hero-orbit .orbit-ring-path {
-    animation-delay: 200ms;
+    animation-delay: 120ms;
   }
 }
 html[data-visit="repeat"]:not([data-motion="reduced"]) .hero-word {
-  animation-duration: 600ms;
-  animation-delay: calc(var(--i, 0) * 40ms);
+  animation-duration: 480ms;
+  animation-delay: calc(var(--i, 0) * 35ms);
 }
 html[data-visit="repeat"]:not([data-motion="reduced"]) .hero-period {
-  animation-delay: 340ms;
+  animation-delay: 260ms;
+}
+html[data-visit="repeat"]:not([data-motion="reduced"]) .hero-in {
+  animation-duration: 480ms;
 }
 html[data-visit="repeat"]:not([data-motion="reduced"]) .hero-in,
 html[data-visit="repeat"]:not([data-motion="reduced"]) .hero-in-soft {
   animation-delay: var(--dm, var(--d, 0ms));
 }
 html[data-visit="repeat"]:not([data-motion="reduced"]) .hero-orbit .orbit-ring-path {
-  animation-delay: 200ms;
+  animation-delay: 120ms;
 }
 
 /* ---------- Scroll-out (desktop, scroll-driven, progressive) ----------

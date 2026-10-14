@@ -152,13 +152,13 @@ html[data-warp="fade"]::view-transition-group(root) {
   height: 1em;
 }
 
-/* --- VT phase: one 1000 ms timeline, in step with the clip-path reveal (peaks mid-transition) --- */
-.cn-warp[data-phase="vt"] .cn-warp-tunnel { animation: cn-warp-tunnel 1000ms linear both; }
-.cn-warp[data-phase="vt"] .cn-warp-streaks-a { animation: cn-warp-streaks 1000ms linear both; }
-.cn-warp[data-phase="vt"] .cn-warp-streaks-b { animation: cn-warp-streaks-b 1000ms linear both; }
-.cn-warp[data-phase="vt"] .cn-warp-flash { animation: cn-warp-flash 1000ms linear both; }
-.cn-warp[data-phase="vt"] .cn-warp-label { animation: cn-warp-label 1000ms linear both; }
-.cn-warp[data-phase="vt"] .cn-warp-years { animation: cn-warp-years 1000ms cubic-bezier(0.76, 0, 0.24, 1) both; }
+/* --- VT phase: one 850 ms timeline, in step with the clip-path reveal (peaks mid-transition) --- */
+.cn-warp[data-phase="vt"] .cn-warp-tunnel { animation: cn-warp-tunnel 850ms linear both; }
+.cn-warp[data-phase="vt"] .cn-warp-streaks-a { animation: cn-warp-streaks 850ms linear both; }
+.cn-warp[data-phase="vt"] .cn-warp-streaks-b { animation: cn-warp-streaks-b 850ms linear both; }
+.cn-warp[data-phase="vt"] .cn-warp-flash { animation: cn-warp-flash 850ms linear both; }
+.cn-warp[data-phase="vt"] .cn-warp-label { animation: cn-warp-label 850ms linear both; }
+.cn-warp[data-phase="vt"] .cn-warp-years { animation: cn-warp-years 850ms cubic-bezier(0.76, 0, 0.24, 1) both; }
 
 @keyframes cn-warp-tunnel {
   0% { opacity: 0; }

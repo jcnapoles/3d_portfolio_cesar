@@ -6,7 +6,7 @@ import Button from "@/components/ui/Button";
 import CalendlyButton from "@/components/ui/CalendlyButton";
 import useMotionPreference from "@/hooks/useMotionPreference";
 
-// Outer to inner. Each ring converges (scale 1.6 -> 1, opacity 0 -> 1, 900 ms EASE.inout, 80 ms stagger).
+// Outer to inner. Each ring converges (scale 1.6 -> 1, opacity 0 -> 1, 600 ms EASE.inout, 60 ms stagger).
 const RINGS = [
   { inset: 0, className: "border-line-strong" },
   { inset: 18, className: "border-[color:var(--hud)]" },
@@ -42,7 +42,7 @@ export default function SuccessPanel({ onReset }) {
             style={{ inset: `${ring.inset}px` }}
             initial={reduced ? false : { scale: 1.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.9, ease: EASE.inout, delay: i * 0.08 }}
+            transition={{ duration: 0.6, ease: EASE.inout, delay: i * 0.06 }}
           />
         ))}
         <span className="relative grid size-12 place-items-center rounded-full bg-[var(--signal-tint)] text-signal">

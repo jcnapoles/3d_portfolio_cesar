@@ -51,7 +51,7 @@ function LeaderReadouts({ d }) {
     <div
       aria-hidden="true"
       className="hero-in-soft pointer-events-none absolute left-0 top-0 z-[3] hidden xl:block"
-      style={{ width: d, height: d, "--d": "1500ms", "--dm": "500ms" }}
+      style={{ width: d, height: d, "--d": "1100ms", "--dm": "600ms" }}
     >
       <svg className="absolute left-0 top-0 overflow-visible" width={d} height={d} fill="none" focusable="false">
         {rows.map((r) => (
@@ -126,7 +126,8 @@ export default function OrbitEclipse({ variant = "desktop", frontRingRef, discRe
         }
       />
 
-      {/* Front half of the orbit + the satellite, over the moon. */}
+      {/* Front half of the orbit + the satellite (OrbitRing's compositor-only satellite), over the moon. The mask is
+          static: only the satellite's own layer moves under it. */}
       <div aria-hidden="true" className="pointer-events-none absolute z-[2]" style={{ ...boxStyle, ...moonMask(d, box) }}>
         <OrbitRing ref={frontRingRef} {...rp} part="front" satellite autoStart={autoStart} className="absolute inset-0" />
       </div>

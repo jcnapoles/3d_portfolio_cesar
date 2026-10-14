@@ -97,8 +97,8 @@ function DemoChip() {
           <m.div
             key="demo-chip"
             initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0, transition: { duration: 0.42, ease: EASE.out } }}
-            exit={{ opacity: 0, y: 6, transition: { duration: 0.24, ease: EASE.in } }}
+            animate={{ opacity: 1, y: 0, transition: { duration: 0.32, ease: EASE.out } }}
+            exit={{ opacity: 0, y: 6, transition: { duration: 0.2, ease: EASE.in } }}
             onPointerEnter={pause}
             onPointerLeave={resume}
             onFocus={pause}

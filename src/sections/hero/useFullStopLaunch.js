@@ -4,12 +4,12 @@ import { EASE } from "@/lib/motion";
 import useMotionPreference from "@/hooks/useMotionPreference";
 import useFirstVisit from "@/hooks/useFirstVisit";
 
-const LAUNCH_AT = 1000; // ms after mount
-const FLIGHT = 1.2; // s
+const LAUNCH_AT = 760; // ms after mount: right after the full stop lands (hero.css: 460 + 280 ms)
+const FLIGHT = 0.85; // s
 const POINTS = 24;
 const ARC_LIFT = 160; // px above the higher end point
 const CANCEL_SCROLL = 40; // px
-const INTRO_END = 2200; // ms: markLaunched() at the end of the intro or on the first scroll
+const INTRO_END = 1900; // ms: markLaunched() at the end of the intro or on the first scroll
 
 const isDesktop = () => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(min-width: 1024px)").matches;
 const easeInOut = cubicBezier(...EASE.inout);
@@ -17,12 +17,12 @@ const easeInOut = cubicBezier(...EASE.inout);
 /**
  * The gold full stop that launches into orbit (spec 6.2).
  * Runs only on desktop (>= 1024), tier A, first visit, motion on. Otherwise the satellite simply orbits.
- * At 1 s a fixed gold clone of `.hero-period` flies a quadratic Bezier (24 points) to the front ring's start point,
- * the original period flashes once, and on landing the ring's satellite begins. Scrolling more than 40 px first
- * cancels the flight and starts the satellite at once.
+ * At 0.76 s (the full stop has just landed) a fixed gold clone of `.hero-period` flies a quadratic Bezier (24 points,
+ * 0.85 s) to the front ring's start point, the original period flashes once, and on landing the ring's satellite
+ * begins. Scrolling more than 40 px first cancels the flight and starts the satellite at once.
  *
  * Returns { launchPending }: true while the front ring must wait (mount it with autoStart={!launchPending}).
- * Also calls markLaunched() at the end of the intro (2.2 s) or on the first scroll, on every first visit.
+ * Also calls markLaunched() at the end of the intro (1.9 s) or on the first scroll, on every first visit.
  */
 export default function useFullStopLaunch({ periodRef, frontRingRef }) {
   const { reduced, tier } = useMotionPreference();
@@ -123,11 +123,9 @@ export default function useFullStopLaunch({ periodRef, frontRingRef }) {
       clone.style.willChange = "transform";
       document.body.appendChild(clone);
 
-      // The original period flashes once (CSS, scale 1.4 -> 1, 300 ms).
-      period.classList.remove("is-launching");
-      void period.offsetWidth;
+      // The original period flashes once (CSS, scale 1.4 -> 1, 300 ms). The class stays on: taking it off would
+      // restart the entrance pop (hero.css) and blink the full stop out for its delay.
       period.classList.add("is-launching");
-      period.addEventListener("animationend", () => period.classList.remove("is-launching"), { once: true });
 
       anim = flyToOrbit(clone, xs, ys, FLIGHT);
       anim.then(() => {
@@ -155,8 +153,8 @@ export default function useFullStopLaunch({ periodRef, frontRingRef }) {
     };
   }, [eligible, periodRef, frontRingRef]);
 
-  // Motion switched off mid-launch: cancel (the satellite parks). Switched back on: a ring that was mounted with
-  // autoStart=false has a fresh <animateMotion begin="indefinite">, so begin it explicitly.
+  // Motion switched off mid-launch: cancel (the satellite parks). Switched back on: a ring mounted with
+  // autoStart=false keeps its OrbitSatellite hidden and held until beginSatellite(), so begin it explicitly.
   const reducedOnce = useRef(reduced);
   useEffect(() => {
     if (reducedOnce.current === reduced) return undefined;

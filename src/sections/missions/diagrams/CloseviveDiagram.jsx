@@ -22,7 +22,7 @@ const CHANNELS = [
 ];
 
 export default function ClosevibeDiagram({ svgRef, fig }) {
-  const { Stroke, Pop, Fade, Satellite, ellipse, onEllipse } = fig;
+  const { Stroke, Pop, Fade, Satellite, ellipse } = fig;
   const icons = useBrandIcons(svgRef);
   const orbit = ellipse(ORBIT.cx, ORBIT.cy, ORBIT.rx, ORBIT.ry);
   const nodeDelay = (i) => 0.55 + i * 0.08;
@@ -34,8 +34,9 @@ export default function ClosevibeDiagram({ svgRef, fig }) {
         {CHANNELS.map((c, i) => (
           <Stroke key={c.key} d={c.line} delay={0.3 + i * 0.08} />
         ))}
-        <Satellite d={orbit} park={onEllipse(ORBIT.cx, ORBIT.cy, ORBIT.rx, ORBIT.ry, 300)} dur={20} />
       </svg>
+      {/* HTML, after the SVG and before the browser frame: it still passes behind the frame. */}
+      <Satellite orbit={ORBIT} parkDeg={300} dur={20} />
 
       {/* The product: x 150..410 of the viewBox, centred on the orbit. */}
       <div className="absolute left-[26.79%] top-[45%] w-[46.43%] -translate-y-1/2">

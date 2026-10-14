@@ -1,19 +1,24 @@
-import { forwardRef, useCallback, useEffect, useId, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useCallback, useId, useImperativeHandle, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import useInViewport from "@/hooks/useInViewport";
 import useMotionPreference from "@/hooks/useMotionPreference";
+import OrbitSatellite from "@/components/ui/OrbitSatellite";
 
 const STROKES = { hud: "var(--hud)", gold: "var(--gold)" };
 const PARK_DEG = 300;
+// The 6 px gold satellite and its glow (box-shadows on a static layer: rasterised once, never per frame).
+const SAT_BODY = "size-1.5 -ml-[3px] -mt-[3px] rounded-full bg-gold shadow-[0_0_3px_rgba(244,184,96,.95),0_0_8px_rgba(244,184,96,.55)]";
 
 /**
- * The orbit motif: a thin ellipse (centered, rotated in a <g>) with an optional 6 px gold satellite on SMIL
- * <animateMotion>. `part` clips the stroke to the top half ('back') or bottom half ('front') in local coordinates.
- * Reduced motion: no animateMotion, the satellite is parked at 300 degrees. Pauses offscreen (pauseAnimations).
+ * The orbit motif: a thin ellipse (centered, rotated) with an optional 6 px gold satellite.
+ * `part` clips the stroke to the top half ('back') or bottom half ('front') in local coordinates.
+ * The satellite is an OrbitSatellite (two compositor-only transform loops on HTML boxes over the SVG), not SMIL.
+ * Reduced motion: the satellite is parked at 300 degrees. Pauses offscreen.
  *
  * ref -> { beginSatellite(), getStartPoint() }
- * Extra props: `paused` (pause the SMIL clock, e.g. footer button not hovered), `strokeClassName`.
+ * Extra props: `paused` (hold the satellite, e.g. footer button not hovered), `strokeClassName`.
  * The visible stroke is a <path pathLength="1" class="orbit-ring-path"> so CSS can draw it in with stroke-dashoffset.
+ * The root is a <span> sized width x height (className positions it), holding the SVG and the satellite.
  */
 const OrbitRing = forwardRef(function OrbitRing(
   {
@@ -33,15 +38,14 @@ const OrbitRing = forwardRef(function OrbitRing(
   },
   ref
 ) {
-  const svgRef = useRef(null);
+  const rootRef = useRef(null);
   const pathRef = useRef(null);
-  const motionRef = useRef(null);
   const [started, setStarted] = useState(autoStart);
+  const [runKey, setRunKey] = useState(0);
   const { reduced } = useMotionPreference();
-  const onScreen = useInViewport(svgRef, { rootMargin: "100px 0px", once: false, attr: false, initial: true });
+  const onScreen = useInViewport(rootRef, { rootMargin: "100px 0px", once: false, attr: false, initial: true });
 
   const uid = useId().replace(/:/g, "");
-  const pathId = `orbit-path-${uid}`;
   const clipId = `orbit-clip-${uid}`;
 
   const cx = width / 2;
@@ -55,44 +59,14 @@ const OrbitRing = forwardRef(function OrbitRing(
         ? { x: cx - rx - pad, y: cy - ry - pad, width: rx * 2 + pad * 2, height: ry + pad }
         : null;
 
-  const rad = (PARK_DEG * Math.PI) / 180;
-  const parked = { x: cx + rx * Math.cos(rad), y: cy + ry * Math.sin(rad) };
   const animated = satellite && !reduced;
 
-  // Pause/resume the SMIL clock: offscreen, explicitly paused, or reduced.
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg || typeof svg.pauseAnimations !== "function") return;
-    if (!animated || !onScreen || paused) svg.pauseAnimations();
-    else svg.unpauseAnimations();
-  }, [animated, onScreen, paused]);
-
-  // Motion switched reduced -> full re-creates the <animateMotion begin="indefinite">: if the satellite was
-  // already launched, start the new element too (otherwise it would sit at the SVG origin).
-  useEffect(() => {
-    if (!animated || autoStart || !started) return;
-    const el = motionRef.current;
-    if (el && typeof el.beginElement === "function") {
-      try {
-        el.beginElement();
-      } catch {
-        /* ignore */
-      }
-    }
-    // Only on (re)creation; beginSatellite() starts it on the first launch.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [animated]);
-
+  const startedRef = useRef(autoStart);
   const beginSatellite = useCallback(() => {
+    // A second launch restarts the orbit from its start point (SMIL beginElement did the same).
+    if (startedRef.current) setRunKey((k) => k + 1);
+    startedRef.current = true;
     setStarted(true);
-    const el = motionRef.current;
-    if (el && typeof el.beginElement === "function") {
-      try {
-        el.beginElement();
-      } catch {
-        /* ignore */
-      }
-    }
   }, []);
 
   const getStartPoint = useCallback(() => {
@@ -108,62 +82,57 @@ const OrbitRing = forwardRef(function OrbitRing(
   useImperativeHandle(ref, () => ({ beginSatellite, getStartPoint }), [beginSatellite, getStartPoint]);
 
   return (
-    <svg
-      ref={svgRef}
+    <span
+      ref={rootRef}
       aria-hidden="true"
-      focusable="false"
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      className={cn("pointer-events-none overflow-visible", className)}
-      fill="none"
+      className={cn("pointer-events-none relative block", className)}
+      style={{ width, height }}
     >
-      <g transform={`rotate(${rotate} ${cx} ${cy})`}>
-        {clipRect ? (
-          <defs>
-            <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
-              <rect {...clipRect} />
-            </clipPath>
-          </defs>
-        ) : null}
-        {/* Motion path (geometry only). */}
-        <path ref={pathRef} id={pathId} d={d} stroke="none" fill="none" />
-        {/* Visible stroke. */}
-        <path
-          d={d}
-          pathLength="1"
-          className={cn("orbit-ring-path", strokeClassName)}
-          stroke={STROKES[tone] || STROKES.hud}
-          strokeOpacity={tone === "gold" ? 0.7 : 1}
-          strokeWidth="1"
-          vectorEffect="non-scaling-stroke"
-          clipPath={clipRect ? `url(#${clipId})` : undefined}
+      <svg
+        focusable="false"
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        className="absolute left-0 top-0 overflow-visible"
+        fill="none"
+      >
+        <g transform={`rotate(${rotate} ${cx} ${cy})`}>
+          {clipRect ? (
+            <defs>
+              <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
+                <rect {...clipRect} />
+              </clipPath>
+            </defs>
+          ) : null}
+          {/* Orbit geometry (getStartPoint). */}
+          <path ref={pathRef} d={d} stroke="none" fill="none" />
+          {/* Visible stroke. */}
+          <path
+            d={d}
+            pathLength="1"
+            className={cn("orbit-ring-path", strokeClassName)}
+            stroke={STROKES[tone] || STROKES.hud}
+            strokeOpacity={tone === "gold" ? 0.7 : 1}
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
+            clipPath={clipRect ? `url(#${clipId})` : undefined}
+          />
+        </g>
+      </svg>
+      {satellite ? (
+        <OrbitSatellite
+          frame={{ left: cx - rx, top: cy - ry, width: rx * 2, height: ry * 2 }}
+          rotate={rotate}
+          duration={satelliteDuration}
+          animated={animated}
+          parkDeg={PARK_DEG}
+          running={animated && started && onScreen && !paused}
+          hidden={animated && !started}
+          runKey={runKey}
+          bodyClassName={SAT_BODY}
         />
-        {satellite ? (
-          <circle
-            className="orbit-satellite"
-            r="3"
-            cx={animated ? 0 : parked.x}
-            cy={animated ? 0 : parked.y}
-            fill="var(--gold)"
-            opacity={animated && !started ? 0 : 1}
-            style={{ filter: "drop-shadow(0 0 3px rgba(244,184,96,.95)) drop-shadow(0 0 8px rgba(244,184,96,.55))" }}
-          >
-            {animated ? (
-              <animateMotion
-                ref={motionRef}
-                dur={`${satelliteDuration}s`}
-                repeatCount="indefinite"
-                begin={autoStart ? "0s" : "indefinite"}
-                rotate="0"
-              >
-                <mpath href={`#${pathId}`} />
-              </animateMotion>
-            ) : null}
-          </circle>
-        ) : null}
-      </g>
-    </svg>
+      ) : null}
+    </span>
   );
 });
 

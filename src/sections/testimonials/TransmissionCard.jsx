@@ -13,12 +13,12 @@ const CLOSE_QUOTE = "”";
 
 /* ---------- Timing (seconds). Every child gets an absolute delay that includes the card's own stagger
    delay (`base`): Motion lets a child's transition.delay override a parent's delayChildren. ---------- */
-const WORDS_START = 0.12; // featured quote lines start just after the card begins to rise
-const LINE_STAGGER = 0.06; // 60 ms between lines
-const WORD_RISE = 16;
-const SWEEP_DURATION = 0.7; // highlight sweep, EASE.out
-const SWEEP_AFTER_TEXT = 0.5; // the sweep starts once the (ease-out) text reveal has visually settled
-const SWEEP_AFTER_CARD = 0.55; // non-featured: after the card's own fade-up has settled
+const WORDS_START = 0.08; // featured quote lines start just after the card begins to rise
+const LINE_STAGGER = 0.05; // 50 ms between lines
+const WORD_RISE = 12;
+const SWEEP_DURATION = 0.5; // highlight sweep, EASE.out
+const SWEEP_AFTER_TEXT = 0.3; // the sweep starts once the (ease-out) text reveal has visually settled
+const SWEEP_AFTER_CARD = 0.32; // non-featured: after the card's own fade-up has settled
 
 /* The highlight band covers 84% of the inline box, sitting towards the baseline: at line-height 1.3 a full-height
    band (font content area ~1.41em) would overlap the band of the line above it. */
@@ -58,8 +58,8 @@ const barVariants = {
   show: (c) => ({
     scaleY: [0, 1, c?.rest ?? REST],
     transition: {
-      delay: (c?.base ?? 0) + 0.2 + (c?.i ?? 0) * 0.07,
-      duration: 1.2,
+      delay: (c?.base ?? 0) + 0.12 + (c?.i ?? 0) * 0.05,
+      duration: 0.8,
       times: [0, 0.38, 1],
       ease: [EASE.out, EASE.inout],
     },

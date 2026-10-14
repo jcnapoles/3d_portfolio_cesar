@@ -1,8 +1,8 @@
 /* Eclipse (src/components/ui/Eclipse.jsx), owner T-A.
-   Only transform and opacity are ever animated: Eclipse.jsx writes them on its own nodes (intro, scroll, flare),
-   CSS animates other nodes (corona rays and streamers spin, breathing, bead twinkle, rare glint).
-   Every loop is gated by html:not([data-motion="reduced"]) and by .ecl:not([data-still]) (tier C), and pauses
-   with [data-paused] (offscreen). Under reduced motion / tier C the markup is a static totality. */
+   Only transform and opacity are ever animated, all on composited layers. Eclipse.jsx owns the time-based motion
+   (the intro and the idle loops are Web Animations the compositor plays; the scroll exit and flare() write inline
+   styles); CSS only twinkles the beads and fades the root in. No loop runs under reduced motion / tier C (static
+   totality), and every loop pauses offscreen ([data-paused] for CSS, Eclipse.jsx for the Web Animations). */
 
 .ecl {
   --ecl-d: 320px; /* sun diameter (the visual weight of the disc) */
@@ -64,9 +64,13 @@ html:not([data-motion="reduced"]) .ecl[data-cta-active="true"] .ecl-boost { tran
 }
 
 /* Fine radial plumes: three incommensurate repeating conic sweeps (an irregular beat pattern), masked to a ring
-   that fades outward and modulated by angle so the poles and the equatorial streamers read differently. */
-.ecl-rays {
+   that fades outward and modulated by angle so the poles and the equatorial streamers read differently.
+   Its wrapper (.ecl-spin) turns inside the slow layer as its own composited layer, so the masked gradients
+   rasterise once. */
+.ecl-spin {
   will-change: transform;
+}
+.ecl-rays {
   background:
     repeating-conic-gradient(from 3deg, rgba(255, 240, 214, 0) 0deg, rgba(255, 240, 214, 0.5) 1.1deg, rgba(255, 240, 214, 0) 2.9deg, rgba(255, 240, 214, 0) 5.3deg),
     repeating-conic-gradient(from 0deg, rgba(255, 226, 178, 0) 0deg, rgba(255, 226, 178, 0.34) 2deg, rgba(255, 226, 178, 0) 4.6deg, rgba(255, 226, 178, 0) 8.9deg),
@@ -82,10 +86,8 @@ html:not([data-motion="reduced"]) .ecl[data-cta-active="true"] .ecl-boost { tran
   opacity: 0.62;
 }
 
-/* Helmet streamers: static blurred SVG petals, rasterised once; only the wrapper rotates. */
-.ecl-streamers {
-  will-change: transform;
-}
+/* Helmet streamers: static blurred SVG petals, rasterised once into the slow layer, which turns them (Eclipse.jsx);
+   the blur is never re-run per frame. */
 .ecl-streamers svg {
   display: block;
   width: 100%;
@@ -226,29 +228,20 @@ html:not([data-motion="reduced"]) .ecl[data-cta-active="true"] .ecl-boost { tran
 .ecl--ambient .ecl-flare-core { display: none; }
 .ecl--ambient .ecl-flare-star { color: var(--gold-hot); }
 
-/* ---------- Idle loops (motion on, not tier C, on screen) ---------- */
-@keyframes ecl-spin { to { transform: rotate(360deg); } }
-@keyframes ecl-breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.88; } }
-@keyframes ecl-glint {
-  0%, 90%, 100% { transform: none; }
-  93.5% { transform: scale(1.38) rotate(14deg); }
-}
+/* ---------- CSS loops (motion on, not tier C, on screen) ----------
+   The corona's turn + breathing and the diamond's glint are Web Animations in Eclipse.jsx. Here: the beads twinkle
+   while some bead shows on scroll (data-beads) and for the whole intro (its bead window is ~0.2 s, and timers on a
+   busy main thread could miss it), and the root fades in under the intro. */
 @keyframes ecl-twinkle {
   0%, 100% { opacity: 1; transform: scale(1); }
   45% { opacity: 0.3; transform: scale(0.72); }
 }
 @keyframes ecl-in { from { opacity: 0; } to { opacity: 1; } }
 
-html:not([data-motion="reduced"]) .ecl:not([data-still]) .ecl-rays { animation: ecl-spin 96s linear infinite; }
-html:not([data-motion="reduced"]) .ecl:not([data-still]) .ecl-streamers { animation: ecl-spin 280s linear infinite; }
-html:not([data-motion="reduced"]) .ecl:not([data-still]) .ecl-breathe { animation: ecl-breathe 8s ease-in-out infinite; }
-html:not([data-motion="reduced"]) .ecl[data-phase="idle"]:not([data-still]) .ecl-flare-glint {
-  animation: ecl-glint 14s var(--ease-in-out) 5s infinite;
-}
-html:not([data-motion="reduced"]) .ecl[data-beads]:not([data-still]) .ecl-bead-i {
+html:not([data-motion="reduced"]) .ecl:is([data-beads], [data-intro]):not([data-still]) .ecl-bead-i {
   animation: ecl-twinkle var(--tw, 420ms) ease-in-out infinite;
 }
-html:not([data-motion="reduced"]) .ecl[data-intro] { animation: ecl-in 700ms var(--ease-out) 60ms both; }
+html:not([data-motion="reduced"]) .ecl[data-intro] { animation: ecl-in 420ms var(--ease-out) both; }
 
 .ecl[data-paused],
 .ecl[data-paused] * { animation-play-state: paused !important; }

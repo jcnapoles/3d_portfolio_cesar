@@ -19,12 +19,12 @@ export default function SttokDiagram({ svgRef, fig }) {
         <Stroke d={outer} delay={0} />
         <Stroke d={inner} delay={0.12} tone="hud" />
         <Stroke d={transfer} delay={0.4} tone="gold" width={1.5} dash="3 5" opacity={0.9} />
-        <Satellite d={outer} park={onEllipse(280, 200, 220, 90, 340)} />
         {nodes.map((p, i) => (
           <Node key={i} x={p.x} y={p.y} delay={nodeDelay(i)} />
         ))}
         <Node x={500} y={200} delay={0.9} tone="gold" r={2.6} ring={6} />
       </svg>
+      <Satellite orbit={{ cx: 280, cy: 200, rx: 220, ry: 90 }} parkDeg={340} />
 
       <Label x={280} y={200} tone="ion" delay={0.2}>
         Sttok

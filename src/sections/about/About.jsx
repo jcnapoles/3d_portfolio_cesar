@@ -72,7 +72,7 @@ export default function About() {
           <Porthole />
         </Reveal>
 
-        <Reveal className="lg:col-span-7" delay={0.1}>
+        <Reveal className="lg:col-span-7" delay={0.05}>
           <p className="max-w-prose text-lead text-ink-2">
             I&apos;m Cesar Napoles, a fractional CTO based in Tarragona, Spain, working with teams remotely and on
             site. For 12+ years I&apos;ve shipped production software, from banking systems at <Em>CaixaBank Tech</Em>,

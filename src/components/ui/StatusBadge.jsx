@@ -6,7 +6,7 @@ import StatusDot from "@/components/ui/StatusDot";
  * "Available" pill with the signal dot. Renders <a> when `href`, otherwise <span>. No backdrop blur.
  * As a link, an invisible hit area reaches 44 px on coarse pointers without changing the visual size.
  */
-const StatusBadge = forwardRef(function StatusBadge({ href, children, className, ...rest }, ref) {
+const StatusBadge = forwardRef(function StatusBadge({ href, children, className, pings, ...rest }, ref) {
   const Tag = href ? "a" : "span";
   return (
     <Tag
@@ -20,7 +20,7 @@ const StatusBadge = forwardRef(function StatusBadge({ href, children, className,
       )}
       {...rest}
     >
-      <StatusDot />
+      <StatusDot pings={pings} />
       <span>{children}</span>
     </Tag>
   );

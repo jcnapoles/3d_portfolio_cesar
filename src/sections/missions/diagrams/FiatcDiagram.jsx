@@ -32,13 +32,13 @@ export default function FiatcDiagram({ svgRef, fig }) {
         <Stroke d={`M 70 ${AXIS_Y} H 490`} delay={0.3} tone="line" />
         <Stroke d={minorTicks()} delay={0.45} tone="dim" linecap="butt" />
         <Stroke d={majors} delay={0.55} tone="hud" linecap="butt" />
-        <Satellite d={liferay} park={onEllipse(380, 180, 130, 52, 300)} />
         <Node x={150} y={180} delay={0.5} r={2.6} ring={6.5} />
         <Node x={landing.x} y={landing.y} delay={0.95} tone="gold" r={2.6} ring={6} />
         {MAJOR.map((x, i) => (
           <Node key={x} x={x} y={AXIS_Y} delay={tickDelay(i)} r={2.6} ring={6} />
         ))}
       </svg>
+      <Satellite orbit={{ cx: 380, cy: 180, rx: 130, ry: 52 }} parkDeg={300} />
 
       <Label x={150} y={222} place="below" delay={0.35}>
         Legacy CMS

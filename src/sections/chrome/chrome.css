@@ -7,11 +7,11 @@
 /* The shell is the full-width fixed strip (it carries the 16 px top inset on >= 768, so -120% clears the pill).
    It stays visible while focus is inside it (:focus-within), and never moves under reduced motion. */
 html:not([data-motion="reduced"]) .nav-shell {
-  transition: transform 420ms var(--ease-out);
+  transition: transform 320ms var(--ease-out);
 }
 html:not([data-motion="reduced"]) .nav-shell[data-hidden="true"]:not(:focus-within) {
   transform: translate3d(0, -120%, 0);
-  transition: transform 320ms var(--ease-in);
+  transition: transform 240ms var(--ease-in);
 }
 
 /* ---------- Bar / pill geometry (shared by the navbar and the mobile menu's header row) ---------- */
@@ -54,6 +54,15 @@ html:not([data-motion="reduced"]) .nav-shell[data-hidden="true"]:not(:focus-with
 }
 @media (min-width: 768px) {
   .nav-surface { border: 1px solid var(--line); }
+}
+/* Phones: the full-width bar would re-blur a 390 x 56 px strip of the page on every scroll frame (GPU). A
+   slightly denser tint and a lighter blur keep the same read for a fraction of the cost. */
+@media (max-width: 767px) {
+  .nav-surface {
+    background: rgba(10, 12, 20, 0.84);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
 }
 .nav-shell[data-scrolled="true"] .nav-surface {
   opacity: 1;

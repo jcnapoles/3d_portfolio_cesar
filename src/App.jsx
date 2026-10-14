@@ -3,6 +3,7 @@ import VersionProvider from "@/providers/VersionProvider";
 import SpaceBackground from "@/components/background/SpaceBackground";
 import SkipLink from "@/components/ui/SkipLink";
 import GsapBoot from "@/components/system/GsapBoot";
+import DeferredMount from "@/components/system/DeferredMount";
 import CursorBrackets from "@/components/system/CursorBrackets";
 import { VersionPill } from "@/components/system/VersionSwitch";
 import Navbar from "@/sections/chrome/Navbar";
@@ -36,20 +37,35 @@ function NewSite() {
       <Navbar />
       <main id="main" className="relative z-content">
         <Hero />
-        <Telemetry />
-        <Fit />
-        <Services />
-        <Missions />
-        <KineticStrip />
-        <Process />
-        <Testimonials />
-        <About />
-        <Builds />
-        <Stack />
-        <Faq />
-        <Contact />
+        {/* Below the fold: mounted group by group right after the hero's first frame (DeferredMount). */}
+        <DeferredMount step={1}>
+          <Telemetry />
+        </DeferredMount>
+        <DeferredMount step={2}>
+          <Fit />
+          <Services />
+        </DeferredMount>
+        <DeferredMount step={3}>
+          <Missions />
+        </DeferredMount>
+        <DeferredMount step={4}>
+          <KineticStrip />
+          <Process />
+          <Testimonials />
+        </DeferredMount>
+        <DeferredMount step={5}>
+          <About />
+          <Builds />
+        </DeferredMount>
+        <DeferredMount step={6}>
+          <Stack />
+          <Faq />
+          <Contact />
+        </DeferredMount>
       </main>
-      <Footer />
+      <DeferredMount step={6}>
+        <Footer />
+      </DeferredMount>
       <MissionRail />
       <MobileStickyCta />
       <LiveDemoChip />

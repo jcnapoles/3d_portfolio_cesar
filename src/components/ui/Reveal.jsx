@@ -5,9 +5,9 @@ import useMotionPreference from "@/hooks/useMotionPreference";
 import useMediaQuery from "@/hooks/useMediaQuery";
 
 /**
- * Motion fade-up reveal, once, when the element enters the viewport (VIEWPORT = { once: true, amount: 0.3 }).
- * The amount is capped for elements taller than the viewport so long stacks always reveal.
- * Default variants: fadeUp() rising 24 px (16 px under 768 px). `delay` applies to the default variants.
+ * Motion fade-up reveal, once, as soon as the element's top is 6 % inside the viewport (VIEWPORT.margin).
+ * The trigger is positional, so a tall block reveals as early as a short one (no share-of-height threshold).
+ * Default variants: fadeUp() rising 16 px (12 px under 768 px). `delay` applies to the default variants.
  * For staggered groups: <Reveal variants={staggerParent()}> with <RevealItem> children.
  * Under reduced motion it renders the final state without animating.
  */
@@ -23,7 +23,7 @@ const Reveal = forwardRef(function Reveal({ as = "div", variants, delay = 0, cla
   );
   const { reduced } = useMotionPreference();
   const isMobile = useMediaQuery("(max-width: 767px)");
-  const resolved = useMemo(() => variants ?? fadeUp({ y: isMobile ? 16 : 24, delay }), [variants, isMobile, delay]);
+  const resolved = useMemo(() => variants ?? fadeUp({ y: isMobile ? 12 : 16, delay }), [variants, isMobile, delay]);
   const [shown, setShown] = useState(false);
 
   useEffect(() => {
@@ -35,8 +35,7 @@ const Reveal = forwardRef(function Reveal({ as = "div", variants, delay = 0, cla
       return undefined;
     }
     if (!el) return undefined;
-    const rect = el.getBoundingClientRect();
-    if (rect.bottom <= 0) {
+    if (el.getBoundingClientRect().bottom <= 0) {
       setShown(true); // already scrolled past: show the final state
       return undefined;
     }
@@ -44,16 +43,13 @@ const Reveal = forwardRef(function Reveal({ as = "div", variants, delay = 0, cla
       setShown(true);
       return undefined;
     }
-    const vh = window.innerHeight || document.documentElement.clientHeight;
-    const amount = Math.min(VIEWPORT.amount, (vh * 0.5) / Math.max(rect.height, 1));
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= amount * 0.98) {
-          setShown(true);
-          if (VIEWPORT.once) io.disconnect();
-        }
+        if (!entry.isIntersecting) return;
+        setShown(true);
+        if (VIEWPORT.once) io.disconnect();
       },
-      { threshold: [0, amount] }
+      { rootMargin: VIEWPORT.margin, threshold: 0 }
     );
     io.observe(el);
     return () => io.disconnect();

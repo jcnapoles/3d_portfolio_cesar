@@ -33,12 +33,12 @@ export default function IsernDiagram({ svgRef, fig }) {
         <Stroke d={`M 90 ${PIPE_Y} H 470`} delay={0.6} tone="line" />
         <Stroke d={`M 90 ${PIPE_Y - 6} V ${PIPE_Y + 6} M 470 ${PIPE_Y - 6} V ${PIPE_Y + 6}`} delay={0.7} linecap="butt" />
         <Stroke d={`M ${RING.cx} ${RING.cy + RING.ry + 6} V ${PIPE_Y - 10}`} delay={0.75} dash="2 4" linecap="butt" opacity={0.7} />
-        <Satellite d={ring} park={onEllipse(RING.cx, RING.cy, RING.rx, RING.ry, 300)} />
         <Node x={mid.x} y={mid.y} delay={0.95} tone="gold" r={2.6} ring={6} />
         {PIPE_NODES.map((n, i) => (
           <Node key={n.name} x={n.x} y={PIPE_Y} delay={nodeDelay(i)} />
         ))}
       </svg>
+      <Satellite orbit={RING} parkDeg={300} />
 
       <Label x={120} y={239} place="below" delay={0.3}>
         Monolith

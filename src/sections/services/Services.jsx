@@ -50,9 +50,9 @@ const TILES = {
   },
 };
 
-// Tiles that share a row enter together, 100 ms apart (fadeUpScale). Tiles alone in their row start at once.
+// Tiles that share a row enter together, 50 ms apart (fadeUpScale). Tiles alone in their row start at once.
 const DELAYS = {
-  md: { fcto: 0, arch: 0, lead: 0.1, build: 0 },
+  md: { fcto: 0, arch: 0, lead: 0.05, build: 0 },
   sm: { fcto: 0, arch: 0, lead: 0, build: 0 },
 };
 

@@ -25,12 +25,12 @@ export default function Fit() {
   const isMobile = !twoCol;
 
   // One Motion reveal per card (each enters on its own on a 1-column phone stack); on 2 columns the
-  // per-index delay gives the 80 ms stagger (4 cards: 0 / 80 / 160 / 240 ms, inside the 480 ms cap).
+  // per-index delay gives the 50 ms stagger (4 cards: 0 / 50 / 100 / 150 ms, inside the 300 ms cap).
   const cardVariants = useMemo(
     () => FIT_CARDS.map((_, i) => fadeUpScale({ delay: twoCol ? i * STAGGER.cards : 0 })),
     [twoCol]
   );
-  const closingVariants = useMemo(() => fadeUp({ y: isMobile ? 16 : 24, delay: isMobile ? 0 : 0.12 }), [isMobile]);
+  const closingVariants = useMemo(() => fadeUp({ y: isMobile ? 12 : 16, delay: isMobile ? 0 : 0.06 }), [isMobile]);
 
   return (
     <Section id="fit" chapter="01" labelledBy="fit-title">

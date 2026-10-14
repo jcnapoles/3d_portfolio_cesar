@@ -14,7 +14,7 @@ import useInViewport from "@/hooks/useInViewport";
 import usePrefersFinePointer from "@/hooks/usePrefersFinePointer";
 
 const BURST_MS = 6000; // B, C, D: active for 6 s after first entering the view
-const VISUAL_DELAY_MS = 300; // each micro-visual starts 300 ms after its tile has revealed
+const VISUAL_DELAY_MS = 120; // each micro-visual starts 120 ms after its tile has revealed
 
 /** Proof line from claims.js: unverified numbers never reach the page. */
 function composeProof(proof) {
@@ -56,7 +56,7 @@ function useVisualActivity({ mode, revealed, revealDelay, visualRef }) {
   const { reduced } = useMotionPreference();
   const fine = usePrefersFinePointer();
 
-  // Ready: 300 ms after the tile's reveal has finished.
+  // Ready: VISUAL_DELAY_MS after the tile's reveal has finished.
   const [ready, setReady] = useState(false);
   useEffect(() => {
     if (!revealed || ready) return undefined;

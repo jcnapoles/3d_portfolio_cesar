@@ -19,16 +19,16 @@ const EXT_LINK = "inline-flex min-h-11 items-center text-body text-ink-2 no-unde
 
 const overlay = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.42, ease: EASE.inout } },
-  exit: { opacity: 0, transition: { duration: 0.28, ease: EASE.in } },
+  show: { opacity: 1, transition: { duration: 0.3, ease: EASE.inout } },
+  exit: { opacity: 0, transition: { duration: 0.2, ease: EASE.in } },
 };
 const list = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.06, delayChildren: 0.08 } },
+  show: { transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
 };
 const item = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE.out } },
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE.out } },
 };
 
 const notify = (open) => {
@@ -134,6 +134,8 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
     onClose?.();
   };
 
+  // The overlay has no backdrop blur: under a 96-97 % void fill it was invisible, yet the GPU re-blurred the whole
+  // viewport on every frame of the fade.
   return (
     <AnimatePresence>
       {open ? (
@@ -149,7 +151,7 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
           initial="hidden"
           animate="show"
           exit="exit"
-          className="fixed inset-0 z-menu bg-void/[.96] backdrop-blur-[14px] backdrop-saturate-[140%] lg:hidden"
+          className="fixed inset-0 z-menu bg-void/[.97] lg:hidden"
         >
           <div aria-hidden="true" className="menu-glow" data-glow="" />
           <div aria-hidden="true" className="menu-stars" />
