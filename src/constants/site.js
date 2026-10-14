@@ -14,7 +14,7 @@ export const LINKS = {
   cv: "/Cesar_Napoles_CV.pdf",
   closevibe: "https://www.closevibe.com/",
 };
-export const CV_LABEL = "Download CV (PDF, 353 KB)";
+export const CV_LABEL = "Download CV (PDF, 355 KB)";
 export const PLACEMENTS = ["nav", "menu", "hero", "fit", "svc-fcto", "svc-arch", "svc-lead", "svc-build", "svc-unsure", "results", "process", "testimonials", "about", "faq", "launch", "contact", "footer", "sticky"];
 export const calendlyUrl = (placement) =>
   `${LINKS.calendly}?utm_source=site&utm_medium=cta&utm_content=${encodeURIComponent(placement)}`;
