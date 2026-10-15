@@ -23,7 +23,7 @@ const CARD_REVEAL = fadeUpScale();
 const MISSION_IDS = new Set(MISSIONS.map((mission) => mission.id));
 
 /**
- * 03 MISSIONS (#results). Five case studies.
+ * 03 MISSIONS (#results). Four case studies.
  * Desktop >= 1024 x 800 with motion on: a sticky stack (each card scales/dims under the next, driven
  * by the list's scroll progress). The stack is only used when every card fits under the navbar at its
  * sticky offset (measured), so content is never trapped below the fold. Everywhere else, including

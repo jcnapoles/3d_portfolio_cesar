@@ -1,5 +1,5 @@
 /**
- * FIG 03.4 — LEGACY TO CLOUD (viewBox 560 x 400).
+ * FIG 03.3 — LEGACY TO CLOUD (viewBox 560 x 400).
  * A 120 x 120 MONOLITH block on the left whose dashed lines resolve into an AWS / AZURE ring on the
  * right, with the delivery pipeline (JENKINS · GITLAB CI) beneath.
  * The satellite runs on the AWS / AZURE (target) ring. `fig` carries the shared primitives from MissionCard.
