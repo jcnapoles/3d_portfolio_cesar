@@ -17,7 +17,6 @@ import MobileMenu from "@/sections/chrome/MobileMenu";
 import "@/sections/chrome/chrome.css";
 
 const SCROLLED_AT = 24;
-const HIDE_AFTER = 600;
 
 /** Keyboard activation (Enter on a link): move focus to the target's heading so Tab continues from there. */
 function focusSection(id) {
@@ -45,7 +44,10 @@ function handleAnchorClick(e, id, lenis) {
   if (e.detail === 0) focusSection(id);
 }
 
-/** Navbar (spec 6.1): floating pill (>= 768) / full-width bar (< 768), progress line, hide on scroll down, mobile menu. */
+/**
+ * Navbar (spec 6.1): floating pill (>= 768) / full-width bar (< 768), progress line, mobile menu.
+ * Always visible (owner feedback, polish 3: no hide-on-scroll). Past 24 px of scroll the glass surface fades in.
+ */
 export default function Navbar() {
   const lenis = useLenis();
   const { reduced } = useMotionPreference();
@@ -59,33 +61,15 @@ export default function Navbar() {
   // Scroll state: written only when it changes (no re-render per scroll event).
   const readY = () => (typeof window === "undefined" ? 0 : window.scrollY);
   const [scrolled, setScrolled] = useState(() => readY() > SCROLLED_AT);
-  const [hidden, setHidden] = useState(false);
   const scrolledRef = useRef(scrolled);
-  const hiddenRef = useRef(false);
-  const blockHideRef = useRef(false);
-  blockHideRef.current = reduced || menuOpen;
 
-  const writeHidden = useCallback((v) => {
-    if (hiddenRef.current === v) return;
-    hiddenRef.current = v;
-    setHidden(v);
-  }, []);
-
-  useLenisScroll(({ scroll, direction }) => {
+  useLenisScroll(({ scroll }) => {
     const s = scroll > SCROLLED_AT;
     if (s !== scrolledRef.current) {
       scrolledRef.current = s;
       setScrolled(s);
     }
-    if (blockHideRef.current || scroll <= HIDE_AFTER) writeHidden(false);
-    else if (direction > 0) writeHidden(true);
-    else if (direction < 0) writeHidden(false);
   });
-
-  // Reduced motion (or an open menu) pins the bar in place immediately.
-  useEffect(() => {
-    if (reduced || menuOpen) writeHidden(false);
-  }, [reduced, menuOpen, writeHidden]);
 
   // Scroll restoration on reload can land mid-page before any scroll event.
   useEffect(() => {
@@ -115,7 +99,6 @@ export default function Navbar() {
       <header
         ref={headerRef}
         data-scrolled={scrolled ? "true" : "false"}
-        data-hidden={hidden ? "true" : "false"}
         className="nav-shell pointer-events-none fixed inset-x-0 top-0 z-nav md:pt-4"
       >
         <div className="nav-frame">

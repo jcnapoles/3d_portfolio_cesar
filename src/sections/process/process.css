@@ -25,7 +25,7 @@
 }
 
 html:not([data-motion="reduced"]) .process-cta[data-glint="true"] .process-glint::before {
-  animation: process-glint 1100ms var(--ease-in-out) 120ms 1 both;
+  animation: process-glint 800ms var(--ease-in-out) 80ms 1 both;
 }
 
 @keyframes process-glint {

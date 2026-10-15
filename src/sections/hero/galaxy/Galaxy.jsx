@@ -5,7 +5,7 @@
  *   commit 482ab1cd3f567467a8dc9f49683bcefe54223e2c
  * License: MIT + Commons Clause License Condition v1.0. Copyright (c) 2026 David Haz.
  *   Full text: https://github.com/DavidHDev/react-bits/blob/main/LICENSE.md
- * Forked for cesarnapoles.com: see changes 1–7 ("fork N" markers below).
+ * Forked for cesarnapoles.com: see changes 1–10 ("fork N" markers below).
  *   1. `introSeconds` prop replaces INTRO_SECONDS.
  *   2. `controlsRef` -> { setBoost(v), setDirection(d), setPaused(p), warp(amount) }.
  *   3. `onReady`, called once after the first frame is drawn.
@@ -14,6 +14,11 @@
  *   6. Live reduced motion from html[data-motion] (MutationObserver): one static frame, no intro/warp/pointer.
  *   7. Props never enter the main effect deps: runtime changes go through settingsRef or refs. Program deletion
  *      and the GL context release on unmount are deferred one tick, so React StrictMode's dev remount reuses them.
+ *   8. `fade` prop: the bottom fraction of the canvas over which the stars fade out, done in the shader (a CSS mask
+ *      over a canvas that redraws every frame costs the compositor an extra pass per frame).
+ *   9. `maxFps` prop: frame cap while nothing is moving fast (no intro, warp, turn-around or moving pointer); the
+ *      next frame is scheduled with a timer, so the main thread has no frame to run in between.
+ *  10. Uniforms are uploaded only when their value changes (per program), not every frame.
  */
 import { useEffect, useRef } from 'react';
 import './Galaxy.css';
@@ -68,6 +73,7 @@ uniform float uReveal;
 uniform float uMode;
 uniform vec3 uBackground;
 uniform float uOpacity;
+uniform float uFade;
 out vec4 outColor;
 
 #define STAR_COLOR_CUTOFF 0.2
@@ -224,9 +230,15 @@ void main() {
   } else {
     outColor = vec4(mix(uBackground, col, uOpacity), 1.0);
   }
+  // fork 8: linear fade to transparent over the bottom uFade of the canvas (premultiplied: scale every channel).
+  if (uFade > 0.0) outColor *= clamp(gl_FragCoord.y / (uFade * uResolution.y), 0.0, 1.0);
 }`;
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+const WHITE = [1, 1, 1];
+const BLACK = [0, 0, 0];
+// fork 9: the pointer counts as still this long after its last move (the 325 ms follow easing has settled).
+const STILL_MS = 1500;
 
 const keyOf = (palette, repel, warp) => (palette ? 4 : 0) + (repel ? 2 : 0) + (warp ? 1 : 0);
 
@@ -300,6 +312,8 @@ const Galaxy = ({
   backgroundColor,
   opacity = 1,
   dpr,
+  fade = 0, // fork 8
+  maxFps = 0, // fork 9: 0 = every frame
   className = '',
   style,
   ...rest
@@ -341,7 +355,9 @@ const Galaxy = ({
     introSeconds: Math.max(0.01, Number(introSeconds) || DEFAULT_INTRO_SECONDS), // fork 1
     backgroundColor,
     opacity: clamp(opacity, 0, 1),
-    dpr
+    dpr,
+    fade: clamp(Number(fade) || 0, 0, 1), // fork 8
+    maxFps: Math.max(0, Number(maxFps) || 0) // fork 9
   };
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
@@ -435,6 +451,8 @@ const Galaxy = ({
       reveal: settingsRef.current.intro && !reduce ? 0 : 1
     };
     let raf = 0;
+    let timer = 0; // fork 9: pending capped-rate wake-up
+    let lastMove = 0; // fork 9: last pointer move (the follow easing settles within STILL_MS)
     let last = 0;
     let visible = true;
     // fork 2: runtime controls state.
@@ -446,11 +464,22 @@ const Galaxy = ({
     let readyFired = false;
     let disposed = false;
 
+    // fork 10: per-program uniform cache; the colour buffer is refilled only when the palette prop changes.
+    let colorsFrom = null;
+    let colorsVersion = 0;
+    let current = null;
+    let viewW = 0;
+    let viewH = 0;
     const render = () => {
       const s = settingsRef.current;
-      s.palette.forEach((value, index) => colors.set(parse(value, [1, 1, 1]), index * 3));
+      if (s.palette !== colorsFrom) {
+        colorsFrom = s.palette;
+        colors.fill(0);
+        s.palette.forEach((value, index) => colors.set(parse(value, [1, 1, 1]), index * 3));
+        colorsVersion += 1;
+      }
       const mode = s.lightMode ? (s.transparent ? 3 : 2) : s.transparent ? 1 : 0;
-      const background = parse(s.backgroundColor, s.lightMode ? [1, 1, 1] : [0, 0, 0]);
+      const background = parse(s.backgroundColor, s.lightMode ? WHITE : BLACK);
       const reveal = state.reveal;
       const palette = s.palette.length > 0;
       const repel = s.autoCenterRepulsion > 0 || (s.mouseRepulsion && s.repulsionStrength > 0 && state.active > 0);
@@ -459,39 +488,70 @@ const Galaxy = ({
       if (!base) return;
       const program = (repel || warp ? variant(palette, repel, warp, false) : null) ?? base;
       const u = program.uniforms;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.useProgram(program.program);
+      const c = program.cache || (program.cache = {});
+      const f1 = (name, v) => {
+        if (c[name] === v) return;
+        c[name] = v;
+        gl.uniform1f(u[name], v);
+      };
+      const f2 = (name, x, y) => {
+        const k = c[name];
+        if (k && k[0] === x && k[1] === y) return;
+        c[name] = [x, y];
+        gl.uniform2f(u[name], x, y);
+      };
+      const i1 = (name, v) => {
+        if (c[name] === v) return;
+        c[name] = v;
+        gl.uniform1i(u[name], v);
+      };
+      if (viewW !== canvas.width || viewH !== canvas.height) {
+        viewW = canvas.width;
+        viewH = canvas.height;
+        gl.viewport(0, 0, viewW, viewH);
+      }
+      if (current !== program) {
+        current = program;
+        gl.useProgram(program.program);
+      }
       gl.bindVertexArray(vao);
-      gl.uniform1f(u.uTime, state.time);
-      gl.uniform2f(u.uResolution, canvas.width, canvas.height);
-      gl.uniform2f(u.uFocal, s.focal[0], s.focal[1]);
-      gl.uniform2f(u.uRotation, s.rotation[0], s.rotation[1]);
-      gl.uniform1f(u.uGloss, state.gloss);
-      gl.uniform1f(u.uDepth, state.depth);
-      gl.uniform1f(u.uDensity, s.density);
-      gl.uniform1f(u.uHueShift, s.hueShift);
-      gl.uniform1f(u.uSpeed, s.speed);
-      gl.uniform2f(u.uMouse, state.mx, state.my);
+      f1('uTime', state.time);
+      f2('uResolution', canvas.width, canvas.height);
+      f2('uFocal', s.focal[0], s.focal[1]);
+      f2('uRotation', s.rotation[0], s.rotation[1]);
+      f1('uGloss', state.gloss);
+      f1('uDepth', state.depth);
+      f1('uDensity', s.density);
+      f1('uHueShift', s.hueShift);
+      f1('uSpeed', s.speed);
+      f2('uMouse', state.mx, state.my);
       const stretch = 1 + state.boost * 5;
-      gl.uniform1f(u.uStarGlow, (0.05 * s.glowIntensity * s.starSize) / Math.pow(stretch, 0.6));
-      gl.uniform1f(u.uFlareGain, s.glowIntensity * s.flareIntensity);
-      gl.uniform1f(u.uSquash, 1 - 1 / (stretch * stretch));
-      gl.uniform1f(u.uSaturation, s.saturation);
-      gl.uniform1f(u.uMouseRepulsion, s.mouseRepulsion ? 1 : 0);
-      gl.uniform1f(u.uTwinkleIntensity, s.twinkleIntensity);
-      gl.uniform1f(u.uRotationAngle, state.angle);
-      gl.uniform1f(u.uRepulsionStrength, s.repulsionStrength);
-      gl.uniform1f(u.uMouseActiveFactor, state.active);
-      gl.uniform1f(u.uAutoCenterRepulsion, s.autoCenterRepulsion);
-      gl.uniform1i(u.uLayers, s.layers);
-      gl.uniform3fv(u.uColors, colors);
-      gl.uniform1i(u.uColorCount, s.palette.length);
-      gl.uniform1f(u.uWarp, state.boost);
+      f1('uStarGlow', (0.05 * s.glowIntensity * s.starSize) / Math.pow(stretch, 0.6));
+      f1('uFlareGain', s.glowIntensity * s.flareIntensity);
+      f1('uSquash', 1 - 1 / (stretch * stretch));
+      f1('uSaturation', s.saturation);
+      f1('uMouseRepulsion', s.mouseRepulsion ? 1 : 0);
+      f1('uTwinkleIntensity', s.twinkleIntensity);
+      f1('uRotationAngle', state.angle);
+      f1('uRepulsionStrength', s.repulsionStrength);
+      f1('uMouseActiveFactor', state.active);
+      f1('uAutoCenterRepulsion', s.autoCenterRepulsion);
+      i1('uLayers', s.layers);
+      if (c.colors !== colorsVersion) {
+        c.colors = colorsVersion;
+        gl.uniform3fv(u.uColors, colors);
+      }
+      i1('uColorCount', s.palette.length);
+      f1('uWarp', state.boost);
       const fade = Math.min(1, reveal / 0.35);
-      gl.uniform1f(u.uReveal, fade * fade * (3 - 2 * fade));
-      gl.uniform1f(u.uMode, mode);
-      gl.uniform3fv(u.uBackground, background);
-      gl.uniform1f(u.uOpacity, s.opacity);
+      f1('uReveal', fade * fade * (3 - 2 * fade));
+      f1('uMode', mode);
+      if (c.background !== background) {
+        c.background = background; // parse() returns one cached array per colour value
+        gl.uniform3fv(u.uBackground, background);
+      }
+      f1('uOpacity', s.opacity);
+      f1('uFade', s.fade); // fork 8
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       // fork 3: notify once, on the frame after the first draw reaches the screen.
       if (!readyFired) {
@@ -543,12 +603,40 @@ const Galaxy = ({
 
       render();
       const busy = motion > 0 || state.boost > 0 || state.active !== target || state.reveal < 1;
-      if (busy) raf = requestAnimationFrame(frame);
-      else last = 0;
+      if (!busy) {
+        last = 0;
+        return;
+      }
+      // fork 9: calm frames (no intro, warp, turn-around or moving pointer) at most maxFps; the star drift then moves
+      // under a pixel per frame. Wait out the budget on a timer.
+      const cap = s.maxFps;
+      const pointerCalm = state.active === 0 || (state.active === 1 && now - lastMove > STILL_MS);
+      if (cap > 0 && state.reveal >= 1 && state.boost === 0 && boostFloor === 0 && dir === dirTarget && pointerCalm) {
+        const wait = 1000 / cap - (performance.now() - now) - 8;
+        if (wait > 1) {
+          timer = setTimeout(() => {
+            timer = 0;
+            if (!raf && visible && !document.hidden && !paused) raf = requestAnimationFrame(frame);
+          }, wait);
+          return;
+        }
+      }
+      raf = requestAnimationFrame(frame);
     };
 
     const wake = () => {
-      if (!raf && visible && !document.hidden && !paused) raf = requestAnimationFrame(frame);
+      if (raf || !visible || document.hidden || paused) return;
+      if (timer) {
+        clearTimeout(timer); // fork 9: something changed, draw on the next frame
+        timer = 0;
+      }
+      raf = requestAnimationFrame(frame);
+    };
+    const halt = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+      clearTimeout(timer);
+      timer = 0;
     };
 
     const resize = () => {
@@ -573,6 +661,9 @@ const Galaxy = ({
 
     const onPointerMove = event => {
       locate(event);
+      // fork 9: without pointer interaction a move changes nothing (and touch scrolling must not lift the cap).
+      if (!settingsRef.current.mouseInteraction) return;
+      lastMove = performance.now();
       wake();
     };
 
@@ -607,8 +698,7 @@ const Galaxy = ({
       if (next === reduce) return;
       reduce = next;
       if (reduce) {
-        cancelAnimationFrame(raf);
-        raf = 0;
+        halt();
         last = 0;
         state.reveal = 1;
         state.boost = 0;
@@ -641,8 +731,7 @@ const Galaxy = ({
         paused = !!p;
         last = 0;
         if (paused) {
-          cancelAnimationFrame(raf);
-          raf = 0;
+          halt();
         } else {
           wake();
         }
@@ -694,7 +783,7 @@ const Galaxy = ({
 
     return () => {
       disposed = true;
-      cancelAnimationFrame(raf);
+      halt();
       wakeRef.current = null;
       if (controlsTarget && controlsTarget.current === controls) controlsTarget.current = null;
       motionObserver.disconnect();

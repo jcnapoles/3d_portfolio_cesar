@@ -47,7 +47,8 @@ module.exports = {
         "hud-xs": ["0.6875rem", { lineHeight: "1.2", letterSpacing: "0.16em", fontWeight: "500" }],
         wordmark: ["clamp(6rem, 22vw, 22rem)", { lineHeight: "0.8", letterSpacing: "-0.05em", fontWeight: "800" }],
       },
-      spacing: { section: "clamp(6rem, 4rem + 6vw, 10rem)", 13: "3.25rem", 18: "4.5rem", 22: "5.5rem" },
+      // rule: hairline rhythm (divider <-> text), 16 px below 768 and 20 px from 768 (--rule-gap, src/index.css).
+      spacing: { section: "clamp(6rem, 4rem + 6vw, 10rem)", rule: "var(--rule-gap)", 13: "3.25rem", 18: "4.5rem", 22: "5.5rem" },
       maxWidth: { container: "1280px", wide: "1440px", prose: "64ch", measure: "56ch" },
       borderRadius: { xs: "4px", sm: "8px", md: "12px", lg: "20px", xl: "28px", pill: "9999px" },
       boxShadow: {
@@ -68,7 +69,8 @@ module.exports = {
         in: "cubic-bezier(0.7, 0, 0.84, 0)",
         draw: "cubic-bezier(0.65, 0, 0.35, 1)",
       },
-      transitionDuration: { press: "100ms", micro: "160ms", ui: "240ms", panel: "420ms", reveal: "800ms" },
+      // Tempo pass 2: keep in sync with DUR (src/lib/motion.js) and the --t-* tokens (src/index.css).
+      transitionDuration: { press: "100ms", micro: "140ms", ui: "180ms", panel: "320ms", reveal: "500ms" },
       zIndex: { bg: "0", grain: "1", content: "10", rail: "40", nav: "50", sticky: "60", menu: "70", cursor: "80", skip: "90" },
       keyframes: {
         rise: { "0%": { transform: "translateY(105%)" }, "100%": { transform: "translateY(0)" } },
@@ -80,16 +82,16 @@ module.exports = {
         twinkle: { "0%, 100%": { opacity: "0.85" }, "50%": { opacity: "1" } },
       },
       animation: {
-        rise: "rise 1100ms cubic-bezier(0.16, 1, 0.3, 1) both",
-        "rise-fast": "rise 600ms cubic-bezier(0.16, 1, 0.3, 1) both",
-        "fade-up": "fade-up 800ms cubic-bezier(0.16, 1, 0.3, 1) both",
-        "fade-in": "fade-in 600ms cubic-bezier(0.16, 1, 0.3, 1) both",
+        rise: "rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both",
+        "rise-fast": "rise 450ms cubic-bezier(0.16, 1, 0.3, 1) both",
+        "fade-up": "fade-up 500ms cubic-bezier(0.16, 1, 0.3, 1) both",
+        "fade-in": "fade-in 400ms cubic-bezier(0.16, 1, 0.3, 1) both",
         "ping-signal": "ping-signal 2.4s cubic-bezier(0, 0, 0.2, 1) infinite",
         "comet-border": "spin-angle 8s linear infinite",
         corona: "spin-angle 60s linear infinite",
         "spin-40": "spin 40s linear infinite",
         "spin-64-rev": "spin 64s linear infinite reverse",
-        "draw-x": "draw-x 900ms cubic-bezier(0.65, 0, 0.35, 1) both",
+        "draw-x": "draw-x 600ms cubic-bezier(0.65, 0, 0.35, 1) both",
         twinkle: "twinkle 6s ease-in-out infinite",
       },
       backgroundImage: {

@@ -1,8 +1,9 @@
-/* 6.3 Telemetry band (T3). No loops or entry animations live here: the cells reveal through Motion,
-   the numbers through NumberTicker and the rulers through Ticks (all reduced-motion aware). */
+/* 6.3 Telemetry band (T3). No loops live here. The cells' entrance is the one-shot transition below
+   (useCellEntrance.js); the numbers roll through NumberTicker and the rulers fill through Ticks (all reduced-motion aware). */
 
-/* 2x2 below 1024, 4 across from 1024. Each cell is a 4-row subgrid (HUD label, value, label, footer),
-   so values, labels and rulers line up across a row even when a HUD label or a label wraps. */
+/* Featured cell (TLM-01, Closevibe) on its own full row, then the numbers: 2x2 below 1024, 4 across from 1024.
+   Each number cell is a 4-row subgrid (HUD label, value, label, footer), so values, labels and rulers line up
+   across a row even when a HUD label or a label wraps. */
 .tlm-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -20,6 +21,27 @@
   .tlm-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); --tlm-cell: calc(25cqi - 4rem); }
 }
 
+/* ---------- Cell entrance (useCellEntrance.js) ----------
+   A fade-up of 500 ms (12 px, 16 px from 768) on opacity + transform only, so it runs on the compositor.
+   No data-enter is the final state: a cell the script never arms (in view at mount, reduced motion, no JS) just shows.
+   "wait" is only set before the first paint, and carries no transition, so arming never fades anything out.
+   Stagger (STAGGER.stats, 60 ms): within a row of the 2x2 grid, across the single row from 1024.
+   Transitions, not keyframes: Section's offscreen pause (animation-play-state) cannot freeze a cell half-way. */
+.tlm-in { --tlm-y: 12px; --tlm-delay: 0ms; }
+.tlm-grid > .tlm-cell:nth-child(odd) { --tlm-delay: 60ms; } /* child 1 is the featured cell */
+@media (min-width: 768px) {
+  .tlm-in { --tlm-y: 16px; }
+}
+@media (min-width: 1024px) {
+  .tlm-grid > .tlm-cell:nth-child(3) { --tlm-delay: 60ms; }
+  .tlm-grid > .tlm-cell:nth-child(4) { --tlm-delay: 120ms; }
+  .tlm-grid > .tlm-cell:nth-child(5) { --tlm-delay: 180ms; }
+}
+html:not([data-motion="reduced"]) .tlm-in[data-enter="wait"] { opacity: 0; transform: translateY(var(--tlm-y)); }
+html:not([data-motion="reduced"]) .tlm-in[data-enter="go"] {
+  transition: opacity var(--t-reveal) var(--ease-out) var(--tlm-delay), transform var(--t-reveal) var(--ease-out) var(--tlm-delay);
+}
+
 .tlm-cell {
   display: grid;
   grid-row: span 4;
@@ -34,7 +56,70 @@
 
 /* Same scale as text-stat / text-stat-text (tailwind.config.cjs), capped by the cell width.
    Measured in Mona Sans 600 / stretch 112 / tabular: "250K+" (the widest value) is 3.09 em, so 0.31 x width
-   always fits. "Co-founder" (the widest text stat, Geist Mono) is 5.7 em, so 0.17 x width.
+   always fits. "Fractional CTO" (the widest text fallback, Geist Mono) is 8.4 em, so 0.115 x width.
    Two classes deep so the cap wins over the single-class Tailwind font-size utilities. */
 .tlm-cell .tlm-value { font-size: min(clamp(3rem, 1.5rem + 4vw, 5.5rem), calc(var(--tlm-cell) * 0.31)); }
-.tlm-cell .tlm-value-text { font-size: min(clamp(1.75rem, 1.2rem + 1.6vw, 2.75rem), calc(var(--tlm-cell) * 0.17)); }
+.tlm-cell .tlm-value-text { font-size: min(clamp(1.75rem, 1.2rem + 1.6vw, 2.75rem), calc(var(--tlm-cell) * 0.115)); }
+
+/* ---------- TLM-01: the featured Closevibe cell ----------
+   A lit panel, static: ion hairline border (gradient border-box), a soft ion wash from the logo corner, the
+   design system's gold "comet" accent as a still spark on the top edge, and a low ion glow under it. */
+.tlm-feature {
+  grid-column: 1 / -1;
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  margin-bottom: 2.5rem;
+  padding: 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background:
+    radial-gradient(70% 150% at 0% 0%, rgba(116, 212, 255, 0.09), transparent 62%) padding-box,
+    linear-gradient(var(--space-800), var(--space-800)) padding-box,
+    linear-gradient(150deg, rgba(116, 212, 255, 0.45), rgba(237, 238, 243, 0.1) 36%, rgba(237, 238, 243, 0.06) 100%) border-box;
+  box-shadow: var(--hi-top), 0 24px 64px -40px rgba(116, 212, 255, 0.5);
+}
+.tlm-feature::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 1.25rem;
+  width: min(42%, 22rem);
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255, 208, 138, 0), rgba(255, 208, 138, 0.9) 72%, rgba(255, 208, 138, 0));
+}
+@media (min-width: 640px) {
+  .tlm-feature { padding: 1.5rem; }
+  .tlm-feature::before { left: 1.5rem; }
+}
+@media (min-width: 768px) {
+  /* Logo | role + line. The hairline between them echoes the band's cell dividers. */
+  .tlm-feature-body {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 2rem;
+  }
+  .tlm-feature-copy { border-left: 1px solid var(--line); padding-left: 2rem; }
+}
+@media (min-width: 1024px) {
+  .tlm-feature { margin-bottom: 3.5rem; padding: 1.75rem 2rem; }
+  .tlm-feature::before { left: 2rem; }
+  .tlm-feature-body { column-gap: 2.5rem; }
+  .tlm-feature-copy { padding-left: 2.5rem; }
+}
+
+/* The role line sizes off its own column, so "Co-founder & CTO" stays on one line from 320 px up
+   (measured: 8.79 em in Mona Sans 600 / stretch 112, so 0.11 x the column width always fits). */
+.tlm-feature-copy { container-type: inline-size; min-width: 0; }
+.tlm-feature .tlm-feature-stat { font-size: min(clamp(1.75rem, 1.2rem + 1.6vw, 2.75rem), 11cqi); }
+
+@media (prefers-contrast: more) {
+  .tlm-feature { background: linear-gradient(var(--space-800), var(--space-800)) padding-box, linear-gradient(var(--line-strong), var(--line-strong)) border-box; box-shadow: none; }
+  .tlm-feature::before { display: none; }
+}
+@media (forced-colors: active) {
+  .tlm-feature { border-color: CanvasText; background: Canvas; box-shadow: none; }
+  .tlm-feature::before { display: none; }
+}

@@ -30,7 +30,7 @@
   stroke-dasharray: 1;
   stroke-dashoffset: 0;
   transition:
-    stroke-dashoffset 900ms var(--ease-draw) calc(var(--g, 0) * 200ms),
+    stroke-dashoffset var(--t-draw) var(--ease-draw) calc(var(--g, 0) * 110ms),
     stroke var(--t-ui) var(--ease-ui) 0ms;
 }
 
@@ -38,7 +38,7 @@
   position: absolute;
   translate: -50% -50%;
   white-space: nowrap;
-  transition: opacity 600ms var(--ease-out) calc(var(--g, 0) * 200ms + 120ms);
+  transition: opacity 400ms var(--ease-out) calc(var(--g, 0) * 110ms + 80ms);
 }
 
 .sky-star {
@@ -48,8 +48,8 @@
   place-items: center;
   pointer-events: auto;
   transition:
-    opacity 600ms var(--ease-out) calc(var(--g, 0) * 200ms + var(--i, 0) * 60ms),
-    scale 600ms var(--ease-out) calc(var(--g, 0) * 200ms + var(--i, 0) * 60ms);
+    opacity 400ms var(--ease-out) calc(var(--g, 0) * 110ms + var(--i, 0) * 35ms),
+    scale 400ms var(--ease-out) calc(var(--g, 0) * 110ms + var(--i, 0) * 35ms);
 }
 
 /* Text stars: 8 px ion dot + mono 11 px label */

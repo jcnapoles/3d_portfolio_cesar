@@ -32,7 +32,8 @@ function useHeroInView(enabled) {
       setInView(false);
       return undefined;
     }
-    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+    // A busy main thread can deliver the initial and the current entry in one batch: the last one is the truth.
+    const io = new IntersectionObserver((entries) => setInView(entries[entries.length - 1].isIntersecting), {
       rootMargin: `-${NAV_OFFSET}px 0px 0px 0px`,
       threshold: 0,
     });
@@ -78,7 +79,7 @@ export default function MissionRail() {
           <div className="rail-label-track" style={{ transform: `translate3d(0, ${activeIdx * ROW + ROW / 2}px, 0)` }}>
             <div className="rail-label -translate-y-1/2 whitespace-nowrap">
               <span className="font-mono text-hud-xs uppercase text-ink-2">
-                <ScrambleText key={active.index} text={`${active.index} / ${active.name}`} trigger="mount" duration={420} />
+                <ScrambleText key={active.index} text={`${active.index} / ${active.name}`} trigger="mount" duration={300} />
               </span>
             </div>
           </div>

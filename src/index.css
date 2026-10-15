@@ -44,6 +44,7 @@
 
 @property --angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 @keyframes cn-angle { to { --angle: 360deg; } }
+@keyframes cn-turn { to { transform: rotate(360deg); } }
 
 @layer base {
   :root {
@@ -59,8 +60,16 @@
     --hi-top: inset 0 1px 0 rgba(255,255,255,.06);
     --ease-out: cubic-bezier(.16,1,.3,1); --ease-in-out: cubic-bezier(.76,0,.24,1);
     --ease-ui: cubic-bezier(.25,1,.5,1); --ease-in: cubic-bezier(.7,0,.84,0); --ease-draw: cubic-bezier(.65,0,.35,1);
-    --t-press: 100ms; --t-micro: 160ms; --t-ui: 240ms; --t-panel: 420ms; --t-reveal: 800ms; --t-headline: 1100ms;
+    /* Tempo pass 2 (keep in sync with DUR in lib/motion.js and transitionDuration in tailwind.config.cjs). */
+    --t-press: 100ms; --t-micro: 140ms; --t-ui: 180ms; --t-panel: 320ms; --t-reveal: 500ms; --t-headline: 700ms; --t-draw: 600ms;
     --nav-offset: 88px;
+    /* Hairline rhythm (polish 3): the space between a divider line and the text it separates (tailwind
+       `*-rule`: py-rule, pt-rule, mt-rule, gap-y-rule). 16 px on phones, 20 px from 768: with the text's own
+       half-leading that reads as ~15-18 px / ~19-22 px from the line to the glyphs. */
+    --rule-gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    :root { --rule-gap: 1.25rem; }
   }
   html {
     background: var(--void);
@@ -121,15 +130,28 @@
   .spotlight > * { position: relative; z-index: 1; }
   @media (hover: hover) and (pointer: fine) { .spotlight:hover::before, .spotlight:hover::after { opacity: 1; } }
 
-  /* Featured comet border (one per page: Services tile A) */
+  /* Featured comet border (one per page: Services tile A). At rest (touch, < 1024 px, reduced motion) the comet
+     holds at 300 deg. On desktop it sweeps: the conic gradient sits on a square layer as wide as the ring's
+     diagonal and only that layer's transform turns (compositor). Animating the gradient angle (an @property)
+     repainted the whole card every frame on the main thread. */
   .comet-ring {
     position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none; z-index: 2;
-    background: conic-gradient(from var(--angle), transparent 0 72%, rgba(255,208,138,0) 74%, #FFD08A 90%, transparent 92%);
+    background: conic-gradient(from 300deg, transparent 0 72%, rgba(255,208,138,0) 74%, #FFD08A 90%, transparent 92%);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
     mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-    --angle: 300deg;
   }
-  html:not([data-motion="reduced"]) .comet-ring { animation: cn-angle 8s linear infinite; }
+  @supports (width: hypot(3px, 4px)) {
+    @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+      html:not([data-motion="reduced"]) .comet-ring { container-type: size; background: none; }
+      html:not([data-motion="reduced"]) .comet-ring::before {
+        content: ""; position: absolute;
+        width: hypot(100cqw, 100cqh); aspect-ratio: 1;
+        left: calc(50cqw - hypot(100cqw, 100cqh) / 2); top: calc(50cqh - hypot(100cqw, 100cqh) / 2);
+        background: conic-gradient(from 300deg, transparent 0 72%, rgba(255,208,138,0) 74%, #FFD08A 90%, transparent 92%);
+        animation: cn-turn 8s linear infinite;
+      }
+    }
+  }
 
   /* Native disclosure, progressively animated */
   .disclosure { interpolate-size: allow-keywords; }
@@ -150,14 +172,14 @@
   .btn-glow:focus-visible::after { opacity: 1; }
 
   /* Ticks ruler: ion overlay fills once in view (useInViewport sets data-inview on the root). */
-  .ticks-fill { clip-path: inset(0); transition: clip-path 900ms var(--ease-draw); }
+  .ticks-fill { clip-path: inset(0); transition: clip-path var(--t-draw) var(--ease-draw); }
   html:not([data-motion="reduced"]) .ticks[data-inview="false"] > .ticks-fill { clip-path: inset(0 100% 0 0); }
 }
 
 /* ---------- Fixed space background (SpaceBackground.jsx) ---------- */
 .space-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: var(--void); overflow: hidden; }
 .space-bg > .layer { position: absolute; inset: 0; }
-.atmo { transition: opacity 1200ms var(--ease-in-out); }
+.atmo { transition: opacity 800ms var(--ease-in-out); }
 html[data-motion="reduced"] .atmo { transition: none; }
 .atmo-nebula { background: radial-gradient(60% 50% at 72% 18%, #2B3A8C, transparent 70%); opacity: .30; }
 .atmo-ion { background: radial-gradient(55% 45% at 18% 72%, #2E8FD1, transparent 70%); opacity: 0; }
@@ -198,7 +220,25 @@ body[data-chapter="10"] .atmo-gold { opacity: .14; }
 
 /* ---------- In-view CSS reveal pattern (useInViewport sets data-inview) ---------- */
 html:not([data-motion="reduced"]) [data-inview="false"] .reveal-rule { transform: scaleX(0); }
-.reveal-rule { transform-origin: left center; transition: transform 900ms var(--ease-draw); }
+.reveal-rule { transform-origin: left center; transition: transform var(--t-draw) var(--ease-draw); }
+
+/* ---------- Orbit satellites (OrbitSatellite.jsx): two compositor-only loops, X = cosine, Y = sine ----------
+   The easing is a tighter fit of (1 - cos(pi t)) / 2 than the usual easeInOutSine bezier (.37, 0, .63, 1):
+   0.012 % vs 0.2 % of the span, so the body stays within 0.1 px of the 1 px ring even on the hero's 343 px orbit. */
+.orbit-sat { position: absolute; pointer-events: none; }
+.orbit-sat-x, .orbit-sat-y { position: absolute; inset: 0; }
+.orbit-sat-body { position: absolute; left: 50%; top: 50%; }
+@keyframes cn-orbit-x { from { transform: translateX(-50%); } to { transform: translateX(50%); } }
+@keyframes cn-orbit-y { from { transform: translateY(-50%); } to { transform: translateY(50%); } }
+html:not([data-motion="reduced"]) .orbit-sat[data-orbit="run"] .orbit-sat-x {
+  animation: cn-orbit-x calc(var(--orbit-dur, 14s) / 2) cubic-bezier(.3625, -.002, .6375, 1.002) infinite alternate;
+}
+html:not([data-motion="reduced"]) .orbit-sat[data-orbit="run"] .orbit-sat-y {
+  animation: cn-orbit-y calc(var(--orbit-dur, 14s) / 2) cubic-bezier(.3625, -.002, .6375, 1.002) calc(var(--orbit-dur, 14s) / -4) infinite alternate;
+}
+/* Held (offscreen, inactive, not launched yet): more specific than the shorthand above, which resets the play state. */
+html:not([data-motion="reduced"]) .orbit-sat[data-orbit="run"][data-run="false"] .orbit-sat-x,
+html:not([data-motion="reduced"]) .orbit-sat[data-orbit="run"][data-run="false"] .orbit-sat-y { animation-play-state: paused; }
 
 /* ---------- Accessibility modes ---------- */
 @media (prefers-contrast: more) {

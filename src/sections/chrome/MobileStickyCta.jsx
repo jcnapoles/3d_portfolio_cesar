@@ -45,7 +45,9 @@ function StickyCta() {
     const stop = whenPresent(
       () => document.getElementById(ANCHORS.heroCta) || document.getElementById("top"),
       (el) => {
-        io = new IntersectionObserver(([entry]) => {
+        // A busy main thread can deliver the initial and the current entry in one batch: read the last one.
+        io = new IntersectionObserver((entries) => {
+          const entry = entries[entries.length - 1];
           setPastHero(!entry.isIntersecting && entry.boundingClientRect.top < 0);
         });
         io.observe(el);
@@ -90,8 +92,8 @@ function StickyCta() {
         <m.div
           key="sticky-cta"
           initial={{ opacity: 0, y: 96 }}
-          animate={{ opacity: 1, y: 0, transition: { duration: 0.32, ease: EASE.out } }}
-          exit={{ opacity: 0, y: 96, transition: { duration: 0.24, ease: EASE.in } }}
+          animate={{ opacity: 1, y: 0, transition: { duration: 0.28, ease: EASE.out } }}
+          exit={{ opacity: 0, y: 96, transition: { duration: 0.2, ease: EASE.in } }}
           className="fixed bottom-[max(12px,env(safe-area-inset-bottom))] left-4 right-[96px] z-sticky md:hidden"
         >
           <div className="h-16 rounded-pill border-t border-line bg-space-800/[.92] p-1 shadow-hi-top">

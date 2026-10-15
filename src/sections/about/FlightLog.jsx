@@ -17,16 +17,16 @@ import { CAREER } from "@/constants/career";
 const NumberFlow = lazy(() => import("@number-flow/react"));
 
 const YEAR_FORMAT = { useGrouping: false };
-const TRANSFORM_TIMING = { duration: 700, easing: "cubic-bezier(0.16, 1, 0.3, 1)" };
-const SPIN_TIMING = { duration: 700, easing: "cubic-bezier(0.16, 1, 0.3, 1)" };
-const OPACITY_TIMING = { duration: 350, easing: "ease-out" };
+const TRANSFORM_TIMING = { duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)" };
+const SPIN_TIMING = { duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)" };
+const OPACITY_TIMING = { duration: 250, easing: "ease-out" };
 
 const TOTAL = CAREER.length;
 const pad2 = (n) => String(n).padStart(2, "0");
 const ROWS = CAREER.map((row, index) => ({ ...row, index }));
 const RECENT = ROWS.filter((row) => !row.earlier);
 const EARLIER = ROWS.filter((row) => row.earlier);
-const ROW_STAGGER = staggerParent({ stagger: 0.06 });
+const ROW_STAGGER = staggerParent({ stagger: 0.045 });
 
 /** Desktop year rail (decorative, aria-hidden: every date is also in the rows as plain text). */
 function YearRail({ index, animate }) {
@@ -182,7 +182,7 @@ export default function FlightLog() {
           trigger: root,
           start: "top 70%",
           end: "bottom 60%",
-          scrub: 0.6,
+          scrub: 0.3,
           onRefresh: (self) => {
             measure();
             if (self.animation) paint(self.animation.progress());

@@ -12,7 +12,11 @@ import flyrLogo from "./company/flyr.svg";
 import indraLogo from "./company/indra.svg";
 import isernLogo from "./company/isern.png";
 import amarisLogo from "./company/amaris.svg";
-import closevibeMarkWebp from "./generated/company/closevibe-mark-128.webp";
+// Closevibe: the official mark (closevibe-frontend public/assets/images/logo.png, transparent, with the envelope
+// flap and the check knocked out) traced to SVG, plus a horizontal lockup with a Poppins SemiBold wordmark set as
+// outlines. Colour on the band, white silhouettes in the hero strip and the flight log (they key off alpha).
+import closevibeMarkSvg from "./company/closevibe-mark.svg";
+import closevibeLogoSvg from "./company/closevibe-logo.svg";
 import uciWebp from "./generated/company/uci-128.webp";
 // Cashela: the "C" mark (path 1 of the official wordmark SVG, kept as company/cashela-mark.svg).
 // 1234ticket: the ticket (with "1234" knocked out) keyed out of the square app logo (company/1234ticket.png).
@@ -77,7 +81,8 @@ export const companyLogos = {
   "1234ticket": { src: ticket1234MarkWebp, width: 128, height: 56, alt: "1234ticket" },
   cashela: { src: cashelaMarkWebp, width: 128, height: 104, alt: "Cashela" },
   caixabanktech: { src: caixabanktechLogo, width: 200, height: 50, alt: "CaixaBank Tech" },
-  closevibe: { src: closevibeMarkWebp, width: 128, height: 128, alt: "Closevibe" },
+  closevibe: { src: closevibeMarkSvg, width: 568, height: 578, alt: "Closevibe" },
+  closevibeLogo: { src: closevibeLogoSvg, width: 2575, height: 578, alt: "Closevibe" },
   fiatc: { src: fiatcLogo, width: 215, height: 59, alt: "FIATC" },
   sttok: { src: sttokLogo, width: 894, height: 261, alt: "Sttok" },
   flyr: { src: flyrLogo, width: 140, height: 24, alt: "Flyr" },
@@ -87,5 +92,5 @@ export const companyLogos = {
   uci: { src: uciWebp, width: 128, height: 94, alt: "Universidad de las Ciencias Informáticas" },
 };
 
-/** The Closevibe mark (cropped from the raster logo). */
+/** The Closevibe mark (official colours: blue-violet bubble, teal envelope). */
 export const closevibeMark = companyLogos.closevibe.src;

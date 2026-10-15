@@ -1,16 +1,29 @@
-import { useMemo } from "react";
+import { useRef } from "react";
 import { ArrowDownRight, ArrowRight } from "lucide-react";
 import Section from "@/components/ui/Section";
 import SectionHeading from "@/components/ui/SectionHeading";
 import NumberTicker from "@/components/ui/NumberTicker";
+import Picture from "@/components/ui/Picture";
 import ScrambleText from "@/components/ui/ScrambleText";
 import Ticks from "@/components/ui/Ticks";
-import Reveal from "@/components/ui/Reveal";
-import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/cn";
-import { fadeUp, STAGGER } from "@/lib/motion";
+import { companyLogos } from "@/assets/media";
 import { FACTS, verifiedClaims } from "@/constants/claims";
+import { ANCHORS } from "@/constants/site";
+import useCellEntrance from "./useCellEntrance";
 import "./telemetry.css";
+
+/**
+ * TLM-01, the featured cell: Closevibe, Cesar's own company, leads the band (owner's call, Oct 2026).
+ * Copy from the CV: co-founder and CTO since 2025; the multichannel AI sales and support SaaS he built end to end.
+ */
+const FEATURED = {
+  hud: "Closevibe · 2025–now",
+  status: "Live",
+  label: "Closevibe, the AI sales & support SaaS I co-founded: WhatsApp, Instagram, Messenger and email on autopilot.",
+  caseStudy: { text: "Read the case study", ariaLabel: "Read the Closevibe case study", href: `#${ANCHORS.missions.closevibe}` },
+  chat: "It runs the chat on this page",
+};
 
 /** "12+", "250K+", "−30%": the plain-text value read by screen readers (the animated one is aria-hidden). */
 const displayOf = ({ display, value, prefix = "", suffix = "" }) =>
@@ -29,22 +42,20 @@ const numberCell = (key, item, caption = item.source) => ({
   href: item.href,
 });
 
+// Text stats that stand in, in order, when fewer than two claims are verified.
+const TEXT_FALLBACKS = [
+  { key: "caixabank", kind: "text", text: "Sr. Tech Lead", label: "CaixaBank Tech", caption: "Now" },
+  { key: "cashela", kind: "text", text: "Fractional CTO", label: "Cashela, cross-border B2B payments", caption: "Now" },
+];
+
 /**
- * Cells are deterministic (spec 6.3): two facts, then two claim slots filled from verifiedClaims() in
- * CLAIM_PRIORITY order, each falling back to a text stat. Flipping `verified` in claims.js is the only edit needed.
+ * The four number cells are deterministic (spec 6.3): two facts, then two claim slots filled from verifiedClaims()
+ * in CLAIM_PRIORITY order, each falling back to a text stat. Flipping `verified` in claims.js is the only edit needed.
  */
 function buildCells() {
-  const v = verifiedClaims();
-  return [
-    numberCell("yearsShipping", FACTS.yearsShipping),
-    numberCell("sttokUsers", FACTS.sttokUsers),
-    v[0]
-      ? numberCell(v[0].key, v[0])
-      : { key: "slot3", kind: "text", text: "Sr. Tech Lead", label: "CaixaBank Tech", caption: "Now" },
-    v[1]
-      ? numberCell(v[1].key, v[1])
-      : { key: "slot4", kind: "text", text: "Co-founder", label: "Closevibe, AI SaaS", caption: "Now · try the chat", captionIcon: "chat" },
-  ];
+  const claims = verifiedClaims().slice(0, 2).map((c) => numberCell(c.key, c));
+  const fallbacks = TEXT_FALLBACKS.slice(0, 2 - claims.length);
+  return [numberCell("yearsShipping", FACTS.yearsShipping), numberCell("sttokUsers", FACTS.sttokUsers), ...claims, ...fallbacks];
 }
 
 // Hairlines: a 2x2 cross below 1024, vertical dividers between 4 cells from 1024 (divide-x look).
@@ -54,6 +65,8 @@ const CELL_EDGES = [
   "border-r border-t pt-8 pr-4 sm:pr-6 lg:border-l lg:border-r-0 lg:border-t-0 lg:pt-0 lg:px-8",
   "border-t pt-8 pl-4 sm:pl-6 lg:border-l lg:border-t-0 lg:pt-0 lg:pl-8 lg:pr-0",
 ];
+
+const hudIndex = (i) => `TLM-${String(i).padStart(2, "0")}`;
 
 function StatValue({ cell }) {
   if (cell.kind === "text") {
@@ -94,22 +107,16 @@ function CaptionText({ text, Icon, iconClassName }) {
 
 // Same box for links and plain captions (44 px tall on coarse pointers), so footers line up across cells.
 const CAPTION_BASE = "inline-block font-mono text-[12px] leading-5 text-ink-3 coarse:py-3";
+const CAPTION_LINK =
+  "group/cap rounded-xs transition-colors duration-ui ease-ui hover:text-ink-1 focus-visible:text-ink-1 motion-off:transition-none";
+const CAPTION_ARROW =
+  "transition-transform duration-ui ease-ui motion-ok:group-hover/cap:translate-x-0.5 motion-ok:group-focus-visible/cap:translate-x-0.5";
 
 function Caption({ cell }) {
   if (cell.href) {
     return (
-      <a
-        href={cell.href}
-        className={cn(
-          CAPTION_BASE,
-          "group/cap rounded-xs transition-colors duration-ui ease-ui hover:text-ink-1 focus-visible:text-ink-1 motion-off:transition-none"
-        )}
-      >
-        <CaptionText
-          text={cell.caption}
-          Icon={ArrowRight}
-          iconClassName="transition-transform duration-ui ease-ui motion-ok:group-hover/cap:translate-x-0.5 motion-ok:group-focus-visible/cap:translate-x-0.5"
-        />
+      <a href={cell.href} className={cn(CAPTION_BASE, CAPTION_LINK)}>
+        <CaptionText text={cell.caption} Icon={ArrowRight} iconClassName={CAPTION_ARROW} />
       </a>
     );
   }
@@ -121,34 +128,80 @@ function Caption({ cell }) {
 }
 
 /**
- * 6.3 Telemetry band (#telemetry, chapter 00). Four honest numbers under the hero.
- * Each cell: HUD label (aria-hidden, repeats the caption) / value / label / ruler / source caption.
+ * TLM-01: the featured Closevibe cell, a full row on top of the band (the numbers keep their full size below).
+ * A lit panel (ion hairline border, static gold spark on the top edge, soft ion glow): no loops.
+ * Phone: stacked (HUD, logo, role, line, ruler, captions). From 768: logo | role + line, side by side.
+ */
+function FeaturedCell() {
+  return (
+    <li className="tlm-feature tlm-in">
+      <div className="flex items-start justify-between gap-4">
+        {/* Decorative HUD label, two stacked lines like the number cells; the content below says it in full. */}
+        <p aria-hidden="true" className="hud-label">
+          <span className="block">{hudIndex(1)}</span>
+          <span className="mt-1.5 block">{FEATURED.hud}</span>
+        </p>
+        <p aria-hidden="true" className="hud-label inline-flex items-center gap-2 text-signal">
+          <span className="size-1.5 rounded-full bg-signal" />
+          {FEATURED.status}
+        </p>
+      </div>
+
+      <div className="tlm-feature-body mt-6 md:mt-7">
+        <Picture
+          image={companyLogos.closevibeLogo}
+          alt="Closevibe"
+          className="block shrink-0"
+          imgClassName="tlm-feature-logo block h-8 w-auto md:h-10 lg:h-11"
+        />
+        <div className="tlm-feature-copy mt-5 md:mt-0">
+          <p className="tlm-feature-stat text-stat-text stretch-112 text-ink-1">
+            Co-founder <span className="text-ion">&amp;</span> CTO
+          </p>
+          <p className="mt-3 max-w-[56ch] text-small text-ink-2">{FEATURED.label}</p>
+        </div>
+      </div>
+
+      <div className="mt-6 lg:mt-7">
+        <Ticks count={80} />
+        {/* Ruler to caption text: ~18 px like the number cells (whose caption sits on a taller line box). On coarse
+            pointers the link's own 12 px touch padding already adds the air, so the gap stays mt-3 there. */}
+        <div className="mt-4 flex flex-wrap items-baseline justify-between gap-x-6 coarse:mt-3">
+          <a href={FEATURED.caseStudy.href} aria-label={FEATURED.caseStudy.ariaLabel} className={cn(CAPTION_BASE, CAPTION_LINK)}>
+            <CaptionText text={FEATURED.caseStudy.text} Icon={ArrowRight} iconClassName={CAPTION_ARROW} />
+          </a>
+          {/* Plain note (not a control), so no 44 px touch box: it would only add height on phones. */}
+          <span className="inline-block font-mono text-[12px] leading-5 text-ink-3">
+            <CaptionText text={FEATURED.chat} Icon={ArrowDownRight} />
+          </span>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+/**
+ * 6.3 Telemetry band (#telemetry, chapter 00). Closevibe first (featured), then four honest numbers.
+ * Each number cell: HUD label (aria-hidden, repeats the caption) / value / label / ruler / source caption.
  */
 export default function Telemetry() {
   const cells = buildCells();
-  const fourUp = useMediaQuery("(min-width: 1024px)");
-  const isMobile = useMediaQuery("(max-width: 767px)");
-
-  // STAGGER.stats (120 ms) between cells. Each cell observes itself, so on the 2x2 phone/tablet grid a row
-  // reveals as soon as it enters instead of waiting for 30% of the whole (tall) band; across the 4-up desktop
-  // row the per-index delay gives exactly the staggerParent({ stagger: STAGGER.stats }) timing.
-  const cellVariants = useMemo(
-    () => cells.map((_, i) => fadeUp({ y: isMobile ? 16 : 24, delay: (fourUp ? i : i % 2) * STAGGER.stats })),
-    // cells.length is constant (4)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [fourUp, isMobile]
-  );
+  const listRef = useRef(null);
+  // Snappy fade-up per cell (500 ms, 12 / 16 px, STAGGER.stats = 60 ms per row: telemetry.css), as CSS transitions
+  // that can only delay the final state, never lose it: see useCellEntrance (brief item 4, the stuck first row).
+  useCellEntrance(listRef);
 
   return (
     <Section id="telemetry" chapter="00" tone="band" labelledBy="telemetry-title">
       <SectionHeading srOnly id="telemetry-title" title="Track record in numbers" />
-      <ul role="list" className="tlm-grid">
+      <ul ref={listRef} role="list" className="tlm-grid">
+        <FeaturedCell />
         {cells.map((cell, i) => (
-          <Reveal as="li" key={cell.key} variants={cellVariants[i]} className={cn("tlm-cell border-line", CELL_EDGES[i])}>
+          <li key={cell.key} className={cn("tlm-cell tlm-in border-line", CELL_EDGES[i])}>
             {/* HUD label "TLM-0n · CAPTION" set as two stacked lines (the line break is the separator), so a
                 long caption never breaks mid-label in a narrow cell. Decorative: the caption is repeated below. */}
             <p aria-hidden="true" className="hud-label self-start">
-              <span className="block">TLM-{String(i + 1).padStart(2, "0")}</span>
+              <span className="block">{hudIndex(i + 2)}</span>
               <span className="mt-1.5 block">{cell.caption}</span>
             </p>
             <StatValue cell={cell} />
@@ -159,7 +212,7 @@ export default function Telemetry() {
                 <Caption cell={cell} />
               </div>
             </div>
-          </Reveal>
+          </li>
         ))}
       </ul>
     </Section>

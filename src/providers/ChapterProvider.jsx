@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChapterContext } from "@/providers/contexts";
 import { CHAPTERS } from "@/constants/site";
+import { DEFERRED_EVENT } from "@/components/system/DeferredMount";
 
 const byIndex = (index) => CHAPTERS.find((c) => c.index === index) || CHAPTERS[0];
 
@@ -16,10 +17,18 @@ const byIndex = (index) => CHAPTERS.find((c) => c.index === index) || CHAPTERS[0
  */
 export default function ChapterProvider({ children }) {
   const [index, setIndex] = useState("00");
+  // Bumped whenever a deferred group of sections mounts (DeferredMount), so the spy re-collects its chapters.
+  const [generation, setGeneration] = useState(0);
 
   useEffect(() => {
     document.body.dataset.chapter = index;
   }, [index]);
+
+  useEffect(() => {
+    const onSections = () => setGeneration((g) => g + 1);
+    window.addEventListener(DEFERRED_EVENT, onSections);
+    return () => window.removeEventListener(DEFERRED_EVENT, onSections);
+  }, []);
 
   useEffect(() => {
     const nodes = Array.from(document.querySelectorAll("[data-chapter-index]"));
@@ -74,7 +83,7 @@ export default function ChapterProvider({ children }) {
       window.removeEventListener("scrollend", onSettled);
       window.removeEventListener("scroll", onScroll);
     };
-  }, []);
+  }, [generation]);
 
   const value = useMemo(() => byIndex(index), [index]);
   return <ChapterContext.Provider value={value}>{children}</ChapterContext.Provider>;

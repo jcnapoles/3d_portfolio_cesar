@@ -37,13 +37,22 @@ export default function Hero() {
     <StatusBadge
       href="#contact"
       className="hero-in rounded-[1.125rem] md:rounded-pill"
-      style={{ "--d": "900ms", "--dm": "300ms" }}
+      style={{ "--d": "320ms", "--dm": "180ms" }}
+      // Four pings (~10 s), then the dot rests: a forever loop here was restyled on every Galaxy frame.
+      pings={4}
     >
       {AVAILABILITY.text}
     </StatusBadge>
   ) : null;
   const eyebrow = (
-    <ScrambleText as="p" className="hud-label hero-scrim" text={HERO_COPY.eyebrow} trigger="mount" delay={250} />
+    <ScrambleText
+      as="p"
+      className="hud-label hero-scrim"
+      text={HERO_COPY.eyebrow}
+      trigger="mount"
+      delay={120}
+      duration={420}
+    />
   );
 
   return (

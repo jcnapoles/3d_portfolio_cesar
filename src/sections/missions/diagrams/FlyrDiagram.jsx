@@ -45,12 +45,12 @@ export default function FlyrDiagram({ svgRef, fig }) {
         {nodes.map((n, i) => (
           <Stroke key={n.name} d={spoke(n)} delay={0.4 + i * 0.06} tone="hud" dash="2 4" linecap="butt" />
         ))}
-        <Satellite d={ring} park={onEllipse(CX, CY, RX, RY, 0)} />
         <Node x={CX} y={CY} delay={0.3} tone="gold" r={3.6} ring={10} />
         {nodes.map((n, i) => (
           <Node key={n.name} x={n.x} y={n.y} delay={nodeDelay(i)} />
         ))}
       </svg>
+      <Satellite orbit={{ cx: CX, cy: CY, rx: RX, ry: RY }} parkDeg={0} />
 
       <Label x={CX} y={CY - RY - 13} place="above" tone="ion" delay={0.25}>
         Micro-frontends

@@ -4,8 +4,11 @@ import { cn } from "@/lib/cn";
 import { getProofChips } from "@/constants/hero";
 
 /**
- * Proof chips under the hero CTAs: mono ion value + plain label, each a link to its evidence.
- * Desktop: one wrapping row. Mobile: a 2 x 2 grid of stacked chips. Fade up from 960 ms, 60 ms apart (hero.css).
+ * Proof chips under the hero CTAs: mono ion value + plain label, each a link to its evidence. Closevibe leads.
+ * Desktop: one wrapping row. Mobile: a 2 x 2 grid of stacked chips.
+ * Fade up through .hero-in (hero.css). Start and step are CSS custom properties so the hero choreography can
+ * retime them from hero.css without touching this file: --hero-chips-d / --hero-chips-dm (start, desktop / below
+ * 1024 and repeat visits) and --hero-chips-step. Defaults match hero.css: 420 ms / 240 ms, 50 ms apart.
  */
 export default function ProofChips({ className }) {
   const chips = useMemo(() => getProofChips(), []);
@@ -15,7 +18,10 @@ export default function ProofChips({ className }) {
         <li
           key={chip.key}
           className="hero-in flex min-w-0"
-          style={{ "--d": `${960 + i * 60}ms`, "--dm": `${360 + i * 60}ms` }}
+          style={{
+            "--d": `calc(var(--hero-chips-d, 420ms) + ${i} * var(--hero-chips-step, 50ms))`,
+            "--dm": `calc(var(--hero-chips-dm, 240ms) + ${i} * var(--hero-chips-step, 50ms))`,
+          }}
         >
           <Chip
             href={chip.href}

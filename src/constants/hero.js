@@ -17,7 +17,8 @@ export const HERO_COPY = {
 
 /**
  * Proof chips (value is uppercased with CSS; the DOM keeps natural case for screen readers).
- * Chip 4 is the single Sttok metric: sttokP95 when verified, else sttokInfraSpend (lead addendum),
+ * Closevibe leads (Cesar's own company, featured first across the hero and the telemetry band).
+ * The last chip is the single Sttok metric: sttokP95 when verified, else sttokInfraSpend (lead addendum),
  * else no chip. Flipping a claim in claims.js is the only edit needed.
  */
 const STTOK_METRIC_CHIP = {
@@ -32,6 +33,7 @@ const STTOK_METRIC_CHIP = {
 export function getProofChips() {
   const users = FACTS.sttokUsers.display;
   const chips = [
+    { key: "closevibe", value: "Co-founder & CTO", label: "Closevibe", href: `#${ANCHORS.missions.closevibe}` },
     {
       key: "sttok-users",
       value: `${users} users`,
@@ -40,7 +42,6 @@ export function getProofChips() {
       ariaLabel: `Sttok case study: architecture for ${users} users`,
     },
     { key: "caixabank", value: "Sr. Tech Lead", label: "CaixaBank Tech", href: "#about" },
-    { key: "closevibe", value: "Co-founder & CTO", label: "Closevibe", href: `#${ANCHORS.missions.closevibe}` },
   ];
   const metric = sttokMetricKey();
   if (metric && STTOK_METRIC_CHIP[metric]) {
@@ -64,17 +65,21 @@ export const LEADER_READOUTS = [
 ];
 
 /**
- * Trust strip, in this order. `scale` is the per-logo optical scale (1 = 24 px desktop / 22 px mobile cap height box).
- * Closevibe is a typeset wordmark (the raster logo has a baked glow). Never UCI or RIU.
+ * Trust strip, in this order (keys of companyLogos in src/assets/media.js). `scale` is the per-logo optical scale
+ * (1 = 24 px desktop / 22 px mobile height box). Closevibe leads with its real logo (mark + wordmark lockup).
+ * Wide and narrow logos alternate so neighbours never touch on the 4 x 2 phone grid (at 375 px the lockup,
+ * CaixaBank and FIATC each fill their 80 px cell; the closest gap is now ~16 px).
+ * Never UCI or RIU. Cashela and 1234ticket stay out: ten logos break the 4-column phone grid (4 + 4 + 2) and
+ * crowd the single desktop row at 1024 px.
  */
 export const TRUST_LOGOS = [
-  { key: "caixabanktech", scale: 1.08 },
-  { key: "closevibe", wordmark: "Closevibe" },
-  { key: "fiatc", scale: 0.94 },
+  { key: "closevibeLogo", scale: 1 },
   { key: "sttok", scale: 0.74 },
+  { key: "caixabanktech", scale: 1.08 },
+  { key: "isern", scale: 1.3 },
+  { key: "fiatc", scale: 0.94 },
   { key: "flyr", scale: 0.8 },
   { key: "indra", scale: 0.84 },
-  { key: "isern", scale: 1.3 },
   { key: "amaris", scale: 1.16 },
 ];
 

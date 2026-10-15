@@ -1,8 +1,9 @@
-import { createContext, memo, useContext, useEffect, useId, useMemo, useRef } from "react";
+import { createContext, memo, useContext, useId, useMemo, useRef } from "react";
 import { m, useTransform } from "motion/react";
 import { cn } from "@/lib/cn";
 import { DUR, EASE, SPRING } from "@/lib/motion";
 import MissionPatch from "@/components/ui/MissionPatch";
+import OrbitSatellite from "@/components/ui/OrbitSatellite";
 import Picture from "@/components/ui/Picture";
 import ExternalLink from "@/components/ui/ExternalLink";
 import NumberTicker from "@/components/ui/NumberTicker";
@@ -20,14 +21,17 @@ const DIAGRAMS = { sttok: SttokDiagram, fiatc: FiatcDiagram, flyr: FlyrDiagram, 
 /* ------------------------------------------------------------------------------------------------
  * Diagram primitives (viewBox 0 0 560 400). Passed to every diagram as the `fig` prop, so the five
  * diagram files stay pure layout and nothing imports back from this file.
- * - Stroke: a path revealed by a Motion pathLength draw (1.2 s, EASE.draw, once). The draw runs on a
+ * - Stroke: a path revealed by a Motion pathLength draw (DUR.draw, EASE.draw, once). The draw runs on a
  *   mask, so dashed and solid strokes draw the same way and keep a crisp 1 px non-scaling stroke.
  * - Node: m.g scale .6 -> 1 on SPRING.lock (callers stagger by 80 ms).
  * - Label / Pop: HTML overlays positioned in viewBox units (mono labels keep their px size on mobile).
- * - Satellite: one gold SMIL satellite on the diagram's target orbit; parked under reduced motion.
+ * - Satellite: one gold satellite on the diagram's target orbit (an HTML OrbitSatellite: compositor-only, rendered
+ *   after the diagram's <svg>); parked under reduced motion.
+ * Every delay a diagram passes is scaled by TEMPO (the diagrams were authored for a slower 1.2 s draw).
  * Under reduced motion everything renders in its final state with no Motion props at all.
  * ---------------------------------------------------------------------------------------------- */
-const FigContext = createContext({ reduced: false });
+const FigContext = createContext({ reduced: false, active: false });
+const TEMPO = 0.6;
 
 const STROKES = {
   hud: "var(--hud)",
@@ -39,19 +43,22 @@ const STROKES = {
 
 const drawVariants = (delay) => ({
   hidden: { pathLength: 0 },
-  show: { pathLength: 1, transition: { duration: DUR.draw, ease: EASE.draw, delay } },
+  show: { pathLength: 1, transition: { duration: DUR.draw, ease: EASE.draw, delay: delay * TEMPO } },
 });
 const popVariants = (delay) => ({
   hidden: { opacity: 0, scale: 0.6 },
   show: {
     opacity: 1,
     scale: 1,
-    transition: { scale: { ...SPRING.lock, delay }, opacity: { duration: DUR.ui, ease: EASE.out, delay } },
+    transition: {
+      scale: { ...SPRING.lock, delay: delay * TEMPO },
+      opacity: { duration: DUR.ui, ease: EASE.out, delay: delay * TEMPO },
+    },
   },
 });
 const fadeVariants = (delay) => ({
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: DUR.panel, ease: EASE.out, delay } },
+  show: { opacity: 1, transition: { duration: DUR.panel, ease: EASE.out, delay: delay * TEMPO } },
 });
 
 const toId = (prefix, raw) => `${prefix}${raw.replace(/[^a-zA-Z0-9_-]/g, "")}`;
@@ -65,6 +72,8 @@ const onEllipse = (cx, cy, rx, ry, deg) => {
   return { x: +(cx + rx * Math.cos(a)).toFixed(2), y: +(cy + ry * Math.sin(a)).toFixed(2) };
 };
 const pct = (x, y) => ({ left: `${(x / 560) * 100}%`, top: `${(y / 400) * 100}%` });
+const pctW = (v) => `${(v / 560) * 100}%`;
+const pctH = (v) => `${(v / 400) * 100}%`;
 
 function Stroke({ d, delay = 0, tone = "hud", width = 1, dash, opacity, linecap = "round" }) {
   const { reduced } = useContext(FigContext);
@@ -157,53 +166,37 @@ function Fade({ delay = 0, className, children }) {
 }
 
 /**
- * The single gold satellite on a target orbit `d`. Runs only while its diagram is active (DiagramPanel
- * pauses every other SMIL clock); it fades in once the orbit has drawn. Motion owns the wrapper's
- * opacity, CSS (.mission-sat, active gating) owns the satellite group's.
- * The glow is a radial-gradient halo drawn in SVG, never a CSS filter: a drop-shadow() on an element moved by
- * SMIL inside a transformed (sticky-stack) card forces filter regions / re-rasters every frame and was the
- * suspected source of a stray translucent rectangle seen in QA. Plain fills are cheap and cannot leave one.
+ * The single gold satellite on a diagram's target orbit `orbit` = { cx, cy, rx, ry } (viewBox units). Render it
+ * AFTER the diagram's <svg> (it is HTML). Runs only while its diagram is active; it fades in once the orbit has
+ * drawn. Motion owns the wrapper's opacity, CSS (.mission-sat, active gating) owns the satellite's.
+ * It is an OrbitSatellite: two compositor-only transform loops. The SMIL animateMotion it replaces re-laid-out and
+ * repainted the whole masked diagram every frame. The glow is a radial-gradient halo (missions.css), never a filter.
+ * The body is sized in viewBox units (halo r 11, core r 3.4), so it scales with the diagram like the SVG did.
  */
-function SatelliteBody({ glowId }) {
-  return (
-    <>
-      <defs>
-        <radialGradient id={glowId}>
-          <stop offset="0%" stopColor="var(--gold-hot)" stopOpacity="0.85" />
-          <stop offset="35%" stopColor="var(--gold)" stopOpacity="0.45" />
-          <stop offset="100%" stopColor="var(--gold)" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <circle className="mission-sat-halo" r="11" fill={`url(#${glowId})`} />
-      <circle r="3.4" fill="var(--gold)" />
-    </>
+function Satellite({ orbit, parkDeg = 300, dur = 16, delay = 1 }) {
+  const { reduced, active } = useContext(FigContext);
+  const { cx, cy, rx, ry } = orbit;
+  const frame = { left: pctW(cx - rx), top: pctH(cy - ry), width: pctW(rx * 2), height: pctH(ry * 2) };
+  // Percentages of the frame width (margins too: vertical margins resolve against the containing block's width).
+  const halo = (11 * 2 * 100) / (rx * 2);
+  const body = { width: `${halo}%`, marginLeft: `${-halo / 2}%`, marginTop: `${-halo / 2}%` };
+  const sat = (
+    <OrbitSatellite
+      frame={frame}
+      duration={dur}
+      animated={!reduced}
+      running={active && !reduced}
+      parkDeg={parkDeg}
+      className="mission-sat"
+      bodyClassName="mission-sat-body"
+      bodyStyle={body}
+    />
   );
-}
-
-function Satellite({ d, park, dur = 16, delay = 1.2 }) {
-  const { reduced } = useContext(FigContext);
-  const uid = useId();
-  const pathId = toId("fs", uid);
-  const glowId = toId("fg", uid);
-  if (reduced) {
-    return (
-      <g className="mission-sat" transform={`translate(${park.x} ${park.y})`}>
-        <SatelliteBody glowId={glowId} />
-      </g>
-    );
-  }
+  if (reduced) return sat;
   return (
-    <>
-      <path id={pathId} d={d} fill="none" stroke="none" />
-      <m.g variants={fadeVariants(delay)}>
-        <g className="mission-sat">
-          <animateMotion dur={`${dur}s`} repeatCount="indefinite" rotate="0">
-            <mpath href={`#${pathId}`} />
-          </animateMotion>
-          <SatelliteBody glowId={glowId} />
-        </g>
-      </m.g>
-    </>
+    <m.span aria-hidden="true" className="pointer-events-none absolute inset-0" variants={fadeVariants(delay)}>
+      {sat}
+    </m.span>
   );
 }
 
@@ -214,15 +207,8 @@ function DiagramPanel({ mission, active }) {
   const { reduced } = useMotionPreference();
   const svgRef = useRef(null);
   const Diagram = DIAGRAMS[mission.diagram];
-  const ctx = useMemo(() => ({ reduced }), [reduced]);
-
-  // Only the active card's satellite runs; every other diagram's SMIL clock is paused.
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg || typeof svg.pauseAnimations !== "function") return;
-    if (active && !reduced) svg.unpauseAnimations();
-    else svg.pauseAnimations();
-  }, [active, reduced]);
+  // Only the active card's satellite runs (Satellite reads `active`); every other one holds still.
+  const ctx = useMemo(() => ({ reduced, active }), [reduced, active]);
 
   if (!Diagram) return null;
   return (
@@ -239,7 +225,7 @@ function DiagramPanel({ mission, active }) {
             className="mission-fig-box"
             initial={reduced ? false : "hidden"}
             whileInView={reduced ? undefined : "show"}
-            viewport={{ once: true, amount: 0.35 }}
+            viewport={{ once: true, margin: "0px 0px -10% 0px" }}
           >
             <Diagram svgRef={svgRef} fig={FIG} />
           </m.div>
@@ -380,7 +366,7 @@ const MissionCard = memo(function MissionCard({ mission, index, total, progress,
         <div className="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-7" data-col="">
           <header className="flex flex-col gap-5">
             <div className="flex items-center gap-4">
-              <MissionPatch code={mission.code} years={mission.years} className="size-16 lg:size-[72px]" />
+              <MissionPatch code={mission.code} years={mission.years} paused={!active} className="size-16 lg:size-[72px]" />
               {/* HUD readout (CLIENT · {COMPANY} / {PERIOD} / ROLE · {ROLE}), one fact per line so narrow
                   columns never wrap mid-phrase or leave a dangling separator. */}
               <p className="min-w-0 font-mono text-hud-xs uppercase leading-[1.75] text-ink-3">
@@ -409,9 +395,10 @@ const MissionCard = memo(function MissionCard({ mission, index, total, progress,
 
           <div>
             <h4 className="hud-label">What I did</h4>
-            <ul className="mt-3 grid gap-x-6 gap-y-4 sm:grid-cols-2">
+            {/* Hairline rhythm (--rule-gap): the same space above and below every item's top rule. */}
+            <ul className="mt-rule grid gap-x-6 gap-y-rule sm:grid-cols-2">
               {mission.did.map((item) => (
-                <li key={item} className="border-t border-line-strong pt-3 text-small text-ink-2">
+                <li key={item} className="border-t border-line-strong pt-rule text-small text-ink-2">
                   {item}
                 </li>
               ))}

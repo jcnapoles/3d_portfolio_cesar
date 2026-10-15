@@ -34,7 +34,7 @@ const HeroHeadline = forwardRef(function HeroHeadline({ className }, periodRef) 
           />
         </span>
       </span>
-      <span className="hero-in mt-4 block text-display-s text-ink-2" style={{ "--d": "450ms", "--dm": "200ms" }}>
+      <span className="hero-in mt-4 block text-display-s text-ink-2" style={{ "--d": "240ms", "--dm": "140ms" }}>
         {HERO_COPY.subtitle}
       </span>
     </h1>

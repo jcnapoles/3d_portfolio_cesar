@@ -161,18 +161,23 @@ const C3_POINT = pointOnLimb(DIR + Math.PI);
 const AMBIENT_POINT = pointOnLimb((210 * Math.PI) / 180); // 10 o'clock, clear of the portrait's head
 
 /* ------------------------------------------------------------------------------------------------------------------
-   Intro timeline (seconds after the delay; the copy starts revealing first). About 3 s in total:
+   Intro timeline (seconds after the delay; it runs beside the copy reveal, never before it). About 1.9 s in total:
    approach (the sun dims as the moon covers it) -> thin crescent -> Baily's beads (lingering, the suspense)
-   -> the last bead flashes into the diamond ring -> the corona blooms and stays.
+   -> the last bead flashes into the diamond ring (totality, ~1.25 s) -> the corona blooms and stays.
+   The whole sequence is the original 3 s one scaled by 0.62 (segment ratios kept, so the eases still hand over
+   with a continuous velocity).
    ------------------------------------------------------------------------------------------------------------------ */
-const INTRO = { delay: 0.32, flashAt: 1.86, bloomAt: 1.74, flash: 0.9, bloom: 1.15 };
-const REPEAT_SPEED = 0.62; // repeat visits in the same tab: the same sequence, shorter
+const INTRO = { delay: 0.1, flashAt: 1.153, bloomAt: 1.079, flash: 0.558, bloom: 0.713 };
+const REPEAT_SPEED = 0.62; // repeat visits in the same tab: the same sequence, shorter (~1.2 s)
 // Moon path keyframes. Segment eases are matched so the velocity is continuous at each hand-over.
 const PATH = {
   s: [S_START, -0.15, -0.05, S_REST],
-  t: [0, 1.05, 1.45, 2.2],
+  t: [0, 0.651, 0.899, 1.364],
   ease: [cubicBezier(0.35, 0.05, 0.5, 0.868), cubicBezier(0.2, 0.4, 0.45, 0.906), cubicBezier(0.3, 0.3, 0.5, 1)],
 };
+// Total intro length (seconds at speed 1), from the start of the delay to the settled corona.
+const INTRO_END = INTRO.delay + Math.max(PATH.t[PATH.t.length - 1], INTRO.flashAt + INTRO.flash, INTRO.bloomAt + INTRO.bloom);
+const INTRO_FPS = 60; // keyframe sampling rate of the compositor intro
 function pathAt(t) {
   const { s, t: T, ease } = PATH;
   if (t <= 0) return s[0];
@@ -186,6 +191,39 @@ const easeInOut = cubicBezier(...EASE.inout);
 const FLASH_PEAK_AT = 0.38; // of the flash duration
 const PULSE_MS = 900;
 
+/* ------------------------------------------------------------------------------------------------------------------
+   Idle loops, two compositor animations in total (every running animation costs the main thread a style update on
+   each frame something else draws, so the corona's four loops became two plus a one-shot):
+   - the slow layer (K-corona, radially symmetric, + helmet streamers) turns once per 280 s and breathes
+     (opacity 1 -> .88 -> 1 every 8 s, 35 breaths per turn);
+   - the fine rays sit inside it and turn once per 146.1 s relative to it, i.e. once per 96 s on screen;
+   - the diamond's rare glint is a 1.4 s one-shot every 14 s (first one at 17.6 s), not a loop that idles 90 %.
+   ------------------------------------------------------------------------------------------------------------------ */
+const SLOW_TURN_MS = 280000;
+const RAYS_TURN_MS = 96000;
+const RAYS_REL_MS = 1 / (1 / RAYS_TURN_MS - 1 / SLOW_TURN_MS);
+const BREATHS = 35; // 280 s / 8 s
+const EASE_INOUT_CSS = `cubic-bezier(${EASE.inout.join(",")})`;
+const SLOW_FRAMES = (() => {
+  // Rotation: linear over the whole turn (it is only set on the first and last keyframe). Breathing: one keyframe
+  // per half breath, eased; the first segment is linear because the first keyframe also starts the rotation.
+  const frames = [{ offset: 0, transform: "rotate(0deg)", opacity: 1, easing: "linear" }];
+  for (let k = 1; k < BREATHS * 2; k += 1) {
+    frames.push({ offset: k / (BREATHS * 2), opacity: k % 2 ? 0.88 : 1, easing: "ease-in-out" });
+  }
+  frames.push({ offset: 1, transform: "rotate(360deg)", opacity: 1 });
+  return frames;
+})();
+const SPIN_FRAMES = [{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }];
+const GLINT_FRAMES = [
+  { transform: "none", easing: EASE_INOUT_CSS },
+  { offset: 0.35, transform: "scale(1.38) rotate(14deg)", easing: EASE_INOUT_CSS },
+  { transform: "none" },
+];
+const GLINT_MS = 1400;
+const GLINT_EVERY = 14000;
+const GLINT_FIRST = 17600;
+
 const REST = {
   hero: { scale: 0.9, glow: 0.55, star: 1 },
   ambient: { scale: 1, glow: 0.5, star: 0.6 },
@@ -198,6 +236,170 @@ function flashCurve(t, from, peak, to) {
   if (t < FLASH_PEAK_AT) return lerp(from, peak, easeOut(t / FLASH_PEAK_AT));
   return lerp(peak, to, easeInOut((t - FLASH_PEAK_AT) / (1 - FLASH_PEAK_AT)));
 }
+
+/** The intro state at `t` seconds after the delay (speed 1): moon travel, diamond flash, corona bloom. */
+function introAt(S, t, rest0) {
+  S.s = pathAt(t);
+  const tf = (t - INTRO.flashAt) / INTRO.flash;
+  S.fScale = flashCurve(tf, 0, 2.2, rest0.scale);
+  S.fGlow = flashCurve(tf, 0, 1, rest0.glow);
+  S.bloom = easeOut(clamp01((t - INTRO.bloomAt) / INTRO.bloom));
+}
+
+/**
+ * Every node the hero eclipse animates, as (node name, CSS property, value) through `put`. Transform and opacity
+ * only. Node names: corona, glare, moon, flare, flareGlow, flareStar, flare3, b0..b6 (second-contact beads),
+ * c0..c4 (third-contact beads). Returns true while any Baily's bead shows.
+ */
+function writeHero(S, put) {
+  // Pulse (flare()) rides on top of the flash state.
+  let fScale = S.fScale;
+  let fGlow = S.fGlow;
+  if (S.pulse) {
+    const p = easeOut(clamp01(S.pulse.k));
+    const bump = p < 0.5 ? p / 0.5 : (1 - p) / 0.5;
+    fScale += (2.2 - fScale) * bump;
+    fGlow += (1 - fGlow) * bump;
+  }
+
+  const s = S.s + exitTravel(S.p);
+  const [mx, my] = moonAt(s);
+  const d = Math.hypot(mx, my);
+
+  // Moon (its box is 2 RM sun radii wide).
+  put("moon", "transform", `translate(${((mx / (2 * RM)) * 100).toFixed(3)}%, ${((my / (2 * RM)) * 100).toFixed(3)}%)`);
+
+  // Glare: sqrt of the visible fraction (the sky only darkens in the last moments), centred on the crescent.
+  const A = coveredArea(d);
+  const vis = clamp01(1 - A / Math.PI);
+  const g = Math.sqrt(vis);
+  let cx = 0;
+  let cy = 0;
+  if (A > 0 && d > 1e-6) {
+    const lens = (Math.max(-1, d - RM) + 1) / 2;
+    const c = vis > 1e-6 ? Math.max(-0.96, (-A * lens) / (Math.PI - A)) : -0.96;
+    cx = (mx / d) * c;
+    cy = (my / d) * c;
+  }
+  put("glare", "opacity", (g * 0.96).toFixed(3));
+  put(
+    "glare",
+    "transform",
+    `translate(${((cx / (2 * KG)) * 100).toFixed(3)}%, ${((cy / (2 * KG)) * 100).toFixed(3)}%) scale(${(0.5 + 0.5 * g).toFixed(4)})`
+  );
+
+  // Third contact: the exiting limb's main valley opens; the corona fades as the glare returns.
+  const gap3 = valleyGap(C3_MAIN, mx, my);
+  const corPos = 1 - smooth(0.004, 0.17, gap3);
+  put("corona", "opacity", (S.bloom * corPos).toFixed(3));
+  put("corona", "transform", `scale(${(0.92 + 0.08 * S.bloom).toFixed(4)})`);
+
+  // Second-contact diamond (flash state), covered again as the moon moves deeper into totality.
+  const posC2 = 1 - smooth(S_REST + 0.004, S_REST + 0.07, s);
+  put("flare", "opacity", posC2.toFixed(3));
+  put("flare", "transform", `scale(${fScale.toFixed(4)})`);
+  put("flareGlow", "opacity", fGlow.toFixed(3));
+
+  // Third-contact diamond: small, peaks as the first bead breaks through, merges into the crescent's glare.
+  const dr3 = smooth(0, 0.014, gap3) * (1 - smooth(0.07, 0.34, gap3));
+  put("flare3", "opacity", dr3.toFixed(3));
+  put("flare3", "transform", `scale(${(0.38 + 0.45 * dr3).toFixed(4)})`);
+
+  // Baily's beads: sunlight left in a valley once the mountains around it already cover the sun
+  // (gap below the relief); above that the crescent is still continuous and the bead hands over to it.
+  let any = false;
+  const beadPass = (list, key) => {
+    for (let i = 0; i < list.length; i += 1) {
+      const gv = valleyGap(list[i], mx, my);
+      const v = smooth(0, 0.0025, gv) * (1 - smooth(0.012, 0.022, gv));
+      if (v > 0.01) any = true;
+      put(`${key}${i}`, "opacity", v.toFixed(3));
+    }
+  };
+  beadPass(BEADS_C2, "b");
+  beadPass(BEADS_C3, "c");
+  return any;
+}
+
+/**
+ * Pre-samples a hero sequence into Web Animation keyframes: `offsets` (0 -> 1, increasing) are the keyframe
+ * offsets, `setup(S, i)` puts the state of sample i into S. Only the properties that change are kept, and a sample
+ * is kept only where some property of that node changes (runs of equal values collapse to their ends).
+ * Returns { nodes: Map(name -> keyframes[]), beads: [[on, off], ...] (offsets where some bead shows) }.
+ */
+function sampleHero(offsets, setup) {
+  const rest0 = REST.hero;
+  const S = { s: S_REST, p: 0, fScale: rest0.scale, fGlow: rest0.glow, bloom: 1, pulse: null };
+  const N = offsets.length - 1;
+  const tracks = new Map(); // "node|prop" -> { node, prop, values }
+  const beadOn = [];
+  for (let i = 0; i <= N; i += 1) {
+    setup(S, i);
+    beadOn.push(
+      writeHero(S, (node, prop, value) => {
+        const key = `${node}|${prop}`;
+        let tr = tracks.get(key);
+        if (!tr) tracks.set(key, (tr = { node, prop, values: [] }));
+        tr.values.push(value);
+      })
+    );
+  }
+  const byNode = new Map();
+  for (const tr of tracks.values()) {
+    if (tr.values.every((v) => v === tr.values[0])) continue;
+    if (!byNode.has(tr.node)) byNode.set(tr.node, []);
+    byNode.get(tr.node).push(tr);
+  }
+  const nodes = new Map();
+  byNode.forEach((list, node) => {
+    const frames = [];
+    for (let i = 0; i <= N; i += 1) {
+      const edge = i === 0 || i === N;
+      const moving = edge || list.some((tr) => tr.values[i] !== tr.values[i - 1] || tr.values[i] !== tr.values[i + 1]);
+      if (!moving) continue;
+      const f = { offset: offsets[i] };
+      for (const tr of list) f[tr.prop] = tr.values[i];
+      frames.push(f);
+    }
+    nodes.set(node, frames);
+  });
+  const beads = [];
+  for (let i = 1; i <= N; i += 1) {
+    if (beadOn[i] && !beadOn[i - 1]) beads.push([offsets[i], 1]);
+    else if (!beadOn[i] && beadOn[i - 1] && beads.length) beads[beads.length - 1][1] = offsets[i];
+  }
+  return { nodes, beads };
+}
+
+/** The first-visit intro (INTRO_FPS samples per second), so the compositor plays it while the page still mounts. */
+let introSample = null;
+function sampleIntro() {
+  if (!introSample) {
+    const N = Math.ceil(INTRO_END * INTRO_FPS);
+    const offsets = Array.from({ length: N + 1 }, (_, i) => i / N);
+    introSample = sampleHero(offsets, (S, i) => introAt(S, offsets[i] * INTRO_END - INTRO.delay, REST.hero));
+  }
+  return introSample;
+}
+
+/**
+ * The scroll exit (scroll progress p: 0 -> 1), for a scroll-driven animation. Sampled densest at the start
+ * (p = u^1.6), where third contact plays its beads and small diamond ring.
+ */
+const EXIT_STEPS = 200;
+let exitSample = null;
+function sampleExit() {
+  if (!exitSample) {
+    const offsets = Array.from({ length: EXIT_STEPS + 1 }, (_, i) => Math.pow(i / EXIT_STEPS, 1.6));
+    exitSample = sampleHero(offsets, (S, i) => {
+      S.p = offsets[i];
+    });
+  }
+  return exitSample;
+}
+const hasScrollTimeline = () => typeof window !== "undefined" && typeof window.ScrollTimeline === "function";
+/** "end" -> 1, "40%" -> 0.4 (the share of the target's height after which the exit completes). */
+const exitShare = (exitAt) => (exitAt === "end" ? 1 : Math.min(1, Math.max(0.01, (Number.parseFloat(exitAt) || 100) / 100)));
 
 /**
  * Pipes the scroll progress of `target`: 0 when its top reaches the viewport top, 1 when the `exitAt` point of the
@@ -300,13 +502,15 @@ function Streamers({ half = 140, reach = 1 }) {
  * core, limb-darkened) -> `underMoon` slot (e.g. the back half of an orbit) -> moon (void, ion earthshine rim) ->
  * Baily's beads -> diamond-ring flares (radial bloom + spikes + StarGlyph).
  *
- * variant 'hero': first visit plays the ~3 s totality intro (repeat visits a shorter one); with `scrollTarget`
- * the moon keeps travelling as that element scrolls out (third contact: beads, a small diamond ring on the exiting
- * limb, then a growing crescent while the corona fades). variant 'ambient': a static totality around a disc
- * (the moon is styled as the portrait disc), with a 10 o'clock star for flare().
+ * variant 'hero': first visit plays the ~1.9 s totality intro (repeat visits ~1.2 s), pre-sampled into Web
+ * Animations so the compositor plays it smoothly while the page is still mounting; with `scrollTarget` the moon
+ * keeps travelling as that element scrolls out (third contact: beads, a small diamond ring on the exiting limb,
+ * then a growing crescent while the corona fades). variant 'ambient': a static totality around a disc (the moon is
+ * styled as the portrait disc), with a 10 o'clock star for flare().
  *
- * Idle: rays turn (96 s / 280 s per turn), the corona breathes (opacity +-6 %, 8 s), a rare glint on the diamond.
- * Paused offscreen. Reduced motion / tier C: static totality, no loops.
+ * Idle (two compositor loops): rays turn (96 s), streamers turn (280 s) while the corona breathes (opacity
+ * 1 -> .88, 8 s), plus a rare glint on the diamond. Paused offscreen. Reduced motion / tier C: static totality,
+ * no loops.
  *
  * props: size (px number or CSS length: the sun's diameter), intro, scrollTarget (ref), exitAt (where on the
  * target the exit completes: "end" = 0 -> 100 % of its height, or e.g. "30%" when the eclipse sits at the very top
@@ -344,6 +548,9 @@ const Eclipse = forwardRef(function Eclipse(
   const flare3Ref = useRef(null);
   const beads2Ref = useRef(null);
   const beads3Ref = useRef(null);
+  const slowRef = useRef(null);
+  const raysRef = useRef(null);
+  const glintRef = useRef(null);
 
   // Animation state lives in a ref: frames write styles directly (no React render per frame).
   const st = useRef({
@@ -353,7 +560,7 @@ const Eclipse = forwardRef(function Eclipse(
     fGlow: rest0.glow,
     fStar: rest0.star,
     bloom: 1,
-    intro: null, // { t0, speed }
+    intro: null, // { anims: Animation[], timers: number[] } while the compositor intro plays
     pulse: null, // { t0 }
     beadsOn: false,
     last: {},
@@ -363,107 +570,83 @@ const Eclipse = forwardRef(function Eclipse(
 
   const inView = useInViewport(rootRef, { rootMargin: "160px 0px", once: false, attr: false, initial: true });
 
+  /** The DOM node behind a writeHero() node name. */
+  const nodeOf = useCallback((name) => {
+    switch (name) {
+      case "corona":
+        return coronaRef.current;
+      case "glare":
+        return glareRef.current;
+      case "moon":
+        return moonRef.current;
+      case "flare":
+        return flareRef.current;
+      case "flareGlow":
+        return flareGlowRef.current;
+      case "flareStar":
+        return flareStarRef.current;
+      case "flare3":
+        return flare3Ref.current;
+      default: {
+        const box = name[0] === "b" ? beads2Ref.current : name[0] === "c" ? beads3Ref.current : null;
+        return box?.children[Number(name.slice(1))] ?? null;
+      }
+    }
+  }, []);
+
+  const setBeads = useCallback((on) => {
+    const S = st.current;
+    if (on === S.beadsOn) return;
+    S.beadsOn = on;
+    if (on) rootRef.current?.setAttribute("data-beads", "");
+    else rootRef.current?.removeAttribute("data-beads");
+  }, []);
+
   /* ---- write the current state to the DOM (transform / opacity only) ---- */
   const apply = useCallback(() => {
     const S = st.current;
     const L = S.last;
-    const set = (el, key, prop, value) => {
-      if (!el || L[key] === value) return;
+    const put = (name, prop, value) => {
+      const key = `${name}|${prop}`;
+      if (L[key] === value) return;
+      const el = nodeOf(name);
+      if (!el) return;
       L[key] = value;
       el.style[prop] = value;
     };
 
-    // Pulse (flare()) rides on top of the flash state.
-    let fScale = S.fScale;
-    let fGlow = S.fGlow;
-    let fStar = S.fStar;
-    if (S.pulse) {
-      const p = easeOut(clamp01(S.pulse.k));
-      const bump = p < 0.5 ? p / 0.5 : (1 - p) / 0.5;
-      fScale += (2.2 - fScale) * bump;
-      fGlow += (1 - fGlow) * bump;
-      fStar += (1 - fStar) * bump;
-    }
-
     if (!hero) {
-      set(flareRef.current, "fs", "transform", `scale(${fScale.toFixed(4)})`);
-      set(flareGlowRef.current, "fg", "opacity", fGlow.toFixed(3));
-      set(flareStarRef.current, "fo", "opacity", fStar.toFixed(3));
+      // Ambient: only the flare pulse moves.
+      let fScale = S.fScale;
+      let fGlow = S.fGlow;
+      let fStar = S.fStar;
+      if (S.pulse) {
+        const p = easeOut(clamp01(S.pulse.k));
+        const bump = p < 0.5 ? p / 0.5 : (1 - p) / 0.5;
+        fScale += (2.2 - fScale) * bump;
+        fGlow += (1 - fGlow) * bump;
+        fStar += (1 - fStar) * bump;
+      }
+      put("flare", "transform", `scale(${fScale.toFixed(4)})`);
+      put("flareGlow", "opacity", fGlow.toFixed(3));
+      put("flareStar", "opacity", fStar.toFixed(3));
       return;
     }
 
-    const s = S.s + exitTravel(S.p);
-    const [mx, my] = moonAt(s);
-    const d = Math.hypot(mx, my);
+    const any = writeHero(S, put);
+    // While the compositor intro plays, its own timers own data-beads.
+    if (!S.intro) setBeads(any);
+  }, [hero, nodeOf, setBeads]);
 
-    // Moon (its box is 2 RM sun radii wide).
-    set(moonRef.current, "m", "transform", `translate(${((mx / (2 * RM)) * 100).toFixed(3)}%, ${((my / (2 * RM)) * 100).toFixed(3)}%)`);
-
-    // Glare: sqrt of the visible fraction (the sky only darkens in the last moments), centred on the crescent.
-    const A = coveredArea(d);
-    const vis = clamp01(1 - A / Math.PI);
-    const g = Math.sqrt(vis);
-    let cx = 0;
-    let cy = 0;
-    if (A > 0 && d > 1e-6) {
-      const lens = (Math.max(-1, d - RM) + 1) / 2;
-      const c = vis > 1e-6 ? Math.max(-0.96, (-A * lens) / (Math.PI - A)) : -0.96;
-      cx = (mx / d) * c;
-      cy = (my / d) * c;
-    }
-    set(glareRef.current, "go", "opacity", (g * 0.96).toFixed(3));
-    set(
-      glareRef.current,
-      "gt",
-      "transform",
-      `translate(${((cx / (2 * KG)) * 100).toFixed(3)}%, ${((cy / (2 * KG)) * 100).toFixed(3)}%) scale(${(0.5 + 0.5 * g).toFixed(4)})`
-    );
-
-    // Third contact: the exiting limb's main valley opens; the corona fades as the glare returns.
-    const gap3 = valleyGap(C3_MAIN, mx, my);
-    const corPos = 1 - smooth(0.004, 0.17, gap3);
-    set(coronaRef.current, "co", "opacity", (S.bloom * corPos).toFixed(3));
-    set(coronaRef.current, "ct", "transform", `scale(${(0.92 + 0.08 * S.bloom).toFixed(4)})`);
-
-    // Second-contact diamond (flash state), covered again as the moon moves deeper into totality.
-    const posC2 = 1 - smooth(S_REST + 0.004, S_REST + 0.07, s);
-    set(flareRef.current, "fo", "opacity", posC2.toFixed(3));
-    set(flareRef.current, "fs", "transform", `scale(${fScale.toFixed(4)})`);
-    set(flareGlowRef.current, "fg", "opacity", fGlow.toFixed(3));
-
-    // Third-contact diamond: small, peaks as the first bead breaks through, merges into the crescent's glare.
-    const dr3 = smooth(0, 0.014, gap3) * (1 - smooth(0.07, 0.34, gap3));
-    set(flare3Ref.current, "f3o", "opacity", dr3.toFixed(3));
-    set(flare3Ref.current, "f3s", "transform", `scale(${(0.38 + 0.45 * dr3).toFixed(4)})`);
-
-    // Baily's beads: sunlight left in a valley once the mountains around it already cover the sun
-    // (gap below the relief); above that the crescent is still continuous and the bead hands over to it.
-    let any = false;
-    const beadPass = (container, list, key) => {
-      const nodes = container?.children;
-      if (!nodes) return;
-      for (let i = 0; i < list.length; i += 1) {
-        const b = list[i];
-        const gv = valleyGap(b, mx, my);
-        const v = smooth(0, 0.0025, gv) * (1 - smooth(0.012, 0.022, gv));
-        if (v > 0.01) any = true;
-        set(nodes[i], `${key}${i}`, "opacity", v.toFixed(3));
-      }
-    };
-    beadPass(beads2Ref.current, BEADS_C2, "b");
-    beadPass(beads3Ref.current, BEADS_C3, "c");
-    if (any !== S.beadsOn) {
-      S.beadsOn = any;
-      if (any) rootRef.current?.setAttribute("data-beads", "");
-      else rootRef.current?.removeAttribute("data-beads");
-    }
-  }, [hero]);
-
-  /* ---- the frame loop (only while a time-based sequence runs) ---- */
+  /* ---- the compositor intro ---- */
   const finishIntro = useCallback(() => {
     const S = st.current;
     if (!S.intro) return;
+    const { anims, timers } = S.intro;
     S.intro = null;
+    timers.forEach((id) => window.clearTimeout(id));
+    // Inline styles already hold the rest frame: cancelling drops the intro effect without a jump.
+    anims.forEach((a) => a.cancel());
     S.s = S_REST;
     S.fScale = rest0.scale;
     S.fGlow = rest0.glow;
@@ -472,29 +655,55 @@ const Eclipse = forwardRef(function Eclipse(
     setPhase("idle");
   }, [rest0]);
 
+  /** Plays the pre-sampled intro on the compositor. The inline styles must already hold the rest frame. */
+  const playIntro = useCallback(
+    (speed) => {
+      const S = st.current;
+      const { nodes, beads } = sampleIntro();
+      const duration = (INTRO_END / speed) * 1000;
+      const anims = [];
+      nodes.forEach((frames, name) => {
+        const el = nodeOf(name);
+        if (el) anims.push(el.animate(frames, { duration, easing: "linear", fill: "none" }));
+      });
+      if (!anims.length) return false;
+      const intro = { anims, timers: [] };
+      S.intro = intro;
+      setBeads(false);
+      // Attribute switches (bead twinkle, idle phase) follow the animation clock, which starts on the first frame.
+      anims[0].ready
+        .then(() => {
+          if (S.intro !== intro) return;
+          for (const [on, off] of beads) {
+            intro.timers.push(window.setTimeout(() => S.intro === intro && setBeads(true), on * duration));
+            intro.timers.push(window.setTimeout(() => S.intro === intro && setBeads(false), off * duration));
+          }
+        })
+        .catch(() => {});
+      anims[0].finished
+        .then(() => {
+          if (S.intro !== intro) return;
+          finishIntro();
+          apply();
+        })
+        .catch(() => {});
+      return true;
+    },
+    [apply, finishIntro, nodeOf, setBeads]
+  );
+
+  /* ---- the frame loop (only for the flare() pulse) ---- */
   const step = useCallback(() => {
     const S = st.current;
-    const now = performance.now();
     let busy = false;
-    if (S.intro) {
-      const t = ((now - S.intro.t0) / 1000) * S.intro.speed - INTRO.delay;
-      S.s = pathAt(t);
-      const tf = (t - INTRO.flashAt) / INTRO.flash;
-      S.fScale = flashCurve(tf, 0, 2.2, rest0.scale);
-      S.fGlow = flashCurve(tf, 0, 1, rest0.glow);
-      const tb = (t - INTRO.bloomAt) / INTRO.bloom;
-      S.bloom = easeOut(clamp01(tb));
-      if (tf >= 1 && tb >= 1) finishIntro();
-      else busy = true;
-    }
     if (S.pulse) {
-      S.pulse.k = (now - S.pulse.t0) / PULSE_MS;
+      S.pulse.k = (performance.now() - S.pulse.t0) / PULSE_MS;
       if (S.pulse.k >= 1) S.pulse = null;
       else busy = true;
     }
     apply();
     return busy;
-  }, [apply, finishIntro, rest0]);
+  }, [apply]);
 
   const startLoop = useCallback(() => {
     if (loopRef.current) return;
@@ -512,34 +721,75 @@ const Eclipse = forwardRef(function Eclipse(
     () => () => {
       if (loopRef.current) cancelFrame(loopRef.current);
       loopRef.current = null;
+      const S = st.current;
+      if (S.intro) {
+        S.intro.timers.forEach((id) => window.clearTimeout(id));
+        S.intro.anims.forEach((a) => a.cancel());
+        S.intro = null;
+      }
     },
     []
   );
 
   /* ---- mount: decide the intro before the first paint ---- */
   useLayoutEffect(() => {
-    const S = st.current;
     const el = rootRef.current;
-    let eligible = hero && intro && !still;
-    if (eligible && el) {
+    let eligible = hero && intro && !still && !!el && typeof el.animate === "function";
+    if (eligible) {
       const r = el.getBoundingClientRect();
       const vh = window.innerHeight || document.documentElement.clientHeight;
       eligible = r.bottom > 0 && r.top < vh && window.scrollY < 40;
     }
-    if (eligible) {
-      S.intro = { t0: performance.now(), speed: firstVisit ? 1 : 1 / REPEAT_SPEED };
-      S.s = S_START;
-      S.fScale = 0;
-      S.fGlow = 0;
-      S.bloom = 0;
-      el?.setAttribute("data-intro", "");
+    // The inline styles always hold the rest frame; the intro plays over them on the compositor.
+    apply();
+    if (eligible && playIntro(firstVisit ? 1 : 1 / REPEAT_SPEED)) {
+      el.setAttribute("data-intro", "");
       setPhase("intro");
     }
-    apply();
-    if (eligible) startLoop();
     // Mount-only: later changes (reduced motion, scroll) are handled below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /* ---- idle loops (compositor animations; none under reduced motion / tier C) ---- */
+  const loopsRef = useRef([]);
+  const inViewRef = useRef(inView);
+  inViewRef.current = inView;
+  useEffect(() => {
+    const slow = slowRef.current;
+    const rays = raysRef.current;
+    if (still || !slow || !rays || typeof slow.animate !== "function") return undefined;
+    const anims = [
+      slow.animate(SLOW_FRAMES, { duration: SLOW_TURN_MS, iterations: Infinity }),
+      rays.animate(SPIN_FRAMES, { duration: RAYS_REL_MS, iterations: Infinity }),
+    ];
+    if (!inViewRef.current) anims.forEach((a) => a.pause());
+    loopsRef.current = anims;
+    return () => {
+      anims.forEach((a) => a.cancel());
+      loopsRef.current = [];
+    };
+  }, [still]);
+  // Offscreen: pause (the CSS [data-paused] rule only reaches CSS animations).
+  useEffect(() => {
+    loopsRef.current.forEach((a) => (inView ? a.play() : a.pause()));
+  }, [inView]);
+
+  // The diamond's rare glint, once the corona has settled and while on screen.
+  useEffect(() => {
+    const glint = glintRef.current;
+    if (still || phase !== "idle" || !inView || !glint || typeof glint.animate !== "function") return undefined;
+    let timer = 0;
+    let anim = null;
+    const fire = () => {
+      anim = glint.animate(GLINT_FRAMES, { duration: GLINT_MS });
+      timer = window.setTimeout(fire, GLINT_EVERY);
+    };
+    timer = window.setTimeout(fire, GLINT_FIRST);
+    return () => {
+      window.clearTimeout(timer);
+      anim?.cancel();
+    };
+  }, [still, phase, inView]);
 
   // Motion switched off at runtime: jump to the final frame, no loops.
   useEffect(() => {
@@ -555,6 +805,56 @@ const Eclipse = forwardRef(function Eclipse(
     apply();
   }, [still, apply, finishIntro]);
 
+  const linkScroll = hero && !!scrollTarget && !still;
+
+  /* ---- scroll exit on the compositor: the pre-sampled exit on a ScrollTimeline (no per-frame JS). Created once
+     no intro plays (a later animation would win over the intro). Without ScrollTimeline, onProgress below writes
+     inline styles per frame instead. ---- */
+  const exitRef = useRef(null); // { anims, beads } while the compositor owns the exit
+  useEffect(() => {
+    const target = scrollTarget?.current;
+    const first = coronaRef.current;
+    if (!linkScroll || phase !== "idle" || !target || !first || typeof first.animate !== "function" || !hasScrollTimeline()) {
+      return undefined;
+    }
+    const share = exitShare(exitAt);
+    const range = () => {
+      const top = Math.round(target.getBoundingClientRect().top + window.scrollY);
+      return [`${top}px`, `${Math.round(top + share * target.offsetHeight)}px`];
+    };
+    const { nodes, beads } = sampleExit();
+    const anims = [];
+    try {
+      const timeline = new window.ScrollTimeline({ source: document.documentElement, axis: "block" });
+      const [rangeStart, rangeEnd] = range();
+      nodes.forEach((frames, name) => {
+        const el = nodeOf(name);
+        if (el) anims.push(el.animate(frames, { timeline, rangeStart, rangeEnd, fill: "both", easing: "linear" }));
+      });
+    } catch {
+      anims.forEach((a) => a.cancel());
+      return undefined;
+    }
+    exitRef.current = { anims, beads };
+    let ro = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => {
+        const [rangeStart, rangeEnd] = range();
+        anims.forEach((a) => {
+          a.rangeStart = rangeStart;
+          a.rangeEnd = rangeEnd;
+        });
+      });
+      ro.observe(target);
+    }
+    return () => {
+      ro?.disconnect();
+      anims.forEach((a) => a.cancel());
+      exitRef.current = null;
+      apply(); // hand the current progress back to the inline styles
+    };
+  }, [linkScroll, phase, scrollTarget, exitAt, nodeOf, apply]);
+
   const onProgress = useCallback(
     (v) => {
       const S = st.current;
@@ -563,9 +863,15 @@ const Eclipse = forwardRef(function Eclipse(
       S.p = p;
       // Scrolling during the intro: settle it at once, the scroll then owns the moon.
       if (S.intro && p > 0.02) finishIntro();
+      const exit = exitRef.current;
+      if (exit) {
+        // The compositor moves everything; only the bead twinkle switch is left to the main thread.
+        setBeads(exit.beads.some(([on, off]) => p >= on && p < off));
+        return;
+      }
       if (!loopRef.current) frame.render(apply);
     },
-    [apply, finishIntro]
+    [apply, finishIntro, setBeads]
   );
 
   useImperativeHandle(
@@ -583,7 +889,6 @@ const Eclipse = forwardRef(function Eclipse(
   );
 
   const sizeValue = typeof size === "number" ? `${size}px` : size;
-  const linkScroll = hero && !!scrollTarget && !still;
 
   return (
     <div
@@ -599,12 +904,17 @@ const Eclipse = forwardRef(function Eclipse(
     >
       {linkScroll ? <ScrollLink target={scrollTarget} exitAt={exitAt} onProgress={onProgress} /> : null}
 
-      {/* Corona: JS owns opacity/scale (bloom, exit) > CSS boost (CTA) > CSS breathing > the three layers. */}
+      {/* Corona: JS owns opacity/scale (bloom, exit) > CSS boost (CTA) > the slow layer (turn + breathing) holding
+          the K-corona, the rays (their own relative turn) and the streamers, in that paint order. */}
       <div ref={coronaRef} className="ecl-l ecl-corona" data-glow>
         <div className="ecl-fill ecl-boost">
-          <div className="ecl-fill ecl-breathe">
+          {/* The turning elements are plain wrappers: an animated element's style is recomputed on every frame the
+              main thread runs, so the gradient-heavy layers never animate themselves. */}
+          <div ref={slowRef} className="ecl-fill ecl-slow">
             <div className="ecl-fill ecl-k" />
-            <div className="ecl-fill ecl-rays" />
+            <div ref={raysRef} className="ecl-fill ecl-spin">
+              <div className="ecl-fill ecl-rays" />
+            </div>
             <div className="ecl-fill ecl-streamers">
               {hero ? <Streamers /> : <Streamers half={115} reach={AMBIENT_REACH} />}
             </div>
@@ -656,7 +966,7 @@ const Eclipse = forwardRef(function Eclipse(
           <span className="ecl-flare-spike ecl-flare-spike--v" />
           {/* JS owns the star's opacity (flare pulse); CSS owns the inner rare glint (transform). */}
           <span ref={flareStarRef} className="ecl-flare-star" style={{ "--star": hero ? 0.15 : 0.06, opacity: rest0.star }}>
-            <span className="ecl-flare-glint">
+            <span ref={glintRef} className="ecl-flare-glint">
               <StarGlyph size={24} />
             </span>
           </span>

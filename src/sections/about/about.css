@@ -78,7 +78,8 @@
   will-change: transform;
 }
 
-/* Row rhythm: 24 px padding on mobile, 16 px on desktop (88 px collapsed with a one-line impact). */
+/* Row rhythm: 24 px padding on mobile, the hairline rhythm (--rule-gap, 20 px) on desktop
+   (96 px collapsed with a one-line impact). */
 .fl-body {
   padding-block: 24px;
 }
@@ -119,22 +120,22 @@ html:not([data-motion="reduced"]) .fl-node {
 
 @media (min-width: 1024px) {
   .fl-body {
-    padding-block: 16px;
+    padding-block: var(--rule-gap);
   }
   .fl-node {
-    top: calc(16px + 28px - 4.5px);
+    top: calc(var(--rule-gap) + 28px - 4.5px);
   }
   /* "Details" sits at the right end of the role line; its panel still opens under the impact line. */
   .fl-details-summary {
     position: absolute;
-    top: 17px;
+    top: calc(var(--rule-gap) + 1px);
     right: 0;
   }
 }
 /* Touch laptops / tablets in landscape: the 44 px hit area stays centred on the role line. */
 @media (min-width: 1024px) and (pointer: coarse) {
   .fl-details-summary {
-    top: 7px;
+    top: calc(var(--rule-gap) - 9px);
   }
 }
 

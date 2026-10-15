@@ -84,25 +84,38 @@
   height: min(100cqh, calc(100cqw * 5 / 7));
 }
 
-/* One moving satellite: only the active card's diagram shows (and runs) it. Its glow is an SVG
-   radial-gradient halo (.mission-sat-halo), never a CSS filter (see Satellite in MissionCard.jsx). */
+/* One moving satellite: only the active card's diagram shows (and runs) it. It is an HTML OrbitSatellite
+   (compositor-only loops) whose glow is a radial-gradient halo, never a CSS filter (see Satellite in MissionCard.jsx). */
 .mission-sat {
   opacity: 0;
-  transition: opacity 600ms var(--ease-ui) 200ms;
+  transition: opacity 400ms var(--ease-ui) 100ms;
 }
 .mission-fig[data-active="true"] .mission-sat {
   opacity: 1;
 }
-/* Reduced motion: no SMIL, every satellite is parked (static) on its orbit. */
+/* Body: halo r 11 + gold core r 3.4 (viewBox units; the body is 22 units wide, set in MissionCard.jsx). */
+.mission-sat-body {
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(255, 208, 138, 0.85) 0%, rgba(244, 184, 96, 0.45) 35%, rgba(244, 184, 96, 0) 100%);
+}
+.mission-sat-body::after {
+  content: "";
+  position: absolute;
+  inset: 34.5%;
+  border-radius: 9999px;
+  background: var(--gold);
+}
+/* Reduced motion: every satellite is parked (static) on its orbit. */
 html[data-motion="reduced"] .mission-sat {
   opacity: 1;
   transition: none;
 }
 
 @media (prefers-contrast: more) {
-  .mission-sat-halo { display: none; }
+  .mission-sat-body { background: none; }
 }
 @media (forced-colors: active) {
   .mission-card { border-color: CanvasText; }
-  .mission-sat-halo { display: none; }
+  .mission-sat-body { background: none; }
 }

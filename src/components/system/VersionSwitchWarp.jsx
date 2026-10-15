@@ -5,7 +5,7 @@ import "@/components/system/VersionSwitchWarp.css";
  * 2024 chunk when a switch starts (every switch needs that chunk anyway), so none of this sits in the entry.
  */
 
-const WARP_MS = 1000;
+const WARP_MS = 850; // keep in sync with the 850 ms VT timeline in VersionSwitchWarp.css
 const WARP_EASE = "cubic-bezier(0.76, 0, 0.24, 1)";
 const COVER_MS = 560;
 const REVEAL_MS = 600;
@@ -37,7 +37,7 @@ function prefersReducedMotion() {
  * Paths:
  * - reduced motion: a 200 ms crossfade (View Transition default fade), or an instant swap + 200 ms fade-in;
  * - View Transitions: the new era is revealed by a clip-path circle growing from the click point
- *   (1000 ms, cubic-bezier(.76,0,.24,1)) while the old one scales to .96 and dims; the overlay peaks mid-way;
+ *   (850 ms, cubic-bezier(.76,0,.24,1)) while the old one scales to .96 and dims; the overlay peaks mid-way;
  * - no View Transitions: a void curtain grows from the click point, the swap happens under it, then it irises open.
  * Every path is time-guarded: the overlay can never stay up and the page always lands on the target.
  */

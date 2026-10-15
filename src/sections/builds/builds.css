@@ -105,7 +105,8 @@
   .builds-preview {
     grid-column: 8 / span 5;
     min-width: 0;
-    padding-top: 30px; /* level with the first row, below the list header */
+    /* Level with the first row, below the list header (hud-label line + its hairline gap + 1 px border). */
+    padding-top: calc(0.9rem + var(--rule-gap) + 1px);
   }
   .builds-preview-sticky {
     position: sticky;
@@ -118,7 +119,7 @@
     column-gap: 20px;
   }
   .builds-head {
-    padding-bottom: 14px;
+    padding-bottom: var(--rule-gap);
     border-bottom: 1px solid var(--line-strong);
   }
   .build-row {
@@ -129,7 +130,8 @@
       ".     code code   code";
     align-content: start;
     height: auto;
-    padding: 22px 0 24px;
+    /* 26 px: the h3 name's glyphs start ~4 px inside its line box, so the hairline above reads ~20 px clear. */
+    padding: 26px 0 24px;
     border: 0;
     border-bottom: 1px solid var(--line);
     border-radius: 0;
@@ -193,7 +195,7 @@
   .build-row::before {
     content: "";
     position: absolute;
-    top: 28px;
+    top: 32px;
     left: 0;
     width: 2px;
     height: 26px;

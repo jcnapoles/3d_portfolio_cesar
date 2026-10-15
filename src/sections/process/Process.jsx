@@ -178,7 +178,7 @@ export default function Process() {
           // orbit as that orbit enters the bottom of the viewport and parks in the target orbit before the
           // top of the diagram reaches the navbar.
           const tl = gsap.timeline({
-            scrollTrigger: { trigger: diagram, start: "86% 95%", end: "19% 14%", scrub: 0.6 },
+            scrollTrigger: { trigger: diagram, start: "86% 95%", end: "19% 14%", scrub: 0.3 },
             onUpdate() {
               updateActive(this.progress());
             },
@@ -200,7 +200,7 @@ export default function Process() {
             {
               scaleY: 1,
               ease: "none",
-              scrollTrigger: { trigger: rail, start: "top 70%", end: "bottom 70%", scrub: 0.6 },
+              scrollTrigger: { trigger: rail, start: "top 70%", end: "bottom 70%", scrub: 0.3 },
               onUpdate() {
                 updateActive(this.progress());
               },
@@ -230,10 +230,10 @@ export default function Process() {
   const multiCol = useMediaQuery("(min-width: 768px)");
   const isMobile = !multiCol;
   const cardVariants = useMemo(
-    () => STEPS.map((_, i) => fadeUpScale({ y: isMobile ? 16 : 32, delay: multiCol ? i * STAGGER.cards : 0 })),
+    () => STEPS.map((_, i) => fadeUpScale({ y: isMobile ? 12 : 20, delay: multiCol ? i * STAGGER.cards : 0 })),
     [multiCol, isMobile]
   );
-  const ctaVariants = useMemo(() => fadeUp({ y: isMobile ? 16 : 24 }), [isMobile]);
+  const ctaVariants = useMemo(() => fadeUp({ y: isMobile ? 12 : 16 }), [isMobile]);
 
   return (
     <Section ref={sectionRef} id="process" chapter="04" labelledBy="process-title">

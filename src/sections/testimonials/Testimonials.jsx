@@ -13,9 +13,9 @@ const VISIBLE = TRANSMISSIONS.filter((t) => t.show !== false);
 const FEATURED = VISIBLE.find((t) => t.featured) ?? VISIBLE[0];
 const OTHERS = VISIBLE.filter((t) => t !== FEATURED);
 
-/** Card reveal (rise + .98 -> 1). The card's delay is also handed to its children as `base` (see TransmissionCard). */
+/** Card reveal (rise + .985 -> 1). The card's delay is also handed to its children as `base` (see TransmissionCard). */
 const cardVariants = (delay, y) => ({
-  hidden: { opacity: 0, y, scale: 0.98 },
+  hidden: { opacity: 0, y, scale: 0.985 },
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: DUR.reveal, delay, ease: EASE.out } },
 });
 
@@ -24,16 +24,16 @@ const cardVariants = (delay, y) => ({
  * - >= 1024: featured card in columns 1-7 (sticky while the right column scrolls past); columns 8-12 hold
  *   Jorge full width, then Reynier and Lazaro side by side from 1280 px, stacked below that.
  * - < 1024: featured first, then the others stacked.
- * Cards fade up with an 80 ms stagger where they sit side by side; on one column each enters on its own.
+ * Cards fade up with a 50 ms stagger where they sit side by side; on one column each enters on its own.
  */
 export default function Testimonials() {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const isMobile = useMediaQuery("(max-width: 767px)");
-  const y = isMobile ? 16 : 32;
+  const y = isMobile ? 12 : 20;
 
   const delays = useMemo(() => VISIBLE.map((_, i) => (isDesktop ? i * STAGGER.cards : 0)), [isDesktop]);
   const variants = useMemo(() => delays.map((d) => cardVariants(d, y)), [delays, y]);
-  const ctaVariants = useMemo(() => fadeUp({ y: isMobile ? 16 : 24 }), [isMobile]);
+  const ctaVariants = useMemo(() => fadeUp({ y: isMobile ? 12 : 16 }), [isMobile]);
 
   return (
     <Section id="testimonials" chapter="05" labelledBy="testimonials-title">

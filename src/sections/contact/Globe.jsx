@@ -7,6 +7,7 @@ import { PERSON } from "@/constants/site";
 
 const SIZE = 320;
 const FREEZE_AFTER_MS = 700; // reduced motion: let the map texture land, then hold one static frame
+const QUIET_MS = 180; // create the globe once no scroll event has arrived for this long
 
 /** Free the GPU context of a canvas we are done with (a fresh canvas is mounted for the next globe). */
 const loseContext = (canvas) => {
@@ -20,7 +21,8 @@ const loseContext = (canvas) => {
 
 /**
  * cobe globe with a gold marker on Tarragona. Desktop tier A only (ChannelPanel decides), never on mobile.
- * - cobe is lazy-loaded once the globe is within 600 px of the viewport.
+ * - cobe is lazy-loaded once the globe is within 600 px of the viewport; the globe itself is created once scrolling
+ *   pauses (180 ms without a scroll event, then an idle callback), so its one long task never lands mid-scroll.
  * - destroy() when it is more than one viewport away (IntersectionObserver rootMargin 100%) and on unmount;
  *   recreated when it comes back.
  * - Pointer drag adds to dragOffset, a Motion spring (stiffness 280, damping 40).
@@ -53,15 +55,31 @@ export default function Globe({ className }) {
     let cancelled = false;
     let globe = null;
     let freezeTimer = 0;
+    let quietTimer = 0;
+    let idleId;
 
-    import("cobe")
-      .then(({ default: createGlobe }) => {
-        if (cancelled || !canvas.isConnected) return;
-        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-        const size = canvas.clientWidth || SIZE;
-        let phi = 0.35;
-        let painted = false;
+    // createGlobe() compiles the shaders and uploads the map in one ~110-170 ms task. Fetch the chunk now, but
+    // only create the globe once scrolling has paused (and the main thread is idle), never mid-scroll.
+    const loading = import("cobe");
+    loading.catch(() => {}); // chunk failure: the panel simply has no globe
+    const whenQuiet = () => {
+      window.clearTimeout(quietTimer);
+      quietTimer = window.setTimeout(() => {
+        window.removeEventListener("scroll", whenQuiet);
+        const go = () => loading.then(create).catch(() => {});
+        if ("requestIdleCallback" in window) idleId = window.requestIdleCallback(go, { timeout: 600 });
+        else go();
+      }, QUIET_MS);
+    };
 
+    function create({ default: createGlobe }) {
+      if (cancelled || !canvas.isConnected) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const size = canvas.clientWidth || SIZE;
+      let phi = 0.35;
+      let painted = false;
+
+      try {
         globe = createGlobe(canvas, {
           devicePixelRatio: dpr,
           width: size * dpr,
@@ -86,15 +104,21 @@ export default function Globe({ className }) {
             }
           },
         });
-        globeRef.current = globe;
-        if (reducedRef.current) freezeTimer = window.setTimeout(() => globe?.toggle(false), FREEZE_AFTER_MS);
-      })
-      .catch(() => {
-        /* WebGL or chunk failure: the panel simply has no globe */
-      });
+      } catch {
+        return; /* WebGL failure: the panel simply has no globe */
+      }
+      globeRef.current = globe;
+      if (reducedRef.current) freezeTimer = window.setTimeout(() => globe?.toggle(false), FREEZE_AFTER_MS);
+    }
+
+    window.addEventListener("scroll", whenQuiet, { passive: true });
+    whenQuiet();
 
     return () => {
       cancelled = true;
+      window.removeEventListener("scroll", whenQuiet);
+      window.clearTimeout(quietTimer);
+      if (idleId !== undefined && "cancelIdleCallback" in window) window.cancelIdleCallback(idleId);
       window.clearTimeout(freezeTimer);
       window.clearTimeout(thawTimer.current);
       if (globe) {
@@ -157,7 +181,7 @@ export default function Globe({ className }) {
     >
       {/* Placeholder limb, same radius as the globe (cobe draws it at 80% of the canvas) */}
       <span
-        className="absolute inset-[10%] rounded-full border border-line transition-opacity duration-reveal ease-out"
+        className="absolute inset-[10%] rounded-full border border-line transition-opacity duration-reveal ease-out motion-off:transition-none"
         style={{ opacity: ready ? 0 : 1 }}
       />
       <canvas
@@ -166,7 +190,8 @@ export default function Globe({ className }) {
         className="absolute inset-0 block size-full touch-none select-none"
         style={{
           opacity: ready ? 1 : 0,
-          transition: "opacity 600ms var(--ease-out)",
+          // Reduced motion: the globe simply appears (static final state, no crossfade).
+          transition: reduced ? "none" : "opacity 500ms var(--ease-out)",
           cursor: grabbing ? "grabbing" : "grab",
           contain: "layout paint size",
         }}

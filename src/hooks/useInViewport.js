@@ -3,15 +3,16 @@ import { useEffect, useState } from "react";
 /**
  * IntersectionObserver visibility.
  *
- * useInViewport(ref, { rootMargin = '0px 0px -15% 0px', threshold = 0, once = true, attr = true, initial = false })
+ * useInViewport(ref, { rootMargin = '0px 0px -6% 0px', threshold = 0, once = true, attr = true, initial = false })
  *
+ * The default margin fires as soon as the element's top is 6 % inside the viewport (it used to wait for 15 %).
  * - When `attr` is true it writes ref.current.dataset.inview = 'true' | 'false'. Before the effect
  *   runs the attribute is absent, so CSS shows the final state (no flash for content already in view).
  * - The initial value is computed synchronously in the effect: with `once`, anything whose top is
  *   above the bottom of the viewport counts as seen; without `once`, it must actually intersect.
  * - `initial` (extra, optional) is the value returned before the first measurement.
  */
-export default function useInViewport(ref, { rootMargin = "0px 0px -15% 0px", threshold = 0, once = true, attr = true, initial = false } = {}) {
+export default function useInViewport(ref, { rootMargin = "0px 0px -6% 0px", threshold = 0, once = true, attr = true, initial = false } = {}) {
   const [inView, setInView] = useState(initial);
 
   useEffect(() => {

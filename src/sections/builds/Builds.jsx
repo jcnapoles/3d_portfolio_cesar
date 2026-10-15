@@ -12,7 +12,7 @@ import BuildRow from "@/sections/builds/BuildRow";
 import BuildPreview from "@/sections/builds/BuildPreview";
 import "./builds.css";
 
-const ROW_STAGGER = staggerParent({ stagger: 0.05 });
+const ROW_STAGGER = staggerParent({ stagger: 0.04 });
 const FIRST_KEY = BUILDS[0].key;
 
 const isHoverPointer = (e) => e.pointerType === "mouse" || e.pointerType === "pen";
@@ -64,9 +64,14 @@ export default function Builds() {
     if (best) setActiveKey(best);
   }, [isDesktop]);
 
-  useLenisScroll(() => {
-    if (nearRef.current) syncToScroll();
-  }, [syncToScroll]);
+  // At most every 100 ms while scrolling (it reads every row's rect), not on every scroll frame.
+  useLenisScroll(
+    () => {
+      if (nearRef.current) syncToScroll();
+    },
+    [syncToScroll],
+    { throttle: 100 }
+  );
 
   useEffect(() => {
     if (!isDesktop) {

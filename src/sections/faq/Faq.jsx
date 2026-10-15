@@ -10,7 +10,7 @@ import { FAQ } from "@/constants/faq";
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
-// Rows fade up with an 80 ms stagger (6 rows fit the 480 ms cap).
+// Rows fade up with a 50 ms stagger (6 rows fit the 300 ms cap).
 const ROW_STAGGER = staggerFor(FAQ.length);
 
 /**
@@ -25,11 +25,11 @@ const ROW_STAGGER = staggerFor(FAQ.length);
 export default function Faq() {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const desktop = useMediaQuery("(min-width: 1024px)");
-  const asideVariants = useMemo(() => fadeUp({ y: isMobile ? 16 : 24, delay: isMobile ? 0 : 0.12 }), [isMobile]);
+  const asideVariants = useMemo(() => fadeUp({ y: isMobile ? 12 : 16, delay: isMobile ? 0 : 0.06 }), [isMobile]);
   // Each row observes itself. On desktop the list enters the viewport in one go, so the per-index delay
   // gives the stagger; on a phone the rows enter one by one as you scroll, so each reveals on arrival.
   const rowVariants = useMemo(
-    () => FAQ.map((_, i) => fadeUp({ y: isMobile ? 16 : 24, delay: desktop ? i * ROW_STAGGER : 0 })),
+    () => FAQ.map((_, i) => fadeUp({ y: isMobile ? 12 : 16, delay: desktop ? i * ROW_STAGGER : 0 })),
     [isMobile, desktop]
   );
 

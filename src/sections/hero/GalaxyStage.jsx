@@ -6,6 +6,7 @@ import useIdleMount from "@/hooks/useIdleMount";
 import useInViewport from "@/hooks/useInViewport";
 import useLenisScroll from "@/hooks/useLenisScroll";
 import { GALAXY } from "@/constants/hero";
+import { sectionsMounted } from "@/components/system/DeferredMount";
 
 const Galaxy = lazy(() => import("./galaxy/Galaxy"));
 
@@ -14,15 +15,22 @@ const OFF = 4;
 const LEVEL_KEY = "cn:galaxy-level";
 const SAMPLE_FRAMES = 90;
 const MIN_FPS = 50;
+// Bottom fraction of the stage over which the stars fade out toward the horizon (in the shader, see Galaxy fork 8).
+const FADE = 0.32;
+// Calm frames (no intro, warp, scroll thrust or moving pointer) at 30 fps: the slow star drift moves under a pixel
+// per frame, so it reads the same, while the full-hero shader and the main-thread frames it drives (every running
+// animation updates its style on each of them) halve. Anything lively runs at the display rate.
+const CALM_FPS = 30;
 
 const readLevel = () => {
   const n = Number.parseInt(readSession(LEVEL_KEY) ?? "", 10);
   return Number.isFinite(n) ? Math.min(Math.max(n, 0), OFF) : 0;
 };
 
+// Device-pixel cap: 1.25 on tier A (stars stay crisp, ~30 % fewer fragments than 1.5), 1 on tier B.
 const configFor = (tierA, level) => {
   const deviceDpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
-  const c = { dpr: Math.min(deviceDpr, tierA ? 1.5 : 1), layers: tierA ? 4 : 3, density: tierA ? 0.8 : 0.6 };
+  const c = { dpr: Math.min(deviceDpr, tierA ? 1.25 : 1), layers: tierA ? 4 : 3, density: tierA ? 0.8 : 0.6 };
   if (level >= 1) c.dpr = 1;
   if (level >= 2) c.layers = Math.min(c.layers, 3);
   if (level >= 3) c.density = Math.min(c.density, 0.5);
@@ -73,7 +81,7 @@ export default function GalaxyStage({ anchorRef }) {
   }, [show]);
 
   const config = useMemo(() => configFor(tierA, level), [tierA, level]);
-  const introSeconds = tierA ? 1.6 : 1.0;
+  const introSeconds = tierA ? 1.1 : 0.8;
 
   const onReady = useCallback(() => setReady(true), []);
 
@@ -141,13 +149,21 @@ export default function GalaxyStage({ anchorRef }) {
       writeSession(LEVEL_KEY, String(n));
       if (n >= OFF) {
         setFading(true);
-        fadeTimer.current = window.setTimeout(() => setLevel(OFF), 800);
+        fadeTimer.current = window.setTimeout(() => setLevel(OFF), 500);
       } else {
         setLevel(n);
       }
     };
 
     const tick = (now) => {
+      // The below-the-fold sections mount in a few long tasks right after the hero (DeferredMount): those frames
+      // say nothing about what the Galaxy costs, so the window only opens once they are all in.
+      if (!sectionsMounted()) {
+        deltas.length = 0;
+        last = now;
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       if (last) {
         const d = now - last;
         if (d > 250) deltas.length = 0; // tab switch or a stall: restart the window
@@ -178,7 +194,7 @@ export default function GalaxyStage({ anchorRef }) {
       {show ? (
         <div
           className={cn(
-            "absolute inset-0 opacity-0 transition-opacity duration-[800ms] ease-out",
+            "absolute inset-0 opacity-0 transition-opacity duration-[500ms] ease-out",
             ready && !fading && "opacity-100"
           )}
         >
@@ -206,6 +222,8 @@ export default function GalaxyStage({ anchorRef }) {
               intro={firstVisit}
               introSeconds={introSeconds}
               dpr={config.dpr}
+              fade={FADE}
+              maxFps={CALM_FPS}
             />
           </Suspense>
         </div>
