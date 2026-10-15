@@ -11,8 +11,9 @@ const STRIP_DELAY_MS = 600;
 const STRIP_STEP_MS = 40;
 
 /**
- * "Where I've built and led technology": eight monochrome logos sitting on the planet horizon at the bottom of the hero.
- * Desktop: one static row. Mobile: a 4 x 2 grid. No marquee. Never UCI or RIU.
+ * "Where I've built and led technology": ten monochrome logos sitting on the planet horizon at the bottom of the hero.
+ * Phone: rows of 4 (a wrapping flex row, so the last 2 sit centred). From 640: a 5 x 2 grid. From 1280: one static
+ * row. No marquee. Never UCI or RIU.
  * Every logo renders as a white silhouette at .55 (.hero-logo + opacity-55), full white on hover.
  */
 export default function TrustStrip({ className }) {
@@ -38,7 +39,7 @@ export default function TrustStrip({ className }) {
         <p className="hud-label text-center lg:text-left">{HERO_COPY.stripLabel}</p>
         <ul
           aria-label={HERO_COPY.stripAria}
-          className="mt-6 grid grid-cols-4 items-center gap-x-2 gap-y-6 sm:gap-x-4 lg:flex lg:justify-between lg:gap-x-6"
+          className="mt-6 flex flex-wrap items-center justify-center gap-y-6 sm:grid sm:grid-cols-5 sm:gap-x-4 xl:flex xl:flex-nowrap xl:justify-between"
         >
           {TRUST_LOGOS.map((logo, i) => {
             const media = companyLogos[logo.key];
@@ -46,7 +47,7 @@ export default function TrustStrip({ className }) {
             return (
               <li
                 key={logo.key}
-                className="flex h-8 min-w-0 items-center justify-center motion-ok:animate-[fade-in_500ms_cubic-bezier(0.16,1,0.3,1)_both] lg:justify-start"
+                className="flex h-8 min-w-0 basis-1/4 items-center justify-center px-1 motion-ok:animate-[fade-in_500ms_cubic-bezier(0.16,1,0.3,1)_both] sm:px-0 lg:justify-start xl:basis-auto"
                 style={{ animationDelay: `${STRIP_DELAY_MS + i * STRIP_STEP_MS}ms` }}
               >
                 <Picture

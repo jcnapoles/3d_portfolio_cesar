@@ -12,6 +12,7 @@ import MobileStickyCta from "@/sections/chrome/MobileStickyCta";
 import LiveDemoChip from "@/sections/chrome/LiveDemoChip";
 import Hero from "@/sections/hero/Hero";
 import Telemetry from "@/sections/telemetry/Telemetry";
+import Delivery from "@/sections/delivery/Delivery";
 import Fit from "@/sections/fit/Fit";
 import Services from "@/sections/services/Services";
 import Missions from "@/sections/missions/Missions";
@@ -40,6 +41,7 @@ function NewSite() {
         {/* Below the fold: mounted group by group right after the hero's first frame (DeferredMount). */}
         <DeferredMount step={1}>
           <Telemetry />
+          <Delivery />
         </DeferredMount>
         <DeferredMount step={2}>
           <Fit />
