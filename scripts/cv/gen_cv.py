@@ -37,7 +37,7 @@ BUL = '•'   # WinAnsi bullet
 TITLE, AUTHOR = 'Cesar Napoles — CV', 'Cesar Napoles'   # PDF metadata
 # PDF /CreationDate and /ModDate as (unix time, UTC offset in hours); ReportLab also seeds the /ID from it.
 # Fixed so unchanged content rebuilds byte-identically; None stamps the current local time.
-PDF_DATE = (1792005359.3803434, 2)                     # 2026-10-14 21:15:59 +02:00
+PDF_DATE = (1792045359.3803434, 2)                     # 2026-10-15 08:22:39 +02:00
 
 NAME = 'CESAR NAPOLES'
 HEADLINE = 'CTO & Senior Technical Lead  |  Full Stack Engineer'
@@ -49,7 +49,7 @@ FOOTER = 'Cesar Napoles  ·  CV  ·  Page {page}'
 
 SUMMARY = [
     'Technology leader and entrepreneur with <b>12+ years of experience</b> in software engineering, system architecture, '
-    'and digital transformation across industries including <b>fintech, payments, insurance, aviation, e-commerce, and '
+    'and digital transformation across industries including <b>fintech, payments, insurance, e-commerce, and '
     'event ticketing</b>. Proven track record building scalable platforms from the ground up, leading cross-functional '
     'teams, and driving measurable business outcomes.',
     'Currently serving as <b>CTO &amp; Co-Founder of Closevibe</b>, an AI-powered conversational commerce platform, and as '
@@ -101,14 +101,6 @@ JOBS = [  # newest first
         'Consulted on <b>MongoDB Atlas performance tuning</b>: indexing strategies, ESR rule enforcement, and advanced Atlas Search optimization, cutting p95 query latency by 70%.',
         'Established <b>monitoring and alerting frameworks</b> in MongoDB Atlas for predictive diagnostics and SLA compliance.',
     ], stack='AWS (EC2, S3, Cognito, VPC, CloudWatch), MongoDB Atlas, CI/CD, Node.js'),
-    dict(company='Flyr · Remote, Spain', location='Remote | Spain', role='Lead Engineer & Frontend Architect',
-         dates=('Mar 2023', 'Sep 2025'), bullets=[
-        'Led the <b>frontend architecture for white-label airline applications</b> deployed for FlyArystan, HKExpress, JSX, and PlusUltra.',
-        'Defined a <b>modular, component-driven architecture</b> enabling rapid deployment of new airline brands with shared core libraries.',
-        'Implemented <b>micro-frontend strategies</b> to decouple brand-specific UIs, enabling independent deployment cycles.',
-        'Integrated with <b>airline reservation systems</b>, disruption management platforms, and multi-channel communication services.',
-        'Achieved a <b>60% reduction in time-to-market</b> for onboarding new airline clients by streamlining development and deployment workflows.',
-    ], stack='React, TypeScript, Micro-frontends, REST APIs, CI/CD, Git'),
     dict(company='FIATC Seguros · Barcelona, Spain', location='Barcelona | Spain',
          role='Fractional CTO / External Tech Lead & Strategic Consultant', dates=('Jan 2023', 'Oct 2024'), bullets=[
         "Acted as <b>fractional CTO</b> for internal digital transformation within one of Spain's established insurance companies.",
@@ -170,7 +162,7 @@ SKILLS = [
     ('Messaging & Integration', ['Apache Kafka', 'WhatsApp Business API', 'Meta APIs', 'n8n', 'REST', 'SOAP', 'GraphQL']),
     ('Testing & QA', ['JUnit', 'Jest', 'Cypress', 'Selenium', 'JMeter', 'Postman', 'SoapUI', 'cURL']),
     ('Tools & Management', ['Git', 'SVN', 'Jira', 'Redmine', 'Trello', 'IntelliJ IDEA', 'VS Code', 'DBeaver', 'Figma']),
-    ('Methodologies', ['Scrum', 'Agile', 'Micro-frontends', 'Microservices', 'Event-Driven Architecture', 'Domain-Driven Design', 'TDD']),
+    ('Methodologies', ['Scrum', 'Agile', 'Microservices', 'Event-Driven Architecture', 'Domain-Driven Design', 'TDD']),
 ]
 
 STRENGTHS = [
@@ -183,7 +175,6 @@ STRENGTHS = [
 
 PROJECTS = [
     ('Closevibe AI Platform', 'Designed and built a production multi-tenant conversational AI SaaS from scratch, handling automated sales conversations across WhatsApp and Messenger for e-commerce brands. Implemented FSM-based conversation flows, RAG with pgvector, and multi-model LLM orchestration.'),
-    ('White-Label Airline Platform (Flyr)', 'Architected a modular micro-frontend system that reduced airline onboarding time by 60%, deployed across 4+ international carriers with brand-specific UIs sharing a unified codebase.'),
     ('Similar Files Detector (ISERN + UPC)', 'Developed an AI-powered document similarity engine in collaboration with the Polytechnic University of Catalonia for intellectual property analysis in the patent industry.'),
     ('InGRID MDM (Indra)', "Built a national-scale energy metering data management platform for Uruguay's utility infrastructure, processing high-volume electrical measurement data using Hadoop/MapReduce/HBase."),
     ('Options Trading SaaS', 'Personal project: designed and developed a full-stack options trading dashboard with Black-Scholes pricing, backtesting engine, FSM state management, and Interactive Brokers API integration.'),

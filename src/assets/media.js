@@ -8,7 +8,6 @@ import fiatcLogo from "./company/fiatc.svg";
 // sttok_logo.svg in git is truncated (327 B, its path data ends in "...") and renders blank; the PNG is the
 // same wordmark (894 x 261, transparent).
 import sttokLogo from "./company/sttok_logo.png";
-import flyrLogo from "./company/flyr.svg";
 import indraLogo from "./company/indra.svg";
 import isernLogo from "./company/isern.png";
 import amarisLogo from "./company/amaris.svg";
@@ -91,7 +90,6 @@ export const companyLogos = {
   closevibeLogo: { src: closevibeLogoSvg, width: 2575, height: 578, alt: "Closevibe" },
   fiatc: { src: fiatcLogo, width: 215, height: 59, alt: "FIATC" },
   sttok: { src: sttokLogo, width: 894, height: 261, alt: "Sttok" },
-  flyr: { src: flyrLogo, width: 140, height: 24, alt: "Flyr" },
   indra: { src: indraLogo, width: 1103, height: 288, alt: "Indra" },
   isern: { src: isernLogo, width: 380, height: 188, alt: "Isern" },
   amaris: { src: amarisLogo, width: 94, height: 35, alt: "Amaris" },

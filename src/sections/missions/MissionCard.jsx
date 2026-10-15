@@ -12,14 +12,13 @@ import { CLAIMS, isVerified } from "@/constants/claims";
 import { testimonialPhotos } from "@/assets/media";
 import SttokDiagram from "./diagrams/SttokDiagram";
 import FiatcDiagram from "./diagrams/FiatcDiagram";
-import FlyrDiagram from "./diagrams/FlyrDiagram";
 import IsernDiagram from "./diagrams/IsernDiagram";
 import ClosevibeDiagram from "./diagrams/CloseviveDiagram";
 
-const DIAGRAMS = { sttok: SttokDiagram, fiatc: FiatcDiagram, flyr: FlyrDiagram, isern: IsernDiagram, closevibe: ClosevibeDiagram };
+const DIAGRAMS = { sttok: SttokDiagram, fiatc: FiatcDiagram, isern: IsernDiagram, closevibe: ClosevibeDiagram };
 
 /* ------------------------------------------------------------------------------------------------
- * Diagram primitives (viewBox 0 0 560 400). Passed to every diagram as the `fig` prop, so the five
+ * Diagram primitives (viewBox 0 0 560 400). Passed to every diagram as the `fig` prop, so the four
  * diagram files stay pure layout and nothing imports back from this file.
  * - Stroke: a path revealed by a Motion pathLength draw (DUR.draw, EASE.draw, once). The draw runs on a
  *   mask, so dashed and solid strokes draw the same way and keep a crisp 1 px non-scaling stroke.

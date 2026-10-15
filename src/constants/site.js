@@ -42,7 +42,7 @@ export const NAV_LINKS = [
 export const ANCHORS = {
   heroCta: "hero-cta",
   contactForm: "contact-form",
-  missions: { sttok: "mission-sttok", fiatc: "mission-fiatc", flyr: "mission-flyr", isern: "mission-isern", closevibe: "mission-closevibe" },
+  missions: { sttok: "mission-sttok", fiatc: "mission-fiatc", isern: "mission-isern", closevibe: "mission-closevibe" },
 };
 // Verified in Phase F step 9 against the injected widget DOM.
 export const CLOSEVIBE_ROOT_SELECTOR = '[id^="closevibe"], [class*="closevibe"], [id^="cv-"]';

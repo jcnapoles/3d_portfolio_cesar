@@ -5,7 +5,7 @@ import useBrandIcons from "@/hooks/useBrandIcons";
 import { projectShots } from "@/assets/media";
 
 /**
- * FIG 03.5 — LIVE PRODUCT (viewBox 560 x 400).
+ * FIG 03.4 — LIVE PRODUCT (viewBox 560 x 400).
  * The live product in a browser frame, four channel nodes around it (WhatsApp, Instagram, Messenger,
  * email) sitting on a faint orbit, each joined by a 1 px line to an AI ASSISTANT label.
  * The satellite runs on that channel orbit and passes behind the frame. `fig` carries the shared
