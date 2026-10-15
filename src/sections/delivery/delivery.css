@@ -1,0 +1,98 @@
+/* AI-native delivery band (Delivery.jsx). Static: no loops. Entrances are Reveal's (reduced-motion aware). */
+
+/* Client wordmarks: white silhouettes, like the hero strip (they key off alpha). */
+.dlv-logo {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+}
+
+/* ---------- The loop: four steps on one hairline, a node per step in its kind's colour ---------- */
+.dlv-steps {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem 1.5rem;
+}
+@media (min-width: 768px) {
+  .dlv-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.5rem 2rem; }
+}
+@media (min-width: 1024px) {
+  .dlv-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.dlv-step {
+  --kind: var(--ion);
+  --kind-tint: var(--ion-tint);
+  position: relative;
+  min-width: 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line-strong);
+}
+.dlv-step[data-kind="expert"] { --kind: #F4B860; --kind-tint: var(--gold-tint); }
+.dlv-step[data-kind="qa"] { --kind: var(--signal); --kind-tint: var(--signal-tint); }
+
+/* The node sits on the hairline at the step's left edge. */
+.dlv-step::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--kind);
+  box-shadow: 0 0 0 3px var(--space-900), 0 0 12px 1px var(--kind-tint);
+}
+
+.dlv-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--kind) 40%, transparent);
+  border-radius: 9999px;
+  background: var(--kind-tint);
+  color: var(--kind);
+  font-family: theme("fontFamily.mono");
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  font-weight: 500;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ---------- Outcomes: text stats, 1 / 2 / 4 across ----------
+   Each cell is a 3-row subgrid (value, label, footer), so values, labels and rulers line up across a row even when
+   a value or a label wraps. */
+.dlv-outcomes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 2rem;
+  row-gap: 2.5rem;
+}
+@media (min-width: 640px) {
+  .dlv-outcomes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .dlv-outcomes { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.dlv-cell {
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  min-width: 0;
+}
+@supports not (grid-template-rows: subgrid) {
+  .dlv-cell { display: flex; flex-direction: column; }
+  .dlv-foot { margin-top: auto; }
+}
+
+/* The arrow follows the value's size (text-h3). */
+.dlv-trend { width: 0.85em; height: 0.85em; }
+
+@media (forced-colors: active) {
+  .dlv-logo { filter: none; opacity: 1; }
+  .dlv-step::before { background: CanvasText; box-shadow: none; }
+  .dlv-badge { border-color: CanvasText; background: Canvas; color: CanvasText; }
+}

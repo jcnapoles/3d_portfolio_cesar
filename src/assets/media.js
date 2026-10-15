@@ -23,6 +23,10 @@ import uciWebp from "./generated/company/uci-128.webp";
 // Both carry their shape in the alpha channel: the flight log and the hero strip render logos as white silhouettes.
 import cashelaMarkWebp from "./generated/company/cashela-128.webp";
 import ticket1234MarkWebp from "./generated/company/1234ticket-128.webp";
+// Hero strip wordmarks. Cashela: the official wordmark (cashela-frontend-v2 public/cashela-logo.svg), unchanged.
+// 1234ticket: the official home2 wordmark without its dark letter fills (see the note in the file).
+import cashelaLogoSvg from "./company/cashela-logo.svg";
+import ticket1234LogoSvg from "./company/1234ticket-logo.svg";
 
 const projectFiles = import.meta.glob("./generated/projects/*.{avif,webp}", { eager: true, import: "default" });
 const testimonialFiles = import.meta.glob("./generated/testimonials/*.{avif,webp}", { eager: true, import: "default" });
@@ -79,7 +83,9 @@ export const testimonialPhotos = Object.fromEntries(
 /** Company logos. SVG width/height come from each file's viewBox (rounded). */
 export const companyLogos = {
   "1234ticket": { src: ticket1234MarkWebp, width: 128, height: 56, alt: "1234ticket" },
+  "1234ticketLogo": { src: ticket1234LogoSvg, width: 164, height: 26, alt: "1234ticket" },
   cashela: { src: cashelaMarkWebp, width: 128, height: 104, alt: "Cashela" },
+  cashelaLogo: { src: cashelaLogoSvg, width: 204, height: 39, alt: "Cashela" },
   caixabanktech: { src: caixabanktechLogo, width: 200, height: 50, alt: "CaixaBank Tech" },
   closevibe: { src: closevibeMarkSvg, width: 568, height: 578, alt: "Closevibe" },
   closevibeLogo: { src: closevibeLogoSvg, width: 2575, height: 578, alt: "Closevibe" },

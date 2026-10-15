@@ -67,20 +67,23 @@ export const LEADER_READOUTS = [
 /**
  * Trust strip, in this order (keys of companyLogos in src/assets/media.js). `scale` is the per-logo optical scale
  * (1 = 24 px desktop / 22 px mobile height box). Closevibe leads with its real logo (mark + wordmark lockup).
- * Wide and narrow logos alternate so neighbours never touch on the 4 x 2 phone grid (at 375 px the lockup,
- * CaixaBank and FIATC each fill their 80 px cell; the closest gap is now ~16 px).
- * Never UCI or RIU. Cashela and 1234ticket stay out: ten logos break the 4-column phone grid (4 + 4 + 2) and
- * crowd the single desktop row at 1024 px.
+ * Ten logos: rows of 4 on phones (4 + 4 + 2, the last row centred), 5 x 2 from 640, one row from 1280.
+ * Phones: wide and narrow logos alternate within each row (at 375 px the lockup, CaixaBank, Cashela and 1234ticket
+ * each fill their ~80 px cell, next to a narrow one). One row: the scale spills past each layout box, so every
+ * scaled-up logo (CaixaBank, Isern, Amaris) sits next to a scaled-down one; the closest gap at 1280 is ~19 px.
+ * Never UCI or RIU.
  */
 export const TRUST_LOGOS = [
   { key: "closevibeLogo", scale: 1 },
   { key: "sttok", scale: 0.74 },
   { key: "caixabanktech", scale: 1.08 },
-  { key: "isern", scale: 1.3 },
-  { key: "fiatc", scale: 0.94 },
   { key: "flyr", scale: 0.8 },
-  { key: "indra", scale: 0.84 },
+  { key: "isern", scale: 1.3 },
+  { key: "cashelaLogo", scale: 0.92 },
   { key: "amaris", scale: 1.16 },
+  { key: "1234ticketLogo", scale: 0.9 },
+  { key: "indra", scale: 0.84 },
+  { key: "fiatc", scale: 0.94 },
 ];
 
 /** Galaxy palette and fallback focal points (GL coordinates: x from the left, y from the bottom). */
