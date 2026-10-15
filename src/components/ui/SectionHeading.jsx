@@ -6,7 +6,8 @@ import Reveal from "@/components/ui/Reveal";
 /**
  * Section header: HUD index row (aria-hidden) -> eyebrow (scramble) -> H2 (GSAP line mask via
  * data-reveal="lines") -> optional lead (Motion fade-up).
- * Rhythm: index->eyebrow 12 px, eyebrow->H2 16 px, H2->lead 24 px, heading->content 40 px mobile / 56 px desktop
+ * Rhythm: index->eyebrow 12 px (16 px from 768, so the HUD hairline reads ~20 px clear of the eyebrow),
+ * eyebrow->H2 16 px, H2->lead 24 px, heading->content 40 px mobile / 56 px desktop
  * (bottom margin; override with className, e.g. "mb-0").
  * With srOnly, only an sr-only <h2> is rendered.
  */
@@ -22,7 +23,7 @@ export default function SectionHeading({ index, name, eyebrow, title, lead, id, 
   return (
     <div className={cn("mb-10 lg:mb-14", center && "mx-auto flex flex-col items-center text-center", className)}>
       {index || name ? <HudIndex index={index} name={name} right={hudRight} /> : null}
-      {eyebrow ? <ScrambleText as="p" className="hud-label mt-3" text={eyebrow} trigger="inview" /> : null}
+      {eyebrow ? <ScrambleText as="p" className="hud-label mt-3 md:mt-4" text={eyebrow} trigger="inview" /> : null}
       <h2 id={id} data-reveal="lines" className={cn("mt-4 text-h2 stretch-110 text-ink-1", center && "mx-auto")}>
         {title}
       </h2>

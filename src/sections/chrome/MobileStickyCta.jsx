@@ -45,7 +45,9 @@ function StickyCta() {
     const stop = whenPresent(
       () => document.getElementById(ANCHORS.heroCta) || document.getElementById("top"),
       (el) => {
-        io = new IntersectionObserver(([entry]) => {
+        // A busy main thread can deliver the initial and the current entry in one batch: read the last one.
+        io = new IntersectionObserver((entries) => {
+          const entry = entries[entries.length - 1];
           setPastHero(!entry.isIntersecting && entry.boundingClientRect.top < 0);
         });
         io.observe(el);

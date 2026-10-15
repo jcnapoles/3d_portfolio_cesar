@@ -3,16 +3,10 @@
    Rule M-3: only transform / opacity are animated; the scrolled navbar surface (background, border,
    shadows, backdrop blur) lives on its own layer and crossfades by opacity. */
 
-/* ---------- Navbar shell: hide on scroll down, show on scroll up ---------- */
-/* The shell is the full-width fixed strip (it carries the 16 px top inset on >= 768, so -120% clears the pill).
-   It stays visible while focus is inside it (:focus-within), and never moves under reduced motion. */
-html:not([data-motion="reduced"]) .nav-shell {
-  transition: transform 320ms var(--ease-out);
-}
-html:not([data-motion="reduced"]) .nav-shell[data-hidden="true"]:not(:focus-within) {
-  transform: translate3d(0, -120%, 0);
-  transition: transform 240ms var(--ease-in);
-}
+/* ---------- Navbar shell ----------
+   The full-width fixed strip (it carries the 16 px top inset on >= 768). It never hides on scroll (owner feedback,
+   polish 3): the bar / pill stays put, so html scroll-padding-top (88 px) always clears it (72 px tall on >= 768,
+   56 px below). */
 
 /* ---------- Bar / pill geometry (shared by the navbar and the mobile menu's header row) ---------- */
 .nav-frame {

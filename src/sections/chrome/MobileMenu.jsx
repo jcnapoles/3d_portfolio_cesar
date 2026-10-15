@@ -181,6 +181,8 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
 
             <div className="mx-auto flex w-full max-w-[1120px] flex-1 flex-col px-4 md:px-9">
               <nav aria-label="Menu" className="pt-8 md:pt-14">
+                {/* Row hairlines: 18 px padding keeps >= 12 px between each rule and the 36 px label's text box
+                    (polish 3 hairline rhythm; 14 px left only 8 px). */}
                 <m.ul variants={list} initial="hidden" animate="show" className="border-t border-line">
                   {NAV_LINKS.map((link, i) => {
                     const active = link.chapter === activeChapter;
@@ -191,7 +193,7 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
                           href={`#${link.id}`}
                           aria-current={active ? "true" : undefined}
                           onClick={(e) => go(e, link.id)}
-                          className="group flex items-center gap-5 py-3.5"
+                          className="group flex items-center gap-5 py-[18px]"
                         >
                           <span aria-hidden="true" className="hud-label w-6 shrink-0 tabular">
                             {String(i + 1).padStart(2, "0")}

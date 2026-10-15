@@ -32,7 +32,8 @@ function useHeroInView(enabled) {
       setInView(false);
       return undefined;
     }
-    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+    // A busy main thread can deliver the initial and the current entry in one batch: the last one is the truth.
+    const io = new IntersectionObserver((entries) => setInView(entries[entries.length - 1].isIntersecting), {
       rootMargin: `-${NAV_OFFSET}px 0px 0px 0px`,
       threshold: 0,
     });

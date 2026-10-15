@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useRef } from "react";
 import { ArrowDownRight, ArrowRight } from "lucide-react";
 import Section from "@/components/ui/Section";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -6,13 +6,11 @@ import NumberTicker from "@/components/ui/NumberTicker";
 import Picture from "@/components/ui/Picture";
 import ScrambleText from "@/components/ui/ScrambleText";
 import Ticks from "@/components/ui/Ticks";
-import Reveal from "@/components/ui/Reveal";
-import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/cn";
-import { DUR, fadeUp, STAGGER } from "@/lib/motion";
 import { companyLogos } from "@/assets/media";
 import { FACTS, verifiedClaims } from "@/constants/claims";
 import { ANCHORS } from "@/constants/site";
+import useCellEntrance from "./useCellEntrance";
 import "./telemetry.css";
 
 /**
@@ -134,9 +132,9 @@ function Caption({ cell }) {
  * A lit panel (ion hairline border, static gold spark on the top edge, soft ion glow): no loops.
  * Phone: stacked (HUD, logo, role, line, ruler, captions). From 768: logo | role + line, side by side.
  */
-function FeaturedCell({ variants }) {
+function FeaturedCell() {
   return (
-    <Reveal as="li" variants={variants} className="tlm-feature">
+    <li className="tlm-feature tlm-in">
       <div className="flex items-start justify-between gap-4">
         {/* Decorative HUD label, two stacked lines like the number cells; the content below says it in full. */}
         <p aria-hidden="true" className="hud-label">
@@ -166,7 +164,9 @@ function FeaturedCell({ variants }) {
 
       <div className="mt-6 lg:mt-7">
         <Ticks count={80} />
-        <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-6">
+        {/* Ruler to caption text: ~18 px like the number cells (whose caption sits on a taller line box). On coarse
+            pointers the link's own 12 px touch padding already adds the air, so the gap stays mt-3 there. */}
+        <div className="mt-4 flex flex-wrap items-baseline justify-between gap-x-6 coarse:mt-3">
           <a href={FEATURED.caseStudy.href} aria-label={FEATURED.caseStudy.ariaLabel} className={cn(CAPTION_BASE, CAPTION_LINK)}>
             <CaptionText text={FEATURED.caseStudy.text} Icon={ArrowRight} iconClassName={CAPTION_ARROW} />
           </a>
@@ -176,7 +176,7 @@ function FeaturedCell({ variants }) {
           </span>
         </div>
       </div>
-    </Reveal>
+    </li>
   );
 }
 
@@ -186,30 +186,18 @@ function FeaturedCell({ variants }) {
  */
 export default function Telemetry() {
   const cells = buildCells();
-  const fourUp = useMediaQuery("(min-width: 1024px)");
-  const isMobile = useMediaQuery("(max-width: 767px)");
-
-  // Snappy reveals (<= 500 ms, STAGGER.stats = 60 ms between cells). Each cell observes itself, so on the 2x2
-  // phone/tablet grid a row reveals as soon as it enters; across the 4-up desktop row the per-index delay gives
-  // the staggerParent({ stagger: STAGGER.stats }) timing. The featured cell observes itself too.
-  const variants = useMemo(() => {
-    const y = isMobile ? 12 : 16;
-    const duration = Math.min(DUR.reveal, 0.5);
-    return {
-      featured: fadeUp({ y, duration }),
-      cells: cells.map((_, i) => fadeUp({ y, duration, delay: (fourUp ? i : i % 2) * STAGGER.stats })),
-    };
-    // cells.length is constant (4)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fourUp, isMobile]);
+  const listRef = useRef(null);
+  // Snappy fade-up per cell (500 ms, 12 / 16 px, STAGGER.stats = 60 ms per row: telemetry.css), as CSS transitions
+  // that can only delay the final state, never lose it: see useCellEntrance (brief item 4, the stuck first row).
+  useCellEntrance(listRef);
 
   return (
     <Section id="telemetry" chapter="00" tone="band" labelledBy="telemetry-title">
       <SectionHeading srOnly id="telemetry-title" title="Track record in numbers" />
-      <ul role="list" className="tlm-grid">
-        <FeaturedCell variants={variants.featured} />
+      <ul ref={listRef} role="list" className="tlm-grid">
+        <FeaturedCell />
         {cells.map((cell, i) => (
-          <Reveal as="li" key={cell.key} variants={variants.cells[i]} className={cn("tlm-cell border-line", CELL_EDGES[i])}>
+          <li key={cell.key} className={cn("tlm-cell tlm-in border-line", CELL_EDGES[i])}>
             {/* HUD label "TLM-0n · CAPTION" set as two stacked lines (the line break is the separator), so a
                 long caption never breaks mid-label in a narrow cell. Decorative: the caption is repeated below. */}
             <p aria-hidden="true" className="hud-label self-start">
@@ -224,7 +212,7 @@ export default function Telemetry() {
                 <Caption cell={cell} />
               </div>
             </div>
-          </Reveal>
+          </li>
         ))}
       </ul>
     </Section>

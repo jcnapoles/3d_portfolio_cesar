@@ -109,6 +109,9 @@ export default function Footer() {
 
   // flow-root: overflow:clip does not create a block formatting context, so without it the wordmark's
   // negative bottom margin would collapse through the footer instead of sinking the letters under its edge.
+  // Below 768 everything is centred (owner feedback, polish 3): text-align on the container centres the titles, the
+  // inline-flex links (icons stay inline with their label) and the Return-to-launch button; the flex rows (the
+  // availability line, the bottom bar) centre with justify-center. 768 and up keep the left-aligned grid.
   return (
     <footer
       ref={footerRef}
@@ -116,7 +119,7 @@ export default function Footer() {
       data-offscreen={onScreen ? "false" : "true"}
       className="relative z-content flow-root overflow-clip border-t border-line pt-20"
     >
-      <Container>
+      <Container className="max-md:text-center">
         {/* Row 1 */}
         <div className="flex items-center gap-4" aria-hidden="true">
           <span className="h-px flex-1 bg-line-strong" />
@@ -186,7 +189,7 @@ export default function Footer() {
                 <LocalTime prefix="TARRAGONA" className="text-hud-xs uppercase text-ink-2" />
               </li>
               {AVAILABILITY.show ? (
-                <li className="flex items-start gap-2.5 text-small text-ink-1">
+                <li className="flex items-start gap-2.5 text-small text-ink-1 max-md:justify-center">
                   <StatusDot className="mt-[0.4375rem]" />
                   {AVAILABILITY.text}
                 </li>
@@ -203,18 +206,21 @@ export default function Footer() {
 
         {/* Row 3 */}
         <div className="mt-16 border-t border-line pt-10 lg:mt-20">
-          <p className="max-w-[40ch] text-lead font-medium text-ink-1">
+          <p className="max-w-[40ch] text-lead font-medium text-ink-1 max-md:mx-auto max-md:text-balance">
             Fractional CTO for startups and SMEs. Strategy, architecture and teams that ship.
           </p>
           <p className="mt-3 text-small text-ink-2">Based in Tarragona, Spain · Remote &amp; hybrid</p>
         </div>
 
         {/* Row 4: bottom bar */}
-        <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-hud-xs uppercase text-ink-3">
+        {/* < 768: centred, one item per line; text-balance (inherited) splits the LCP readout evenly instead of
+            leaving "DEVICE" alone on its second line. */}
+        <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-hud-xs uppercase text-ink-3 max-md:justify-center max-md:text-balance">
           <span>© {new Date().getFullYear()} Cesar Napoles</span>
           <span>Chat assistant powered by Closevibe</span>
           <LcpReadout />
-          <MotionToggle className="lg:ml-auto" />
+          {/* Pushed to the row's right edge from 768 (tablet matches desktop); centred with the rest below 768. */}
+          <MotionToggle className="md:ml-auto" />
         </div>
       </Container>
 

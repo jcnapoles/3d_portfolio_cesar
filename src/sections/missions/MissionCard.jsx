@@ -395,9 +395,10 @@ const MissionCard = memo(function MissionCard({ mission, index, total, progress,
 
           <div>
             <h4 className="hud-label">What I did</h4>
-            <ul className="mt-3 grid gap-x-6 gap-y-4 sm:grid-cols-2">
+            {/* Hairline rhythm (--rule-gap): the same space above and below every item's top rule. */}
+            <ul className="mt-rule grid gap-x-6 gap-y-rule sm:grid-cols-2">
               {mission.did.map((item) => (
-                <li key={item} className="border-t border-line-strong pt-3 text-small text-ink-2">
+                <li key={item} className="border-t border-line-strong pt-rule text-small text-ink-2">
                   {item}
                 </li>
               ))}

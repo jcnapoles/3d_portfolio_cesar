@@ -57,7 +57,7 @@ export default function ChannelPanel({ className }) {
           <div
             key={row.dt}
             className={
-              "flex min-w-0 flex-col gap-2 border-b border-line py-4 first:pt-0 last:border-b-0 last:pb-0 " +
+              "flex min-w-0 flex-col gap-2 border-b border-line py-rule first:pt-0 last:border-b-0 last:pb-0 " +
               "sm:max-lg:[&:nth-child(2)]:pt-0 sm:max-lg:[&:nth-last-child(2)]:border-b-0 sm:max-lg:[&:nth-last-child(2)]:pb-0"
             }
           >

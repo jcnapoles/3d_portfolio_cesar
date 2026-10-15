@@ -47,7 +47,8 @@ module.exports = {
         "hud-xs": ["0.6875rem", { lineHeight: "1.2", letterSpacing: "0.16em", fontWeight: "500" }],
         wordmark: ["clamp(6rem, 22vw, 22rem)", { lineHeight: "0.8", letterSpacing: "-0.05em", fontWeight: "800" }],
       },
-      spacing: { section: "clamp(6rem, 4rem + 6vw, 10rem)", 13: "3.25rem", 18: "4.5rem", 22: "5.5rem" },
+      // rule: hairline rhythm (divider <-> text), 16 px below 768 and 20 px from 768 (--rule-gap, src/index.css).
+      spacing: { section: "clamp(6rem, 4rem + 6vw, 10rem)", rule: "var(--rule-gap)", 13: "3.25rem", 18: "4.5rem", 22: "5.5rem" },
       maxWidth: { container: "1280px", wide: "1440px", prose: "64ch", measure: "56ch" },
       borderRadius: { xs: "4px", sm: "8px", md: "12px", lg: "20px", xl: "28px", pill: "9999px" },
       boxShadow: {

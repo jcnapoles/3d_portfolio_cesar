@@ -1,5 +1,5 @@
-/* 6.3 Telemetry band (T3). No loops or entry animations live here: the cells reveal through Motion,
-   the numbers through NumberTicker and the rulers through Ticks (all reduced-motion aware). */
+/* 6.3 Telemetry band (T3). No loops live here. The cells' entrance is the one-shot transition below
+   (useCellEntrance.js); the numbers roll through NumberTicker and the rulers fill through Ticks (all reduced-motion aware). */
 
 /* Featured cell (TLM-01, Closevibe) on its own full row, then the numbers: 2x2 below 1024, 4 across from 1024.
    Each number cell is a 4-row subgrid (HUD label, value, label, footer), so values, labels and rulers line up
@@ -19,6 +19,27 @@
 @media (min-width: 1024px) {
   /* A quarter of the grid minus px-8 on both sides (the middle cells). */
   .tlm-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); --tlm-cell: calc(25cqi - 4rem); }
+}
+
+/* ---------- Cell entrance (useCellEntrance.js) ----------
+   A fade-up of 500 ms (12 px, 16 px from 768) on opacity + transform only, so it runs on the compositor.
+   No data-enter is the final state: a cell the script never arms (in view at mount, reduced motion, no JS) just shows.
+   "wait" is only set before the first paint, and carries no transition, so arming never fades anything out.
+   Stagger (STAGGER.stats, 60 ms): within a row of the 2x2 grid, across the single row from 1024.
+   Transitions, not keyframes: Section's offscreen pause (animation-play-state) cannot freeze a cell half-way. */
+.tlm-in { --tlm-y: 12px; --tlm-delay: 0ms; }
+.tlm-grid > .tlm-cell:nth-child(odd) { --tlm-delay: 60ms; } /* child 1 is the featured cell */
+@media (min-width: 768px) {
+  .tlm-in { --tlm-y: 16px; }
+}
+@media (min-width: 1024px) {
+  .tlm-grid > .tlm-cell:nth-child(3) { --tlm-delay: 60ms; }
+  .tlm-grid > .tlm-cell:nth-child(4) { --tlm-delay: 120ms; }
+  .tlm-grid > .tlm-cell:nth-child(5) { --tlm-delay: 180ms; }
+}
+html:not([data-motion="reduced"]) .tlm-in[data-enter="wait"] { opacity: 0; transform: translateY(var(--tlm-y)); }
+html:not([data-motion="reduced"]) .tlm-in[data-enter="go"] {
+  transition: opacity var(--t-reveal) var(--ease-out) var(--tlm-delay), transform var(--t-reveal) var(--ease-out) var(--tlm-delay);
 }
 
 .tlm-cell {

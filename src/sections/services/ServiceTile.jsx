@@ -77,7 +77,9 @@ function useVisualActivity({ mode, revealed, revealDelay, visualRef }) {
       return undefined;
     }
     const io = new IntersectionObserver(
-      ([entry]) => {
+      (entries) => {
+        // A busy main thread can batch the initial and the current entry: the last one is the current state.
+        const entry = entries[entries.length - 1];
         setVisible(entry.isIntersecting);
         setMostly(entry.isIntersecting && entry.intersectionRatio >= 0.5);
       },
@@ -121,7 +123,7 @@ function useVisualActivity({ mode, revealed, revealDelay, visualRef }) {
 function Deliverables({ items }) {
   return (
     <details className="disclosure group/del mt-6 border-y border-line">
-      <summary className="group/sum flex min-h-11 items-center justify-between gap-4 py-3 text-small font-semibold text-ink-1">
+      <summary className="group/sum flex min-h-11 items-center justify-between gap-4 py-3 text-small md:py-4 font-semibold text-ink-1">
         <span>Deliverables ({items.length})</span>
         <span className="grid size-7 shrink-0 place-items-center rounded-full border border-line-strong text-ink-2 transition-colors duration-ui ease-ui group-hover/sum:border-ink-3 group-hover/sum:text-ink-1 group-open/del:border-ink-3 group-open/del:text-ink-1">
           <Plus size={14} strokeWidth={2} aria-hidden="true" className="motion-ok:transition-transform motion-ok:duration-ui motion-ok:ease-ui group-open/del:rotate-45" />
@@ -145,7 +147,7 @@ function CoreList({ items }) {
       <p className="hud-label">You get</p>
       <ul className="mt-2">
         {items.map((item) => (
-          <li key={item} className="flex items-start gap-3 border-t border-line py-3 text-body text-ink-1 first:border-t-0">
+          <li key={item} className="flex items-start gap-3 border-t border-line py-rule text-body text-ink-1 first:border-t-0 first:pt-3">
             <StarGlyph size={10} className="mt-[0.5em] text-gold" />
             <span>{item}</span>
           </li>
@@ -157,7 +159,7 @@ function CoreList({ items }) {
 
 function Proof({ text }) {
   return (
-    <div className="panel-blueprint mt-6 p-4">
+    <div className="panel-blueprint mt-6 p-rule">
       <p className="hud-label">Proof</p>
       <p className="mt-2 text-small text-ink-2">{highlightCompanies(text)}</p>
     </div>

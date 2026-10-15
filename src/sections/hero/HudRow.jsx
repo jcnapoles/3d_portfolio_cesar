@@ -19,7 +19,8 @@ export default function HudRow() {
             <span className="text-ion">00</span> / LAUNCH
           </span>
         </div>
-        <div className="hero-ticks reveal-rule mt-2.5" />
+        {/* Hairline rhythm: 14 px under the readout on phones (the badge row starts at 132 px), 20 px from 1024. */}
+        <div className="hero-ticks reveal-rule mt-3.5 lg:mt-5" />
       </Container>
     </div>
   );

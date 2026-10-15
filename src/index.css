@@ -63,6 +63,13 @@
     /* Tempo pass 2 (keep in sync with DUR in lib/motion.js and transitionDuration in tailwind.config.cjs). */
     --t-press: 100ms; --t-micro: 140ms; --t-ui: 180ms; --t-panel: 320ms; --t-reveal: 500ms; --t-headline: 700ms; --t-draw: 600ms;
     --nav-offset: 88px;
+    /* Hairline rhythm (polish 3): the space between a divider line and the text it separates (tailwind
+       `*-rule`: py-rule, pt-rule, mt-rule, gap-y-rule). 16 px on phones, 20 px from 768: with the text's own
+       half-leading that reads as ~15-18 px / ~19-22 px from the line to the glyphs. */
+    --rule-gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    :root { --rule-gap: 1.25rem; }
   }
   html {
     background: var(--void);

@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { m } from "motion/react";
 import { cn } from "@/lib/cn";
 import { fadeUp, staggerParent } from "@/lib/motion";
-import Reveal from "@/components/ui/Reveal";
 import RevealItem from "@/components/ui/RevealItem";
+import useInViewport from "@/hooks/useInViewport";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import useMotionPreference from "@/hooks/useMotionPreference";
 import usePrefersFinePointer from "@/hooks/usePrefersFinePointer";
@@ -29,6 +30,19 @@ export default function Wordmark({ trackRef, className, ...rest }) {
   const fine = usePrefersFinePointer();
   const desktop = useMediaQuery("(min-width: 1024px)");
   const proximity = !reduced && fine && desktop;
+
+  // Rise trigger: the box's first visible pixel (no bottom inset). The wordmark is the last thing on the page and
+  // sinks under the footer's edge, so at maximum scroll its top can sit inside the bottom 6 % of the viewport
+  // (390 x 844: top 796 px, Reveal's trigger line 793 px): <Reveal> never fired there and the letters stayed at
+  // opacity 0. useInViewport also checks synchronously at mount and reads every entry of a batched callback.
+  const seen = useInViewport(boxRef, { rootMargin: "0px", attr: false });
+  // Anything rendered while motion is reduced counts as shown (same contract as <Reveal>), so switching motion
+  // back on never hides the letters and replays them.
+  const [shownReduced, setShownReduced] = useState(reduced);
+  useEffect(() => {
+    if (reduced) setShownReduced(true);
+  }, [reduced]);
+  const show = reduced || shownReduced || seen;
 
   useEffect(() => {
     if (!proximity) return undefined;
@@ -113,7 +127,12 @@ export default function Wordmark({ trackRef, className, ...rest }) {
       )}
       {...rest}
     >
-      <Reveal as="div" variants={parentVariants} className="flex justify-center">
+      <m.div
+        variants={parentVariants}
+        initial={reduced ? false : "hidden"}
+        animate={show ? "show" : "hidden"}
+        className="flex justify-center"
+      >
         {LETTERS.map((ch, i) => (
           <RevealItem as="span" key={`${ch}-${i}`} variants={letterVariants} className="inline-block">
             <span
@@ -126,7 +145,7 @@ export default function Wordmark({ trackRef, className, ...rest }) {
             </span>
           </RevealItem>
         ))}
-      </Reveal>
+      </m.div>
     </div>
   );
 }
