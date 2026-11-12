@@ -1,18 +1,21 @@
 // Hero (spec 6.2) copy and data. Numbers come only from claims.js (FACTS / verified CLAIMS).
 import { CLAIMS, FACTS, sttokMetricKey } from "@/constants/claims";
 import { ANCHORS } from "@/constants/site";
+import { t } from "@/i18n";
 
 export const HERO_COPY = {
-  eyebrow: "FRACTIONAL CTO FOR STARTUPS & SMES",
-  subtitle: "Without the full-time CTO.",
-  lead:
-    "I help founders and leadership teams make the right technical calls, scale their platforms and build engineering teams that ship. Hands-on, with 12+ years across banking, fintech, insurance and e-commerce.",
-  primaryCta: "Book a 30-min call",
-  secondaryCta: "See results",
-  microcopy: "30 minutes. Bring your hardest tech question.",
-  portraitAlt: "Cesar Napoles, fractional CTO",
-  stripLabel: "Where I've built and led technology",
-  stripAria: "Companies where Cesar has built and led technology",
+  eyebrow: t({ en: "FRACTIONAL CTO FOR STARTUPS & SMES", es: "CTO FRACCIONAL PARA STARTUPS Y PYMES" }),
+  subtitle: t({ en: "Without the full-time CTO.", es: "Sin un CTO a tiempo completo." }),
+  lead: t({
+    en: "I help founders and leadership teams make the right technical calls, scale their platforms and build engineering teams that ship. Hands-on, with 12+ years across banking, fintech, insurance and e-commerce.",
+    es: "Ayudo a fundadores y equipos directivos a tomar las decisiones técnicas correctas, escalar sus plataformas y formar equipos de ingeniería que entregan. Con implicación directa y más de 12 años en banca, fintech, seguros y e-commerce.",
+  }),
+  primaryCta: t({ en: "Book a 30-min call", es: "Agenda una llamada de 30 min" }),
+  secondaryCta: t({ en: "See results", es: "Ver resultados" }),
+  microcopy: t({ en: "30 minutes. Bring your hardest tech question.", es: "30 minutos. Trae tu pregunta técnica más difícil." }),
+  portraitAlt: t({ en: "Cesar Napoles, fractional CTO", es: "Cesar Napoles, CTO fraccional" }),
+  stripLabel: t({ en: "Where I've built and led technology", es: "Donde he construido y liderado tecnología" }),
+  stripAria: t({ en: "Companies where Cesar has built and led technology", es: "Empresas donde Cesar ha construido y liderado tecnología" }),
 };
 
 /**
@@ -22,24 +25,27 @@ export const HERO_COPY = {
  * else no chip. Flipping a claim in claims.js is the only edit needed.
  */
 const STTOK_METRIC_CHIP = {
-  sttokP95: { unit: "p95 latency", label: "Sttok" },
+  sttokP95: { unit: t({ en: "p95 latency", es: "latencia p95" }), label: "Sttok" },
   sttokInfraSpend: {
-    unit: "infra spend",
-    label: "Sttok AWS projection",
-    ariaLabel: "Sttok case study: 30% lower projected infrastructure spend",
+    unit: t({ en: "infra spend", es: "gasto en infra" }),
+    label: t({ en: "Sttok AWS projection", es: "Proyección AWS de Sttok" }),
+    ariaLabel: t({
+      en: "Sttok case study: 30% lower projected infrastructure spend",
+      es: "Caso de estudio de Sttok: 30% menos de gasto proyectado en infraestructura",
+    }),
   },
 };
 
 export function getProofChips() {
   const users = FACTS.sttokUsers.display;
   const chips = [
-    { key: "closevibe", value: "Co-founder & CTO", label: "Closevibe", href: `#${ANCHORS.missions.closevibe}` },
+    { key: "closevibe", value: t({ en: "Co-founder & CTO", es: "Cofundador y CTO" }), label: "Closevibe", href: `#${ANCHORS.missions.closevibe}` },
     {
       key: "sttok-users",
-      value: `${users} users`,
-      label: "Architecture at Sttok",
+      value: t({ en: `${users} users`, es: `${users} usuarios` }),
+      label: t({ en: "Architecture at Sttok", es: "Arquitectura en Sttok" }),
       href: `#${ANCHORS.missions.sttok}`,
-      ariaLabel: `Sttok case study: architecture for ${users} users`,
+      ariaLabel: t({ en: `Sttok case study: architecture for ${users} users`, es: `Caso de estudio de Sttok: arquitectura para ${users} usuarios` }),
     },
     { key: "caixabank", value: "Sr. Tech Lead", label: "CaixaBank Tech", href: "#about" },
   ];
@@ -60,8 +66,8 @@ export function getProofChips() {
 
 /** Leader readouts (>= 1280, aria-hidden). `t` is the anchor angle on the front ring, in degrees. */
 export const LEADER_READOUTS = [
-  { key: "caixabank", tag: "ORBIT", text: "CAIXABANK TECH — SR. TECH LEAD", t: 60, row: 1.06 },
-  { key: "closevibe", tag: "ORBIT", text: "CLOSEVIBE — CO-FOUNDER & CTO", t: 40, row: 1.135 },
+  { key: "caixabank", tag: t({ en: "ORBIT", es: "ÓRBITA" }), text: "CAIXABANK TECH — SR. TECH LEAD", t: 60, row: 1.06 },
+  { key: "closevibe", tag: t({ en: "ORBIT", es: "ÓRBITA" }), text: t({ en: "CLOSEVIBE — CO-FOUNDER & CTO", es: "CLOSEVIBE — COFUNDADOR Y CTO" }), t: 40, row: 1.135 },
 ];
 
 /**

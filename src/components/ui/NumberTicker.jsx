@@ -2,6 +2,9 @@ import { lazy, Suspense, useLayoutEffect, useMemo, useRef, useState } from "reac
 import { cn } from "@/lib/cn";
 import useMotionPreference from "@/hooks/useMotionPreference";
 import useInViewport from "@/hooks/useInViewport";
+import { intlLocale } from "@/i18n";
+
+const DEFAULT_LOCALE = intlLocale();
 
 // Lazy chunk: only requested when a ticker mounts below the fold with motion on.
 const NumberFlow = lazy(() => import("@number-flow/react"));
@@ -28,7 +31,7 @@ function formatStatic(value, locales, format) {
  *   (Suspense fallback = the same static text), parks at 0, and rolls to `value` (600 ms) once the element
  *   is 6 % into the viewport. Otherwise it stays static. Reduced motion: always the static final value.
  */
-export default function NumberTicker({ value, format, prefix, suffix, className, locales = "en-US" }) {
+export default function NumberTicker({ value, format, prefix, suffix, className, locales = DEFAULT_LOCALE }) {
   const ref = useRef(null);
   const { reduced } = useMotionPreference();
   const [armed, setArmed] = useState(false);

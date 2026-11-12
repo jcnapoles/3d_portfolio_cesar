@@ -2,6 +2,8 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { Resend } from 'resend'
+import blogPlugin from './scripts/blog/vite-plugin-blog.mjs'
+import localesPlugin from './scripts/i18n/vite-plugin-locales.mjs'
 
 import {
   TURNSTILE_TOKEN_FIELD,
@@ -130,7 +132,9 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
-    plugins: [react(), createResendDevPlugin(env)],
+    // blogPlugin: static /blog and /es/blog pages generated from content/blog (see scripts/blog/).
+    // localesPlugin: the Spanish home page /es/, generated from index.html (see scripts/i18n/).
+    plugins: [react(), createResendDevPlugin(env), localesPlugin(), blogPlugin()],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
     // Dev only. Keep the watcher and the dep scanner out of the local Python tooling (scripts/.pylib, ~9k files)
     // and build outputs: on Windows a watched dist/ folder makes `vite build` fail with EPERM.
@@ -160,6 +164,11 @@ export default defineConfig(({ mode }) => {
       // would otherwise bloat it and defeat lazy loading.
       assetsInlineLimit: 0,
       rollupOptions: {
+        // blog.html only carries the blog's client entry; the blog plugin turns it into the /blog pages.
+        input: {
+          main: fileURLToPath(new URL('./index.html', import.meta.url)),
+          blog: fileURLToPath(new URL('./blog.html', import.meta.url)),
+        },
         // Rollup cannot bundle React Server Component directives; "use client" in motion,
         // lucide-react and @number-flow/react is harmless here. Silence only that warning.
         onwarn(warning, warn) {

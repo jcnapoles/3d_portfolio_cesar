@@ -1,43 +1,57 @@
+// Relative import (not "@/"): scripts/blog imports this file from Node.
+import { t, blogPath, LOCALE } from "../i18n/index.js";
+
+/** 30-min call booking page (Closevibe), one per language. */
+export const BOOKING = {
+  en: "https://closevibe.com/r/cesar-napoles/meeting-30min",
+  es: "https://closevibe.com/r/cesar-napoles/reunion-30min",
+};
+
 export const SITE_URL = "https://cesarnapoles.com";
 export const PERSON = {
   name: "Cesar Napoles",
-  role: "Fractional CTO",
-  location: "Tarragona, Spain",
-  workMode: "Remote & hybrid",
+  role: t({ en: "Fractional CTO", es: "CTO fraccional" }),
+  location: t({ en: "Tarragona, Spain", es: "Tarragona, España" }),
+  workMode: t({ en: "Remote & hybrid", es: "Remoto e híbrido" }),
   timeZone: "Europe/Madrid",
   coords: [41.1189, 1.2445],
 };
 export const LINKS = {
-  calendly: "https://calendly.com/cesarnapoles/30min",
+  booking: BOOKING[LOCALE],
   linkedin: "https://linkedin.com/in/jcnapoles",
   github: "https://github.com/jcnapoles",
   cv: "/Cesar_Napoles_CV.pdf",
   closevibe: "https://www.closevibe.com/",
+  blog: blogPath(),
 };
-export const CV_LABEL = "Download CV (PDF, 355 KB)";
-export const PLACEMENTS = ["nav", "menu", "hero", "fit", "svc-fcto", "svc-arch", "svc-lead", "svc-build", "svc-unsure", "results", "process", "testimonials", "about", "faq", "launch", "contact", "footer", "sticky"];
-export const calendlyUrl = (placement) =>
-  `${LINKS.calendly}?utm_source=site&utm_medium=cta&utm_content=${encodeURIComponent(placement)}`;
+export const CV_LABEL = t({ en: "Download CV (PDF, 355 KB)", es: "Descargar CV (PDF, 355 KB, en inglés)" });
+export const PLACEMENTS = ["nav", "menu", "hero", "fit", "svc-fcto", "svc-arch", "svc-lead", "svc-build", "svc-unsure", "results", "process", "testimonials", "about", "faq", "launch", "contact", "footer", "sticky", "blog", "blog-post"];
+/** Booking link for a CTA, UTM-tagged with its placement. `lang` defaults to the page's locale (the blog passes it). */
+export const bookingUrl = (placement, lang = LOCALE) =>
+  `${BOOKING[lang] || BOOKING.en}?utm_source=site&utm_medium=cta&utm_content=${encodeURIComponent(placement)}`;
 export const NAV_OFFSET = 88;
 export const CHAPTERS = [
-  { index: "00", name: "LAUNCH", id: "top", label: "Launch" },
-  { index: "01", name: "BRIEFING", id: "fit", label: "Briefing" },
-  { index: "02", name: "FLIGHT MODES", id: "services", label: "Services" },
-  { index: "03", name: "MISSIONS", id: "results", label: "Results" },
-  { index: "04", name: "FLIGHT PLAN", id: "process", label: "Process" },
-  { index: "05", name: "TRANSMISSIONS", id: "testimonials", label: "Testimonials" },
-  { index: "06", name: "TRAJECTORY", id: "about", label: "About" },
-  { index: "07", name: "FLEET", id: "builds", label: "Builds" },
-  { index: "08", name: "SYSTEMS", id: "stack", label: "Stack" },
-  { index: "09", name: "PRE-FLIGHT CHECKS", id: "faq", label: "FAQ" },
-  { index: "10", name: "OPEN CHANNEL", id: "contact", label: "Contact" },
+  { index: "00", name: t({ en: "LAUNCH", es: "DESPEGUE" }), id: "top", label: t({ en: "Launch", es: "Inicio" }) },
+  { index: "01", name: t({ en: "BRIEFING", es: "BRIEFING" }), id: "fit", label: t({ en: "Briefing", es: "Briefing" }) },
+  { index: "02", name: t({ en: "FLIGHT MODES", es: "MODOS DE VUELO" }), id: "services", label: t({ en: "Services", es: "Servicios" }) },
+  { index: "03", name: t({ en: "MISSIONS", es: "MISIONES" }), id: "results", label: t({ en: "Results", es: "Resultados" }) },
+  { index: "04", name: t({ en: "FLIGHT PLAN", es: "PLAN DE VUELO" }), id: "process", label: t({ en: "Process", es: "Proceso" }) },
+  { index: "05", name: t({ en: "TRANSMISSIONS", es: "TRANSMISIONES" }), id: "testimonials", label: t({ en: "Testimonials", es: "Testimonios" }) },
+  { index: "06", name: t({ en: "TRAJECTORY", es: "TRAYECTORIA" }), id: "about", label: t({ en: "About", es: "Sobre mí" }) },
+  { index: "07", name: t({ en: "FLEET", es: "FLOTA" }), id: "builds", label: t({ en: "Builds", es: "Proyectos" }) },
+  { index: "08", name: t({ en: "SYSTEMS", es: "SISTEMAS" }), id: "stack", label: t({ en: "Stack", es: "Stack" }) },
+  { index: "09", name: t({ en: "PRE-FLIGHT CHECKS", es: "CHEQUEOS PREVIOS" }), id: "faq", label: t({ en: "FAQ", es: "FAQ" }) },
+  { index: "10", name: t({ en: "OPEN CHANNEL", es: "CANAL ABIERTO" }), id: "contact", label: t({ en: "Contact", es: "Contacto" }) },
 ];
 export const NAV_LINKS = [
-  { id: "services", label: "Services", chapter: "02" },
-  { id: "results", label: "Results", chapter: "03" },
-  { id: "process", label: "Process", chapter: "04" },
-  { id: "testimonials", label: "Testimonials", chapter: "05" },
-  { id: "about", label: "About", chapter: "06" },
+  { id: "services", label: t({ en: "Services", es: "Servicios" }), chapter: "02" },
+  { id: "results", label: t({ en: "Results", es: "Resultados" }), chapter: "03" },
+  { id: "process", label: t({ en: "Process", es: "Proceso" }), chapter: "04" },
+  // wideOnly: shown in the desktop navbar from 1280 only (see Navbar.jsx); always in the mobile menu.
+  { id: "testimonials", label: t({ en: "Testimonials", es: "Testimonios" }), chapter: "05", wideOnly: true },
+  { id: "about", label: t({ en: "About", es: "Sobre mí" }), chapter: "06" },
+  // Not a section: a separate page (static /blog, generated by scripts/blog). `href` makes it a plain link.
+  { id: "blog", label: "Blog", href: blogPath() },
 ];
 export const ANCHORS = {
   heroCta: "hero-cta",

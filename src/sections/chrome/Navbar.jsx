@@ -7,12 +7,14 @@ import { scrollToId, scrollToTop } from "@/lib/scroll";
 import { NAV_LINKS } from "@/constants/site";
 import Logo from "@/components/ui/Logo";
 import StarGlyph from "@/components/ui/StarGlyph";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import useLenis from "@/hooks/useLenis";
 import useLenisScroll from "@/hooks/useLenisScroll";
 import useActiveChapter from "@/hooks/useActiveChapter";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import useMotionPreference from "@/hooks/useMotionPreference";
+import LanguageSwitch from "@/components/ui/LanguageSwitch";
+import { t } from "@/i18n";
 import MobileMenu from "@/sections/chrome/MobileMenu";
 import "@/sections/chrome/chrome.css";
 
@@ -107,25 +109,27 @@ export default function Navbar() {
           <a
             href="#top"
             data-nav-home=""
-            aria-label="Cesar Napoles, Fractional CTO: back to top"
+            aria-label={t({ en: "Cesar Napoles, Fractional CTO: back to top", es: "Cesar Napoles, CTO fraccional: volver arriba" })}
             onClick={(e) => handleAnchorClick(e, "top", lenis)}
             className="relative -my-1 shrink-0 rounded-sm py-1"
           >
             <Logo />
           </a>
 
-          <nav aria-label="Primary" className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block">
+          <nav aria-label={t({ en: "Primary", es: "Principal" })}className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block">
             <ul className="flex items-center">
               {NAV_LINKS.map((link) => {
-                const active = link.chapter === chapter;
+                const active = !link.href && link.chapter === chapter;
                 return (
-                  <li key={link.id}>
+                  // 1024-1279: the centred links share the bar with the language switch and a longer Spanish CTA,
+                  // so `wideOnly` links (still in MissionRail and the mobile menu) wait for 1280.
+                  <li key={link.id} className={link.wideOnly ? "hidden xl:block" : undefined}>
                     <a
-                      href={`#${link.id}`}
+                      href={link.href || `#${link.id}`}
                       aria-current={active ? "true" : undefined}
-                      onClick={(e) => handleAnchorClick(e, link.id, lenis)}
+                      onClick={link.href ? undefined : (e) => handleAnchorClick(e, link.id, lenis)}
                       className={cn(
-                        "relative flex h-10 items-center rounded-pill px-3.5 text-small transition-colors duration-ui ease-ui coarse:h-11",
+                        "relative flex h-10 items-center whitespace-nowrap rounded-pill px-2.5 text-small transition-colors duration-ui ease-ui coarse:h-11 xl:px-3.5",
                         active ? "text-ink-1" : "text-ink-2 hover:text-ink-1"
                       )}
                     >
@@ -142,7 +146,8 @@ export default function Navbar() {
           </nav>
 
           <div className="relative flex shrink-0 items-center gap-1 md:gap-1.5">
-            <CalendlyButton
+            <LanguageSwitch className="max-[389px]:hidden" />
+            <BookingButton
               placement="nav"
               size="sm"
               magnetic
@@ -150,15 +155,15 @@ export default function Navbar() {
               data-magnet="8"
               className="max-md:px-4 max-md:[&_svg]:hidden"
             >
-              <span className="md:hidden">Book</span>
-              <span className="hidden md:inline">Book a call</span>
-            </CalendlyButton>
+              <span className="md:hidden">{t({ en: "Book", es: "Reservar" })}</span>
+              <span className="hidden md:inline">{t({ en: "Book a call", es: "Agendar llamada" })}</span>
+            </BookingButton>
             <button
               ref={toggleRef}
               type="button"
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
-              aria-label="Open menu"
+              aria-label={t({ en: "Open menu", es: "Abrir menú" })}
               onClick={() => setMenuOpen((v) => !v)}
               className="inline-flex size-11 items-center justify-center rounded-pill text-ink-1 transition-colors duration-ui ease-ui hover:bg-white/[.06] lg:hidden"
             >

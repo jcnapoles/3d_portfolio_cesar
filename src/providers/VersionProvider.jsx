@@ -4,14 +4,18 @@ import { readLocal, readSession, writeLocal } from "@/lib/storage";
 import { gsapReady } from "@/lib/gsap";
 import { VersionContext } from "@/providers/versionContext";
 import { LegacyNotice, LegacyReturnPill } from "@/components/system/VersionSwitch";
+import { t } from "@/i18n";
 import "@/components/system/VersionSwitch.css";
 
 const STORAGE_KEY = "cn:version";
 const PARAM = "v";
 const ANNOUNCE = {
-  legacy: "Now showing the 2024 version of the site.",
-  new: "Now showing the 2026 version of the site.",
-  failed: "The 2024 version could not be loaded. Check your connection and try again.",
+  legacy: t({ en: "Now showing the 2024 version of the site.", es: "Ahora se muestra la versión 2024 de la web." }),
+  new: t({ en: "Now showing the 2026 version of the site.", es: "Ahora se muestra la versión 2026 de la web." }),
+  failed: t({
+    en: "The 2024 version could not be loaded. Check your connection and try again.",
+    es: "No se ha podido cargar la versión 2024. Revisa tu conexión e inténtalo de nuevo.",
+  }),
 };
 
 const isVersion = (v) => v === "new" || v === "legacy";

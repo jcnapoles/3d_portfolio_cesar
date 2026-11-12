@@ -1,12 +1,13 @@
 import { useMemo } from "react";
 import Section from "@/components/ui/Section";
 import SectionHeading from "@/components/ui/SectionHeading";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import Reveal from "@/components/ui/Reveal";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/cn";
 import { DUR, EASE, fadeUp, STAGGER } from "@/lib/motion";
 import { TRANSMISSIONS } from "@/constants/testimonials";
+import { t as tr } from "@/i18n";
 import TransmissionCard from "./TransmissionCard";
 
 const VISIBLE = TRANSMISSIONS.filter((t) => t.show !== false);
@@ -39,10 +40,13 @@ export default function Testimonials() {
     <Section id="testimonials" chapter="05" labelledBy="testimonials-title">
       <SectionHeading
         index="05"
-        name="TRANSMISSIONS"
-        eyebrow="Testimonials"
-        title="In their words"
-        lead="Leaders and teammates I've worked with. Every name links to LinkedIn."
+        name={tr({ en: "TRANSMISSIONS", es: "TRANSMISIONES" })}
+        eyebrow={tr({ en: "Testimonials", es: "Testimonios" })}
+        title={tr({ en: "In their words", es: "En sus palabras" })}
+        lead={tr({
+          en: "Leaders and teammates I've worked with. Every name links to LinkedIn.",
+          es: "Responsables y compañeros con los que he trabajado. Cada nombre enlaza a LinkedIn.",
+        })}
         id="testimonials-title"
       />
 
@@ -63,7 +67,7 @@ export default function Testimonials() {
       </div>
 
       <Reveal variants={ctaVariants} className="mt-12 lg:mt-16">
-        <CalendlyButton placement="testimonials" label="Book a call" cursorLock />
+        <BookingButton placement="testimonials" label={tr({ en: "Book a call", es: "Agendar llamada" })} cursorLock />
       </Reveal>
     </Section>
   );

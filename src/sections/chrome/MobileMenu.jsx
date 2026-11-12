@@ -8,9 +8,11 @@ import { scrollToId, scrollToTop } from "@/lib/scroll";
 import { CV_LABEL, LINKS, NAV_LINKS } from "@/constants/site";
 import Logo from "@/components/ui/Logo";
 import StarGlyph from "@/components/ui/StarGlyph";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import ExternalLink from "@/components/ui/ExternalLink";
 import MotionToggle from "@/components/ui/MotionToggle";
+import LanguageSwitch from "@/components/ui/LanguageSwitch";
+import { t } from "@/i18n";
 import { VersionSwitchLink } from "@/components/system/VersionSwitch";
 import useLenis from "@/hooks/useLenis";
 
@@ -145,7 +147,7 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
           id="mobile-menu"
           role="dialog"
           aria-modal="true"
-          aria-label="Menu"
+          aria-label={t({ en: "Menu", es: "Menú" })}
           data-lenis-prevent=""
           variants={overlay}
           initial="hidden"
@@ -162,7 +164,7 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
               <div className="nav-frame">
                 <a
                   href="#top"
-                  aria-label="Cesar Napoles, Fractional CTO: back to top"
+                  aria-label={t({ en: "Cesar Napoles, Fractional CTO: back to top", es: "Cesar Napoles, CTO fraccional: volver arriba" })}
                   onClick={(e) => go(e, "top")}
                   className="relative -my-1 shrink-0 rounded-sm py-1"
                 >
@@ -170,7 +172,7 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
                 </a>
                 <button
                   type="button"
-                  aria-label="Close menu"
+                  aria-label={t({ en: "Close menu", es: "Cerrar menú" })}
                   onClick={() => onClose?.()}
                   className="inline-flex size-11 items-center justify-center rounded-pill text-ink-1 transition-colors duration-ui ease-ui hover:bg-white/[.06]"
                 >
@@ -180,19 +182,19 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
             </div>
 
             <div className="mx-auto flex w-full max-w-[1120px] flex-1 flex-col px-4 md:px-9">
-              <nav aria-label="Menu" className="pt-8 md:pt-14">
+              <nav aria-label={t({ en: "Menu", es: "Menú" })} className="pt-8 md:pt-14">
                 {/* Row hairlines: 18 px padding keeps >= 12 px between each rule and the 36 px label's text box
                     (polish 3 hairline rhythm; 14 px left only 8 px). */}
                 <m.ul variants={list} initial="hidden" animate="show" className="border-t border-line">
                   {NAV_LINKS.map((link, i) => {
-                    const active = link.chapter === activeChapter;
+                    const active = !link.href && link.chapter === activeChapter;
                     return (
                       <m.li key={link.id} variants={item} className="border-b border-line">
                         <a
                           ref={i === 0 ? firstLinkRef : undefined}
-                          href={`#${link.id}`}
+                          href={link.href || `#${link.id}`}
                           aria-current={active ? "true" : undefined}
-                          onClick={(e) => go(e, link.id)}
+                          onClick={link.href ? undefined : (e) => go(e, link.id)}
                           className="group flex items-center gap-5 py-[18px]"
                         >
                           <span aria-hidden="true" className="hud-label w-6 shrink-0 tabular">
@@ -216,7 +218,7 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
 
               <m.div variants={list} initial="hidden" animate="show" className="mt-auto pt-10">
                 <m.div variants={item}>
-                  <CalendlyButton placement="menu" size="lg" fullWidth />
+                  <BookingButton placement="menu" size="lg" fullWidth />
                 </m.div>
                 <m.div variants={item} className="mt-6 flex flex-wrap items-center gap-x-8">
                   <ExternalLink href={LINKS.linkedin} className={EXT_LINK}>
@@ -245,8 +247,9 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
                 <m.div variants={item}>
                   <VersionSwitchLink className="inline-flex min-h-11 items-center gap-2.5 text-body text-ink-2 transition-colors duration-ui ease-ui hover:text-ink-1" />
                 </m.div>
-                <m.div variants={item} className="mt-4 border-t border-line pt-3">
+                <m.div variants={item} className="mt-4 flex items-center justify-between border-t border-line pt-3">
                   <MotionToggle />
+                  <LanguageSwitch onNavigate={onClose} />
                 </m.div>
               </m.div>
             </div>

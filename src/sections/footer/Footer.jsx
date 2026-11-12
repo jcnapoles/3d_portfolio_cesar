@@ -5,26 +5,29 @@ import { scrollToId, scrollToTop } from "@/lib/scroll";
 import { CV_LABEL, LINKS } from "@/constants/site";
 import { AVAILABILITY } from "@/constants/claims";
 import Container from "@/components/ui/Container";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import ExternalLink from "@/components/ui/ExternalLink";
 import LocalTime from "@/components/ui/LocalTime";
 import MissionElapsed from "@/components/ui/MissionElapsed";
 import LcpReadout from "@/components/ui/LcpReadout";
 import MotionToggle from "@/components/ui/MotionToggle";
+import LanguageSwitch from "@/components/ui/LanguageSwitch";
 import OrbitRing from "@/components/ui/OrbitRing";
 import StatusDot from "@/components/ui/StatusDot";
 import { VersionSwitchLink } from "@/components/system/VersionSwitch";
 import useLenis from "@/hooks/useLenis";
 import useInViewport from "@/hooks/useInViewport";
 import Wordmark from "@/sections/footer/Wordmark";
+import { t } from "@/i18n";
 import "@/sections/footer/footer.css";
 
 const NAVIGATE = [
-  { id: "services", label: "Services" },
-  { id: "results", label: "Results" },
-  { id: "process", label: "Process" },
-  { id: "about", label: "About" },
-  { id: "contact", label: "Contact" },
+  { id: "services", label: t({ en: "Services", es: "Servicios" }) },
+  { id: "results", label: t({ en: "Results", es: "Resultados" }) },
+  { id: "process", label: t({ en: "Process", es: "Proceso" }) },
+  { id: "about", label: t({ en: "About", es: "Sobre mí" }) },
+  { id: "blog", label: "Blog", href: LINKS.blog },
+  { id: "contact", label: t({ en: "Contact", es: "Contacto" }) },
 ];
 
 const LINK = "inline-flex min-h-8 items-center gap-2.5 text-base text-ink-2 transition-colors duration-ui ease-ui hover:text-ink-1 coarse:min-h-11";
@@ -87,7 +90,7 @@ function ReturnToLaunch({ lenis }) {
           className="relative text-ink-2 transition-[color,transform] duration-ui ease-ui group-hover:text-ink-1 motion-ok:group-hover:-translate-y-px"
         />
       </span>
-      Return to launch
+      {t({ en: "Return to launch", es: "Volver al despegue" })}
     </button>
   );
 }
@@ -123,18 +126,18 @@ export default function Footer() {
         {/* Row 1 */}
         <div className="flex items-center gap-4" aria-hidden="true">
           <span className="h-px flex-1 bg-line-strong" />
-          <span className="hud-label">END OF TRANSMISSION</span>
+          <span className="hud-label">{t({ en: "END OF TRANSMISSION", es: "FIN DE LA TRANSMISIÓN" })}</span>
           <span className="h-px flex-1 bg-line-strong" />
         </div>
 
         {/* Row 2 */}
         <div className="mt-14 grid grid-cols-1 gap-x-6 gap-y-12 md:grid-cols-2 lg:mt-16 lg:grid-cols-4">
           <nav aria-labelledby="footer-navigate">
-            <ColumnTitle id="footer-navigate">Navigate</ColumnTitle>
+            <ColumnTitle id="footer-navigate">{t({ en: "Navigate", es: "Navegación" })}</ColumnTitle>
             <ul className={LIST}>
               {NAVIGATE.map((l) => (
                 <li key={l.id}>
-                  <a href={`#${l.id}`} onClick={(e) => onAnchor(e, l.id)} className={LINK}>
+                  <a href={l.href || `#${l.id}`} onClick={l.href ? undefined : (e) => onAnchor(e, l.id)} className={LINK}>
                     {l.label}
                   </a>
                 </li>
@@ -143,7 +146,7 @@ export default function Footer() {
           </nav>
 
           <div>
-            <ColumnTitle id="footer-connect">Connect</ColumnTitle>
+            <ColumnTitle id="footer-connect">{t({ en: "Connect", es: "Conecta" })}</ColumnTitle>
             <ul aria-labelledby="footer-connect" className={LIST}>
               <li>
                 <ExternalLink href={LINKS.linkedin} className={EXT_LINK}>
@@ -162,13 +165,13 @@ export default function Footer() {
                 </ExternalLink>
               </li>
               <li className="pt-1 coarse:pt-0">
-                <CalendlyButton variant="text" placement="footer" label="Book a call" className="min-h-8" />
+                <BookingButton variant="text" placement="footer" label={t({ en: "Book a call", es: "Agendar llamada" })} className="min-h-8" />
               </li>
             </ul>
           </div>
 
           <div>
-            <ColumnTitle id="footer-resources">Resources</ColumnTitle>
+            <ColumnTitle id="footer-resources">{t({ en: "Resources", es: "Recursos" })}</ColumnTitle>
             <ul aria-labelledby="footer-resources" className={LIST}>
               <li>
                 <a href={LINKS.cv} download className={LINK}>
@@ -183,7 +186,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <ColumnTitle id="footer-status">Status</ColumnTitle>
+            <ColumnTitle id="footer-status">{t({ en: "Status", es: "Estado" })}</ColumnTitle>
             <ul aria-labelledby="footer-status" className="mt-5 space-y-3.5">
               <li>
                 <LocalTime prefix="TARRAGONA" className="text-hud-xs uppercase text-ink-2" />
@@ -195,7 +198,7 @@ export default function Footer() {
                 </li>
               ) : null}
               <li aria-hidden="true">
-                <MissionElapsed label="MISSION ELAPSED TIME" className="text-hud-xs uppercase text-ink-3" />
+                <MissionElapsed label={t({ en: "MISSION ELAPSED TIME", es: "TIEMPO DE MISIÓN" })}className="text-hud-xs uppercase text-ink-3" />
               </li>
               <li className="pt-1.5">
                 <ReturnToLaunch lenis={lenis} />
@@ -207,9 +210,14 @@ export default function Footer() {
         {/* Row 3 */}
         <div className="mt-16 border-t border-line pt-10 lg:mt-20">
           <p className="max-w-[40ch] text-lead font-medium text-ink-1 max-md:mx-auto max-md:text-balance">
-            Fractional CTO for startups and SMEs. Strategy, architecture and teams that ship.
+            {t({
+              en: "Fractional CTO for startups and SMEs. Strategy, architecture and teams that ship.",
+              es: "CTO fraccional para startups y pymes. Estrategia, arquitectura y equipos que entregan.",
+            })}
           </p>
-          <p className="mt-3 text-small text-ink-2">Based in Tarragona, Spain · Remote &amp; hybrid</p>
+          <p className="mt-3 text-small text-ink-2">
+            {t({ en: "Based in Tarragona, Spain · Remote & hybrid", es: "Con base en Tarragona, España · Remoto e híbrido" })}
+          </p>
         </div>
 
         {/* Row 4: bottom bar */}
@@ -217,10 +225,12 @@ export default function Footer() {
             leaving "DEVICE" alone on its second line. */}
         <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-hud-xs uppercase text-ink-3 max-md:justify-center max-md:text-balance">
           <span>© {new Date().getFullYear()} Cesar Napoles</span>
-          <span>Chat assistant powered by Closevibe</span>
+          <span>{t({ en: "Chat assistant powered by Closevibe", es: "Asistente de chat con tecnología de Closevibe" })}</span>
           <LcpReadout />
           {/* Pushed to the row's right edge from 768 (tablet matches desktop); centred with the rest below 768. */}
           <MotionToggle className="md:ml-auto" />
+          <LanguageSwitch />
+
         </div>
       </Container>
 

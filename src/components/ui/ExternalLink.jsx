@@ -1,13 +1,16 @@
 import { forwardRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { t } from "@/i18n";
+
+const NEW_TAB = t({ en: "(opens in a new tab)", es: "(se abre en una pestaña nueva)" });
 
 /**
  * External link: new tab, rel="noopener noreferrer", ArrowUpRight (14 px) and an sr-only hint.
  * Default look is `.link-ion`; override colours with utilities in `className`.
  */
 const ExternalLink = forwardRef(function ExternalLink(
-  { href, children, srHint = "(opens in a new tab)", className, showIcon = true, ...rest },
+  { href, children, srHint = NEW_TAB, className, showIcon = true, ...rest },
   ref
 ) {
   return (

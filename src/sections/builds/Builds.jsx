@@ -10,6 +10,7 @@ import { staggerParent } from "@/lib/motion";
 import { BUILDS } from "@/constants/builds";
 import BuildRow from "@/sections/builds/BuildRow";
 import BuildPreview from "@/sections/builds/BuildPreview";
+import { t } from "@/i18n";
 import "./builds.css";
 
 const ROW_STAGGER = staggerParent({ stagger: 0.04 });
@@ -112,10 +113,13 @@ export default function Builds() {
     <Section ref={sectionRef} id="builds" chapter="07" labelledBy="builds-title">
       <SectionHeading
         index="07"
-        name="FLEET"
-        eyebrow="Builds"
-        title="What I've built and lead"
-        lead="My own SaaS, the platforms I lead as fractional CTO, and client websites. Live and clickable."
+        name={t({ en: "FLEET", es: "FLOTA" })}
+        eyebrow={t({ en: "Builds", es: "Proyectos" })}
+        title={t({ en: "What I've built and lead", es: "Lo que he construido y lidero" })}
+        lead={t({
+          en: "My own SaaS, the platforms I lead as fractional CTO, and client websites. Live and clickable.",
+          es: "Mi propio SaaS, las plataformas que lidero como CTO fraccional y webs de clientes. En línea y listas para visitar.",
+        })}
         id="builds-title"
       />
 
@@ -130,8 +134,8 @@ export default function Builds() {
         >
           <div aria-hidden="true" className="builds-head hud-label hidden lg:grid">
             <span>Nº</span>
-            <span>Project</span>
-            <span>Status</span>
+            <span>{t({ en: "Project", es: "Proyecto" })}</span>
+            <span>{t({ en: "Status", es: "Estado" })}</span>
             <span />
           </div>
           <Reveal as="ol" variants={ROW_STAGGER} className="grid gap-4 sm:grid-cols-2 lg:block">

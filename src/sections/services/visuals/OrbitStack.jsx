@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import StarGlyph from "@/components/ui/StarGlyph";
 import useBrandIcons from "@/hooks/useBrandIcons";
+import { t } from "@/i18n";
 
 // Spec 6.5, tile B. A 220 px square: inner ring r = 60 (clouds), outer ring r = 100 (data stores).
 // Glyph names resolve against the lazily loaded brand icon map (useBrandIcons); the discs render at once.
@@ -51,7 +52,7 @@ export default function OrbitStack({ active = false }) {
       {/* Core */}
       <span className="absolute left-1/2 top-1/2 flex size-14 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 rounded-full border border-line-strong bg-space-700 shadow-hi-top">
         <StarGlyph size={14} className="text-ion" />
-        <span className="font-mono text-[10px] font-medium leading-none tracking-[0.16em] text-ink-1">DATA</span>
+        <span className="font-mono text-[10px] font-medium leading-none tracking-[0.16em] text-ink-1">{t({ en: "DATA", es: "DATOS" })}</span>
       </span>
 
       {/* Carriers (rotate) */}

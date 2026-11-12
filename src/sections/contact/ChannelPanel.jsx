@@ -1,22 +1,23 @@
 import { MapPin } from "lucide-react";
 import { cn } from "@/lib/cn";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import ExternalLink from "@/components/ui/ExternalLink";
 import LocalTime from "@/components/ui/LocalTime";
 import Reveal from "@/components/ui/Reveal";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import useMotionPreference from "@/hooks/useMotionPreference";
 import { LINKS, PERSON } from "@/constants/site";
+import { t } from "@/i18n";
 import Globe from "./Globe";
 
 const ROWS = [
   {
-    dt: "CALENDLY · 30 MIN",
+    dt: t({ en: "CALL · 30 MIN", es: "LLAMADA · 30 MIN" }),
     dd: (
-      <CalendlyButton
+      <BookingButton
         variant="text"
         placement="contact"
-        label="Book a call (Calendly)"
+        label={t({ en: "Book a call (Closevibe)", es: "Agendar llamada (Closevibe)" })}
         icon="external"
         className="text-body"
       />
@@ -25,7 +26,7 @@ const ROWS = [
   { dt: "LINKEDIN", dd: <ExternalLink href={LINKS.linkedin}>linkedin.com/in/jcnapoles</ExternalLink> },
   { dt: "GITHUB", dd: <ExternalLink href={LINKS.github}>github.com/jcnapoles</ExternalLink> },
   {
-    dt: "BASE",
+    dt: t({ en: "BASE", es: "BASE" }),
     dd: (
       <span className="inline-flex items-start gap-2">
         <MapPin size={16} strokeWidth={1.75} aria-hidden="true" className="mt-[5px] shrink-0 text-ink-3" />
@@ -35,12 +36,12 @@ const ROWS = [
       </span>
     ),
   },
-  { dt: "LOCAL TIME", dd: <LocalTime prefix="TARRAGONA" className="text-[15px] tracking-[.02em]" /> },
-  { dt: "LANGUAGES", dd: "English · Spanish" },
+  { dt: t({ en: "LOCAL TIME", es: "HORA LOCAL" }), dd: <LocalTime prefix="TARRAGONA" className="text-[15px] tracking-[.02em]" /> },
+  { dt: t({ en: "LANGUAGES", es: "IDIOMAS" }), dd: t({ en: "English · Spanish", es: "Inglés · Español" }) },
 ];
 
 /**
- * 10b side panel: a <dl> of HUD rows (Calendly, LinkedIn, GitHub, base, local time, languages).
+ * 10b side panel: a <dl> of HUD rows (booking, LinkedIn, GitHub, base, local time, languages).
  * Desktop (>= 1024) on a tier-A device also gets the cobe globe above the list.
  */
 export default function ChannelPanel({ className }) {

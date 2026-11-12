@@ -12,6 +12,7 @@ import { requestRefresh } from "@/lib/gsap";
 import { staggerParent } from "@/lib/motion";
 import { companyLogos } from "@/assets/media";
 import { CAREER } from "@/constants/career";
+import { intlLocale, t } from "@/i18n";
 
 // Lazy chunk (spec 7.2): only requested when the desktop rail mounts below the fold with motion on.
 const NumberFlow = lazy(() => import("@number-flow/react"));
@@ -41,7 +42,7 @@ function YearRail({ index, animate }) {
               <NumberFlow
                 value={year}
                 format={YEAR_FORMAT}
-                locales="en-US"
+                locales={intlLocale()}
                 respectMotionPreference={false}
                 transformTiming={TRANSFORM_TIMING}
                 spinTiming={SPIN_TIMING}
@@ -55,7 +56,7 @@ function YearRail({ index, animate }) {
         </span>
       </div>
       <p className="hud-label mt-5 tabular">
-        LOG {pad2(index + 1)} / {pad2(TOTAL)}
+        {t({ en: "LOG", es: "BITÁCORA" })} {pad2(index + 1)} / {pad2(TOTAL)}
       </p>
     </div>
   );
@@ -80,7 +81,7 @@ function LogRow({ row, onToggle }) {
           <details className="disclosure group/fd" onToggle={onToggle}>
             <summary className="fl-details-summary mt-3 inline-flex items-center gap-2 rounded-sm text-small text-ink-2 transition-colors duration-ui ease-ui hover:text-ink-1 coarse:min-h-11 lg:mt-0">
               <span>
-                Details<span className="sr-only">: {row.role}, {row.company}</span>
+                {t({ en: "Details", es: "Detalles" })}<span className="sr-only">: {row.role}, {row.company}</span>
               </span>
               <span
                 aria-hidden="true"
@@ -211,7 +212,7 @@ export default function FlightLog() {
 
   return (
     <div className="mt-24 lg:mt-36">
-      <h3 className="text-h3 text-ink-1">Where I&apos;ve led and built</h3>
+      <h3 className="text-h3 text-ink-1">{t({ en: "Where I've led and built", es: "Dónde he liderado y construido" })}</h3>
       <div className="mt-10 lg:mt-14 lg:grid lg:grid-cols-12 lg:gap-6">
         <div className="hidden lg:col-span-3 lg:block">
           <YearRail index={active} animate={belowFold && isDesktop && !reduced} />
@@ -228,7 +229,7 @@ export default function FlightLog() {
           </Reveal>
           <details className="disclosure group/early" onToggle={onToggle}>
             <summary className="ml-8 mt-6 inline-flex h-11 items-center gap-3 rounded-pill border border-line-strong bg-white/[.04] px-5 text-button stretch-105 text-ink-1 transition-colors duration-ui ease-ui hover:border-ink-3 hover:bg-white/[.07] lg:ml-12">
-              <span>Show earlier roles (2012–2021)</span>
+              <span>{t({ en: "Show earlier roles (2012–2021)", es: "Ver puestos anteriores (2012–2021)" })}</span>
               <Plus
                 size={16}
                 strokeWidth={2}

@@ -2,11 +2,12 @@ import { useMemo } from "react";
 import { Plus } from "lucide-react";
 import Section from "@/components/ui/Section";
 import SectionHeading from "@/components/ui/SectionHeading";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import Reveal from "@/components/ui/Reveal";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { fadeUp, staggerFor } from "@/lib/motion";
 import { FAQ } from "@/constants/faq";
+import { t } from "@/i18n";
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
@@ -39,9 +40,9 @@ export default function Faq() {
         <div className="contents lg:sticky lg:top-[120px] lg:col-span-4 lg:block lg:self-start">
           <SectionHeading
             index="09"
-            name="PRE-FLIGHT CHECKS"
-            eyebrow="FAQ"
-            title="Questions founders ask"
+            name={t({ en: "PRE-FLIGHT CHECKS", es: "CHEQUEOS PREVIOS" })}
+            eyebrow={t({ en: "FAQ", es: "Preguntas frecuentes" })}
+            title={t({ en: "Questions founders ask", es: "Lo que preguntan los fundadores" })}
             id="faq-title"
             className="order-1 lg:order-none lg:mb-10"
           />
@@ -49,8 +50,8 @@ export default function Faq() {
             variants={asideVariants}
             className="order-3 mt-12 flex flex-wrap items-center gap-x-4 gap-y-1 sm:mt-14 lg:order-none lg:mt-0"
           >
-            <p className="text-lead text-ink-1">Still unsure?</p>
-            <CalendlyButton placement="faq" variant="text" label="Book a call" />
+            <p className="text-lead text-ink-1">{t({ en: "Still unsure?", es: "¿Aún tienes dudas?" })}</p>
+            <BookingButton placement="faq" variant="text" label={t({ en: "Book a call", es: "Agenda una llamada" })} />
           </Reveal>
         </div>
 
@@ -60,7 +61,7 @@ export default function Faq() {
               <details name="faq" className="disclosure group border-b border-line">
                 <summary className="group/q grid min-h-16 grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2 rounded-sm py-5 sm:grid-cols-[5.5rem_1fr_auto]">
                   <span aria-hidden="true" className="hud-label col-span-2 sm:col-span-1">
-                    CHECK {pad2(i + 1)}
+                    {t({ en: "CHECK", es: "PUNTO" })} {pad2(i + 1)}
                   </span>
                   <span className="text-balance text-h4 text-ink-1">{item.q}</span>
                   <span

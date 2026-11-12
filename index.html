@@ -20,8 +20,21 @@
         d.dataset.tier = reduced ? 'C' : base;
         d.dataset.pointer = fine ? 'fine' : 'coarse';
         d.dataset.visit = launched ? 'repeat' : 'first';
+        // Language switch transition (src/i18n/switch.js): the page starts behind the curtain the last page
+        // faded to, and only fades in once its stylesheets and scripts have loaded (no unstyled flash).
+        try { if (sessionStorage.getItem('cn:lang-switch')) { sessionStorage.removeItem('cn:lang-switch'); if (!reduced) { d.classList.add('lang-entering'); var finished = false, reveal = function () { if (!finished) d.classList.add('lang-ready'); }; window.addEventListener('load', function () { requestAnimationFrame(function () { requestAnimationFrame(reveal); }); }); setTimeout(reveal, 1500); var done = function () { finished = true; d.classList.remove('lang-entering', 'lang-ready'); }; d.addEventListener('animationend', function (e) { if (e.animationName === 'lang-curtain-out') done(); }); setTimeout(done, 3000); } } } catch (e) {}
       })();
     </script>
+    <style>
+      /* Language-change curtain (inline: it must work before the stylesheets load). Opacity-only on html::after,
+         so fixed elements and the WebGL canvas are untouched. Kept in sync with scripts/blog/templates.mjs. */
+      html.lang-leaving::after, html.lang-entering::after { content: ""; position: fixed; inset: 0; z-index: 2147483647; pointer-events: none; background: radial-gradient(120% 80% at 50% 0%, rgba(244,184,96,.07), transparent 60%), #05060A; }
+      html.lang-leaving::after { animation: lang-curtain-in .26s cubic-bezier(.4,0,1,1) both; }
+      html.lang-entering.lang-ready::after { animation: lang-curtain-out .6s cubic-bezier(.2,.7,.2,1) both; }
+      html.lang-leaving body { cursor: progress; }
+      @keyframes lang-curtain-in { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes lang-curtain-out { from { opacity: 1; } to { opacity: 0; } }
+    </style>
     <title>Cesar Napoles | Fractional CTO for Startups &amp; SMEs</title>
     <meta name="description" content="Fractional CTO with 12+ years scaling software in banking, fintech, insurance and e-commerce. Strategy, architecture and teams that ship. Book a call." />
     <link rel="canonical" href="https://cesarnapoles.com/" />

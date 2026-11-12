@@ -4,11 +4,12 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import Picture from "@/components/ui/Picture";
 import Reveal from "@/components/ui/Reveal";
 import Button from "@/components/ui/Button";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import ExternalLink from "@/components/ui/ExternalLink";
 import { aboutPortrait } from "@/assets/media";
 import { CV_LABEL, LINKS } from "@/constants/site";
 import FlightLog from "@/sections/about/FlightLog";
+import { t } from "@/i18n";
 import "./about.css";
 
 // Porthole bezel: 72 ticks every 5 degrees, a longer one every 45, around a 300 x 300 box.
@@ -61,9 +62,12 @@ export default function About() {
     <Section id="about" chapter="06" labelledBy="about-title">
       <SectionHeading
         index="06"
-        name="TRAJECTORY"
-        eyebrow="About"
-        title="Hands-on tech leader. Co-founder. Shipping software since 2012."
+        name={t({ en: "TRAJECTORY", es: "TRAYECTORIA" })}
+        eyebrow={t({ en: "About", es: "Sobre mí" })}
+        title={t({
+          en: "Hands-on tech leader. Co-founder. Shipping software since 2012.",
+          es: "Líder técnico hands-on. Cofundador. Entregando software desde 2012.",
+        })}
         id="about-title"
       />
 
@@ -74,19 +78,40 @@ export default function About() {
 
         <Reveal className="lg:col-span-7" delay={0.05}>
           <p className="max-w-prose text-lead text-ink-2">
-            I&apos;m Cesar Napoles, a fractional CTO based in Tarragona, Spain, working with teams remotely and on
-            site. For 12+ years I&apos;ve shipped production software, from banking systems at <Em>CaixaBank Tech</Em>,
-            where I&apos;m a Senior Technical Lead, to the digital transformation of <Em>FIATC Seguros</Em> and the
-            re-architecture of <Em>Sttok</Em>&apos;s platform for 250K+ users. Today I&apos;m also the fractional CTO of{" "}
-            <Em>Cashela</Em>, a cross-border B2B payments platform. I co-founded <Em>Closevibe</Em>, an
-            AI-powered SaaS for multichannel sales and support, so I know the founder&apos;s side of the table. My job:
-            align technology with business outcomes and build teams that deliver.
+            {t({
+              en: (
+                <>
+                  I&apos;m Cesar Napoles, a fractional CTO based in Tarragona, Spain, working with teams remotely and on
+                  site. For 12+ years I&apos;ve shipped production software, from banking systems at <Em>CaixaBank Tech</Em>,
+                  where I&apos;m a Senior Technical Lead, to the digital transformation of <Em>FIATC Seguros</Em> and the
+                  re-architecture of <Em>Sttok</Em>&apos;s platform for 250K+ users. Today I&apos;m also the fractional CTO of{" "}
+                  <Em>Cashela</Em>, a cross-border B2B payments platform. I co-founded <Em>Closevibe</Em>, an
+                  AI-powered SaaS for multichannel sales and support, so I know the founder&apos;s side of the table. My job:
+                  align technology with business outcomes and build teams that deliver.
+                </>
+              ),
+              es: (
+                <>
+                  Soy Cesar Napoles, CTO fraccional con base en Tarragona, España, y trabajo con equipos en remoto y
+                  presencialmente. Llevo más de 12 años poniendo software en producción: desde sistemas bancarios en{" "}
+                  <Em>CaixaBank Tech</Em>, donde soy Senior Technical Lead, hasta la transformación digital de{" "}
+                  <Em>FIATC Seguros</Em> y la rearquitectura de la plataforma de <Em>Sttok</Em> para más de 250K
+                  usuarios. Hoy también soy el CTO fraccional de <Em>Cashela</Em>, una plataforma de pagos B2B
+                  transfronterizos. Cofundé <Em>Closevibe</Em>, un SaaS con IA para ventas y atención al cliente
+                  multicanal, así que conozco el lado del fundador. Mi trabajo: alinear la tecnología con los resultados
+                  de negocio y formar equipos que entregan.
+                </>
+              ),
+            })}
           </p>
           <p className="mt-5 max-w-prose text-small text-ink-2">
-            The chat bubble on this page runs on Closevibe, the AI SaaS I co-founded.
+            {t({
+              en: "The chat bubble on this page runs on Closevibe, the AI SaaS I co-founded.",
+              es: "El chat de esta página funciona con Closevibe, el SaaS de IA que cofundé.",
+            })}
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
-            <CalendlyButton placement="about" label="Book a call" size="md" cursorLock className="w-full xs:w-auto" />
+            <BookingButton placement="about" label={t({ en: "Book a call", es: "Agendar llamada" })} size="md" cursorLock className="w-full xs:w-auto" />
             <Button variant="ghost" size="md" href={LINKS.cv} download icon="download" className="w-full xs:w-auto">
               {CV_LABEL}
             </Button>

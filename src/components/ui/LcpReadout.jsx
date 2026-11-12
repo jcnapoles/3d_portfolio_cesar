@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
+import { isEs } from "@/i18n";
 
 const supported = () =>
   typeof PerformanceObserver !== "undefined" &&
@@ -67,7 +68,9 @@ export default function LcpReadout({ className }) {
   if (seconds == null || !Number.isFinite(seconds) || seconds > GOOD_LCP_S) return null;
   return (
     <span className={cn("font-mono text-hud-xs uppercase tabular", className)}>
-      THIS PAGE RENDERED IN {seconds.toFixed(2)} S ON YOUR DEVICE
+      {isEs
+        ? `ESTA PÁGINA SE RENDERIZÓ EN ${seconds.toFixed(2).replace(".", ",")} S EN TU DISPOSITIVO`
+        : `THIS PAGE RENDERED IN ${seconds.toFixed(2)} S ON YOUR DEVICE`}
     </span>
   );
 }

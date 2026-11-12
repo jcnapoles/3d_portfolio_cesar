@@ -1,4 +1,5 @@
 import "@/components/system/VersionSwitchWarp.css";
+import { t } from "@/i18n";
 
 /*
  * The "time warp" between the 2026 and 2024 sites. A lazy chunk: VersionProvider imports it together with the
@@ -136,7 +137,7 @@ export default function VersionSwitchWarp({ target, x, y, r, phase }) {
       <div className="cn-warp-streaks cn-warp-streaks-b" />
       <div className="cn-warp-flash" />
       <div className="cn-warp-label">
-        <span className="cn-warp-kicker">{to === "legacy" ? "Warping to" : "Returning to"}</span>
+        <span className="cn-warp-kicker">{to === "legacy" ? t({ en: "Warping to", es: "Saltando a" }) : t({ en: "Returning to", es: "Volviendo a" })}</span>
         <span className="cn-warp-year">
           <span className="cn-warp-years">
             {YEARS[to].map((year) => (

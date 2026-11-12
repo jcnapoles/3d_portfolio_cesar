@@ -4,11 +4,12 @@ import { Plus } from "lucide-react";
 import SpotlightCard from "@/components/ui/SpotlightCard";
 import Chip from "@/components/ui/Chip";
 import StarGlyph from "@/components/ui/StarGlyph";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import { cn } from "@/lib/cn";
 import { DUR, fadeUpScale } from "@/lib/motion";
 import { isVerified, sttokMetricKey } from "@/constants/claims";
 import { PROOF_COMPANIES } from "@/constants/services";
+import { t } from "@/i18n";
 import useMotionPreference from "@/hooks/useMotionPreference";
 import useInViewport from "@/hooks/useInViewport";
 import usePrefersFinePointer from "@/hooks/usePrefersFinePointer";
@@ -61,8 +62,8 @@ function useVisualActivity({ mode, revealed, revealDelay, visualRef }) {
   useEffect(() => {
     if (!revealed || ready) return undefined;
     const ms = reduced ? 0 : (DUR.reveal + revealDelay) * 1000 + VISUAL_DELAY_MS;
-    const t = window.setTimeout(() => setReady(true), ms);
-    return () => window.clearTimeout(t);
+    const timer = window.setTimeout(() => setReady(true), ms);
+    return () => window.clearTimeout(timer);
   }, [revealed, ready, reduced, revealDelay]);
 
   // Visibility of the visual itself.
@@ -124,7 +125,7 @@ function Deliverables({ items }) {
   return (
     <details className="disclosure group/del mt-6 border-y border-line">
       <summary className="group/sum flex min-h-11 items-center justify-between gap-4 py-3 text-small md:py-4 font-semibold text-ink-1">
-        <span>Deliverables ({items.length})</span>
+        <span>{t({ en: "Deliverables", es: "Entregables" })} ({items.length})</span>
         <span className="grid size-7 shrink-0 place-items-center rounded-full border border-line-strong text-ink-2 transition-colors duration-ui ease-ui group-hover/sum:border-ink-3 group-hover/sum:text-ink-1 group-open/del:border-ink-3 group-open/del:text-ink-1">
           <Plus size={14} strokeWidth={2} aria-hidden="true" className="motion-ok:transition-transform motion-ok:duration-ui motion-ok:ease-ui group-open/del:rotate-45" />
         </span>
@@ -144,7 +145,7 @@ function Deliverables({ items }) {
 function CoreList({ items }) {
   return (
     <div className="mt-6">
-      <p className="hud-label">You get</p>
+      <p className="hud-label">{t({ en: "You get", es: "Qué obtienes" })}</p>
       <ul className="mt-2">
         {items.map((item) => (
           <li key={item} className="flex items-start gap-3 border-t border-line py-rule text-body text-ink-1 first:border-t-0 first:pt-3">
@@ -160,7 +161,7 @@ function CoreList({ items }) {
 function Proof({ text }) {
   return (
     <div className="panel-blueprint mt-6 p-rule">
-      <p className="hud-label">Proof</p>
+      <p className="hud-label">{t({ en: "Proof", es: "Pruebas" })}</p>
       <p className="mt-2 text-small text-ink-2">{highlightCompanies(text)}</p>
     </div>
   );
@@ -240,7 +241,7 @@ export default function ServiceTile({
           </span>
           {service.featured ? (
             <Chip tone="gold" className="text-[11px] uppercase leading-none tracking-[0.14em]">
-              Core offer
+              {t({ en: "Core offer", es: "Oferta principal" })}
             </Chip>
           ) : null}
         </header>
@@ -256,7 +257,7 @@ export default function ServiceTile({
             {service.title}
           </h3>
           <p className="mt-3 text-body text-ink-2">
-            <span className="text-ink-1">For:</span> {service.for}
+            <span className="text-ink-1">{t({ en: "For:", es: "Para:" })}</span> {service.for}
           </p>
 
           {service.featured ? <CoreList items={service.get} /> : <Deliverables items={service.get} />}
@@ -264,7 +265,7 @@ export default function ServiceTile({
           <Proof text={proofText} />
 
           <div className="mt-auto pt-6">
-            <CalendlyButton variant="text" placement={service.placement} label={service.cta} />
+            <BookingButton variant="text" placement={service.placement} label={service.cta} />
           </div>
         </div>
       </SpotlightCard>

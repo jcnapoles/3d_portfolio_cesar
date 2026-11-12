@@ -240,6 +240,11 @@ html:not([data-motion="reduced"]) .orbit-sat[data-orbit="run"] .orbit-sat-y {
 html:not([data-motion="reduced"]) .orbit-sat[data-orbit="run"][data-run="false"] .orbit-sat-x,
 html:not([data-motion="reduced"]) .orbit-sat[data-orbit="run"][data-run="false"] .orbit-sat-y { animation-play-state: paused; }
 
+/* ---------- Language switch (src/i18n/flags.js, src/i18n/switch.js) ---------- */
+.lang-flag { flex-shrink: 0; border-radius: 2px; box-shadow: 0 0 0 1px rgba(237,238,243,.18); }
+/* The language-change curtain CSS is inline in the <head> (index.html, scripts/blog/templates.mjs):
+   it must cover the next page before this stylesheet has loaded. */
+
 /* ---------- Accessibility modes ---------- */
 @media (prefers-contrast: more) {
   :root { --text-3: #A1A6B4; --line: rgba(237,238,243,.24); --line-strong: rgba(237,238,243,.32); }

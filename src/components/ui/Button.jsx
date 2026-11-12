@@ -5,6 +5,9 @@ import { cn } from "@/lib/cn";
 import { SPRING } from "@/lib/motion";
 import useMotionPreference from "@/hooks/useMotionPreference";
 import usePrefersFinePointer from "@/hooks/usePrefersFinePointer";
+import { t } from "@/i18n";
+
+const NEW_TAB = t({ en: "(opens in a new tab)", es: "(se abre en una pestaña nueva)" });
 
 const ICONS = { arrow: ArrowRight, external: ArrowUpRight, down: ArrowDown, download: FileDown };
 const ICON_SHIFT = {
@@ -122,7 +125,7 @@ const Button = forwardRef(function Button(
   const content = (
     <Label className="relative z-[1] inline-flex items-center gap-[inherit]" style={magnetOn ? { x: slx, y: sly } : undefined}>
       <span>{children}</span>
-      {external ? <span className="sr-only"> {srHint ?? "(opens in a new tab)"}</span> : null}
+      {external ? <span className="sr-only"> {srHint ?? NEW_TAB}</span> : null}
       {Icon ? (
         <Icon
           size={16}

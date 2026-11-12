@@ -8,6 +8,7 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import { STAGGER } from "@/lib/motion";
 import { companyLogos } from "@/assets/media";
 import { DELIVERY_CAPTION, DELIVERY_CLIENTS, DELIVERY_COPY, DELIVERY_OUTCOMES, DELIVERY_STEPS } from "@/constants/delivery";
+import { t } from "@/i18n";
 import "./delivery.css";
 
 const TREND_ICONS = { up: TrendingUp, down: TrendingDown };
@@ -36,7 +37,7 @@ export default function Delivery() {
         className="mb-10 lg:mb-12"
       />
 
-      <Reveal as="ul" role="list" aria-label="Companies" className="flex flex-wrap items-center gap-x-12 gap-y-5">
+      <Reveal as="ul" role="list" aria-label={t({ en: "Companies", es: "Empresas" })} className="flex flex-wrap items-center gap-x-12 gap-y-5">
         {DELIVERY_CLIENTS.map((client) => {
           const logo = companyLogos[client.logo];
           return (

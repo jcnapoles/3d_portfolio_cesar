@@ -3,8 +3,9 @@ import { m } from "motion/react";
 import { Check } from "lucide-react";
 import { EASE } from "@/lib/motion";
 import Button from "@/components/ui/Button";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import useMotionPreference from "@/hooks/useMotionPreference";
+import { t } from "@/i18n";
 
 // Outer to inner. Each ring converges (scale 1.6 -> 1, opacity 0 -> 1, 600 ms EASE.inout, 60 ms stagger).
 const RINGS = [
@@ -51,24 +52,37 @@ export default function SuccessPanel({ onReset }) {
       </div>
 
       <p aria-hidden="true" className="hud-label mt-7">
-        TRANSMISSION RECEIVED
+        {t({ en: "TRANSMISSION RECEIVED", es: "TRANSMISIÓN RECIBIDA" })}
       </p>
       <h3 ref={headingRef} tabIndex={-1} className="mt-3 text-h3 text-ink-1">
-        Message received
+        {t({ en: "Message received", es: "Mensaje recibido" })}
       </h3>
-      <p className="mt-3 max-w-[36ch] text-body text-ink-2">Thanks, your message is in. I'll reply by email.</p>
+      <p className="mt-3 max-w-[36ch] text-body text-ink-2">
+        {t({ en: "Thanks, your message is in. I'll reply by email.", es: "Gracias, he recibido tu mensaje. Te responderé por email." })}
+      </p>
 
       <div className="mt-8 flex flex-col items-center gap-5">
-        <CalendlyButton
+        <BookingButton
           placement="contact"
           variant="text"
-          label="Want a faster answer? Book a 30-min call"
+          label={t({ en: "Want a faster answer? Book a 30-min call", es: "¿Quieres una respuesta más rápida? Agenda una llamada de 30 min" })}
           className="whitespace-normal text-center"
         >
-          Want a faster answer? Book a <span className="whitespace-nowrap">30-min call</span>
-        </CalendlyButton>
+          {t({
+            en: (
+              <>
+                Want a faster answer? Book a <span className="whitespace-nowrap">30-min call</span>
+              </>
+            ),
+            es: (
+              <>
+                ¿Quieres una respuesta más rápida? Agenda una <span className="whitespace-nowrap">llamada de 30 min</span>
+              </>
+            ),
+          })}
+        </BookingButton>
         <Button variant="ghost" size="md" icon="none" onClick={onReset}>
-          Send another message
+          {t({ en: "Send another message", es: "Enviar otro mensaje" })}
         </Button>
       </div>
     </m.div>

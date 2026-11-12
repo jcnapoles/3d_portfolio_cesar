@@ -271,11 +271,11 @@ const Contact = () => {
             <FaLinkedin className="mr-2 text-2xl" aria-hidden="true" />     
           </a>
           <a
-            href="https://calendly.com/cesarnapoles/30min"
+            href="https://closevibe.com/r/cesar-napoles/meeting-30min"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Schedule a 30-minute meeting on Calendly (opens in a new tab)"
-            title="Book a call on Calendly"
+            aria-label="Schedule a 30-minute meeting on Closevibe (opens in a new tab)"
+            title="Book a call on Closevibe"
             className="flex items-center transition md:justify-center md:hover:scale-105"
           >
             <FaRegCalendarAlt className="mr-2 text-2xl" aria-hidden="true" />

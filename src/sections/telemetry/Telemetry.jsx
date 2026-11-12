@@ -10,6 +10,7 @@ import { cn } from "@/lib/cn";
 import { companyLogos } from "@/assets/media";
 import { FACTS, verifiedClaims } from "@/constants/claims";
 import { ANCHORS } from "@/constants/site";
+import { t } from "@/i18n";
 import useCellEntrance from "./useCellEntrance";
 import "./telemetry.css";
 
@@ -18,11 +19,18 @@ import "./telemetry.css";
  * Copy from the CV: co-founder and CTO since 2025; the multichannel AI sales and support SaaS he built end to end.
  */
 const FEATURED = {
-  hud: "Closevibe · 2025–now",
-  status: "Live",
-  label: "Closevibe, the AI sales & support SaaS I co-founded: WhatsApp, Instagram, Messenger and email on autopilot.",
-  caseStudy: { text: "Read the case study", ariaLabel: "Read the Closevibe case study", href: `#${ANCHORS.missions.closevibe}` },
-  chat: "It runs the chat on this page",
+  hud: t({ en: "Closevibe · 2025–now", es: "Closevibe · 2025–hoy" }),
+  status: t({ en: "Live", es: "Operativo" }),
+  label: t({
+    en: "Closevibe, the AI sales & support SaaS I co-founded: WhatsApp, Instagram, Messenger and email on autopilot.",
+    es: "Closevibe, el SaaS de ventas y soporte con IA que cofundé: WhatsApp, Instagram, Messenger y email en piloto automático.",
+  }),
+  caseStudy: {
+    text: t({ en: "Read the case study", es: "Lee el caso de estudio" }),
+    ariaLabel: t({ en: "Read the Closevibe case study", es: "Lee el caso de estudio de Closevibe" }),
+    href: `#${ANCHORS.missions.closevibe}`,
+  },
+  chat: t({ en: "It runs the chat on this page", es: "Atiende el chat de esta página" }),
 };
 
 /** "12+", "250K+", "−30%": the plain-text value read by screen readers (the animated one is aria-hidden). */
@@ -44,8 +52,14 @@ const numberCell = (key, item, caption = item.source) => ({
 
 // Text stats that stand in, in order, when fewer than two claims are verified.
 const TEXT_FALLBACKS = [
-  { key: "caixabank", kind: "text", text: "Sr. Tech Lead", label: "CaixaBank Tech", caption: "Now" },
-  { key: "cashela", kind: "text", text: "Fractional CTO", label: "Cashela, cross-border B2B payments", caption: "Now" },
+  { key: "caixabank", kind: "text", text: "Sr. Tech Lead", label: "CaixaBank Tech", caption: t({ en: "Now", es: "Actual" }) },
+  {
+    key: "cashela",
+    kind: "text",
+    text: t({ en: "Fractional CTO", es: "CTO fraccional" }),
+    label: t({ en: "Cashela, cross-border B2B payments", es: "Cashela, pagos B2B transfronterizos" }),
+    caption: t({ en: "Now", es: "Actual" }),
+  },
 ];
 
 /**
@@ -156,7 +170,7 @@ function FeaturedCell() {
         />
         <div className="tlm-feature-copy mt-5 md:mt-0">
           <p className="tlm-feature-stat text-stat-text stretch-112 text-ink-1">
-            Co-founder <span className="text-ion">&amp;</span> CTO
+            {t({ en: "Co-founder", es: "Cofundador" })} <span className="text-ion">{t({ en: "&", es: "y" })}</span> CTO
           </p>
           <p className="mt-3 max-w-[56ch] text-small text-ink-2">{FEATURED.label}</p>
         </div>
@@ -193,7 +207,7 @@ export default function Telemetry() {
 
   return (
     <Section id="telemetry" chapter="00" tone="band" labelledBy="telemetry-title">
-      <SectionHeading srOnly id="telemetry-title" title="Track record in numbers" />
+      <SectionHeading srOnly id="telemetry-title" title={t({ en: "Track record in numbers", es: "Trayectoria en cifras" })} />
       <ul ref={listRef} role="list" className="tlm-grid">
         <FeaturedCell />
         {cells.map((cell, i) => (

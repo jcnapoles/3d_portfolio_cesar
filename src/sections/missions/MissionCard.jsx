@@ -14,6 +14,7 @@ import SttokDiagram from "./diagrams/SttokDiagram";
 import FiatcDiagram from "./diagrams/FiatcDiagram";
 import IsernDiagram from "./diagrams/IsernDiagram";
 import ClosevibeDiagram from "./diagrams/CloseviveDiagram";
+import { t } from "@/i18n";
 
 const DIAGRAMS = { sttok: SttokDiagram, fiatc: FiatcDiagram, isern: IsernDiagram, closevibe: ClosevibeDiagram };
 
@@ -293,7 +294,7 @@ function Result({ mission }) {
 
   return (
     <div>
-      <h4 className="hud-label">Result</h4>
+      <h4 className="hud-label">{t({ en: "Result", es: "Resultado" })}</h4>
       {stat}
       <p className={cn("text-body text-ink-1", stat ? "mt-4" : "mt-2")}>{changed}</p>
     </div>
@@ -324,7 +325,7 @@ function Quote({ quote }) {
           </span>
           <ExternalLink
             href={quote.linkedin}
-            srHint="(opens LinkedIn in a new tab)"
+            srHint={t({ en: "(opens LinkedIn in a new tab)", es: "(abre LinkedIn en una pestaña nueva)" })}
             className="whitespace-nowrap coarse:-my-3 coarse:inline-block coarse:py-3"
           >
             LinkedIn
@@ -370,7 +371,7 @@ const MissionCard = memo(function MissionCard({ mission, index, total, progress,
                   columns never wrap mid-phrase or leave a dangling separator. */}
               <p className="min-w-0 font-mono text-hud-xs uppercase leading-[1.75] text-ink-3">
                 <span className="block">
-                  {mission.metaLabel || "Client"} · <span className="text-ink-2">{mission.company}</span>
+                  {mission.metaLabel || t({ en: "Client", es: "Cliente" })} · <span className="text-ink-2">{mission.company}</span>
                   <span className="sr-only">,</span>
                 </span>
                 <span className="tabular block whitespace-nowrap text-ink-2">
@@ -378,7 +379,7 @@ const MissionCard = memo(function MissionCard({ mission, index, total, progress,
                   <span className="sr-only">,</span>
                 </span>
                 <span className="block">
-                  Role · <span className="text-ink-2">{mission.role}</span>
+                  {t({ en: "Role", es: "Rol" })} · <span className="text-ink-2">{mission.role}</span>
                 </span>
               </p>
             </div>
@@ -388,12 +389,12 @@ const MissionCard = memo(function MissionCard({ mission, index, total, progress,
           </header>
 
           <div>
-            <h4 className="hud-label">Challenge</h4>
+            <h4 className="hud-label">{t({ en: "Challenge", es: "Reto" })}</h4>
             <p className="mt-2 text-body text-ink-2">{mission.challenge}</p>
           </div>
 
           <div>
-            <h4 className="hud-label">What I did</h4>
+            <h4 className="hud-label">{t({ en: "What I did", es: "Qué hice" })}</h4>
             {/* Hairline rhythm (--rule-gap): the same space above and below every item's top rule. */}
             <ul className="mt-rule grid gap-x-6 gap-y-rule sm:grid-cols-2">
               {mission.did.map((item) => (

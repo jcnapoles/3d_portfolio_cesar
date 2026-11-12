@@ -1,6 +1,7 @@
 import Container from "@/components/ui/Container";
 import MissionElapsed from "@/components/ui/MissionElapsed";
 import LocalTime from "@/components/ui/LocalTime";
+import { t } from "@/i18n";
 
 /**
  * Hero HUD row (aria-hidden), 88 px from the top of the hero.
@@ -16,7 +17,7 @@ export default function HudRow() {
           {/* On phones the eclipse's corona reaches behind the time: hero-scrim keeps it legible. */}
           <LocalTime className="hero-scrim" />
           <span className="hidden lg:inline">
-            <span className="text-ion">00</span> / LAUNCH
+            <span className="text-ion">00</span> / {t({ en: "LAUNCH", es: "DESPEGUE" })}
           </span>
         </div>
         {/* Hairline rhythm: 14 px under the readout on phones (the badge row starts at 132 px), 20 px from 1024. */}

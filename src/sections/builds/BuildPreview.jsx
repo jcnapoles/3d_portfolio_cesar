@@ -8,6 +8,7 @@ import { cn } from "@/lib/cn";
 import { CSS_EASE } from "@/lib/motion";
 import { projectShots } from "@/assets/media";
 import { BUILDS } from "@/constants/builds";
+import { t } from "@/i18n";
 
 const BY_KEY = Object.fromEntries(BUILDS.map((b, i) => [b.key, { ...b, index: i }]));
 const nextKey = (key) => BUILDS[((BY_KEY[key]?.index ?? -1) + 1) % BUILDS.length].key;
@@ -121,7 +122,10 @@ export default function BuildPreview({ activeKey, reduced, className }) {
                     <Picture
                       ref={(el) => (el ? imgs.current.set(key, el) : imgs.current.delete(key))}
                       image={projectShots[key]}
-                      alt={`${BY_KEY[key]?.name ?? key} screenshot`}
+                      alt={t({
+                        en: `${BY_KEY[key]?.name ?? key} screenshot`,
+                        es: `Captura de pantalla de ${BY_KEY[key]?.name ?? key}`,
+                      })}
                       sizes={SIZES}
                       className="block size-full"
                       imgClassName="size-full object-cover object-top"
@@ -133,7 +137,7 @@ export default function BuildPreview({ activeKey, reduced, className }) {
           </BrowserFrame>
           {/* Rides in the browser bar's right end (the bar is 28 px tall). */}
           <span className="absolute right-1.5 top-1 z-[3] inline-flex h-5 items-center gap-0.5 rounded-pill bg-gold pl-2.5 pr-1.5 text-[11px] font-semibold leading-none text-void group-hover/preview:bg-gold-hot motion-ok:transition-colors motion-ok:duration-ui motion-ok:ease-ui">
-            {live ? "Visit" : "Preview"}
+            {live ? t({ en: "Visit", es: "Visitar" }) : t({ en: "Preview", es: "Vista previa" })}
             <ArrowUpRight size={12} strokeWidth={2.5} aria-hidden="true" />
           </span>
         </a>
@@ -144,11 +148,11 @@ export default function BuildPreview({ activeKey, reduced, className }) {
               {pad(build.index + 1)} / {pad(BUILDS.length)}
             </span>
             <span className="truncate text-small font-semibold text-ink-1">{build.name}</span>
-            {build.lead ? <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.14em] text-ion">Platform I lead</span> : null}
+            {build.lead ? <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.14em] text-ion">{t({ en: "Platform I lead", es: "Plataforma que lidero" })}</span> : null}
           </p>
           <p className="flex shrink-0 items-center gap-2 font-mono text-[11px] uppercase leading-none tracking-[0.14em]">
             {live ? <StatusDot /> : <span className="inline-block size-2 shrink-0 rounded-full border border-ink-3" />}
-            <span className={live ? "text-ink-1" : "text-ink-3"}>{live ? "Live" : "Preview"}</span>
+            <span className={live ? "text-ink-1" : "text-ink-3"}>{live ? t({ en: "Live", es: "En línea" }) : t({ en: "Preview", es: "Vista previa" })}</span>
           </p>
         </div>
 
