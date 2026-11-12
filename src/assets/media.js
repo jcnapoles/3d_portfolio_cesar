@@ -65,7 +65,7 @@ export const heroPortrait = {
 /** About portrait (square crop of PerfilProColor.jpeg), 240 / 468. */
 export const aboutPortrait = responsive(portraitFiles, "portrait", "about", [240, 468], 468, 468);
 
-const PROJECT_KEYS = ["closevibe", "cashela", "1234ticket", "quinque", "investanalysis", "fullstackquestions", "dretimediacio", "vcdetectius", "fiatbrav"];
+const PROJECT_KEYS = ["closevibe", "calendavibe", "cashela", "1234ticket", "quinque", "investanalysis", "fullstackquestions", "dretimediacio", "vcdetectius", "fiatbrav"];
 
 /** Project screenshots, 16:10 top-anchored crops at 640 / 1280. */
 export const projectShots = Object.fromEntries(
