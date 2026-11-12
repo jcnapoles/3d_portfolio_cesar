@@ -3,7 +3,7 @@ import { m } from "motion/react";
 import { Check } from "lucide-react";
 import { EASE } from "@/lib/motion";
 import Button from "@/components/ui/Button";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import useMotionPreference from "@/hooks/useMotionPreference";
 import { t } from "@/i18n";
 
@@ -62,7 +62,7 @@ export default function SuccessPanel({ onReset }) {
       </p>
 
       <div className="mt-8 flex flex-col items-center gap-5">
-        <CalendlyButton
+        <BookingButton
           placement="contact"
           variant="text"
           label={t({ en: "Want a faster answer? Book a 30-min call", es: "¿Quieres una respuesta más rápida? Agenda una llamada de 30 min" })}
@@ -80,7 +80,7 @@ export default function SuccessPanel({ onReset }) {
               </>
             ),
           })}
-        </CalendlyButton>
+        </BookingButton>
         <Button variant="ghost" size="md" icon="none" onClick={onReset}>
           {t({ en: "Send another message", es: "Enviar otro mensaje" })}
         </Button>

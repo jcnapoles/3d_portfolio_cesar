@@ -1,5 +1,11 @@
 // Relative import (not "@/"): scripts/blog imports this file from Node.
-import { t, blogPath } from "../i18n/index.js";
+import { t, blogPath, LOCALE } from "../i18n/index.js";
+
+/** 30-min call booking page (Closevibe), one per language. */
+export const BOOKING = {
+  en: "https://closevibe.com/r/cesar-napoles/meeting-30min",
+  es: "https://closevibe.com/r/cesar-napoles/reunion-30min",
+};
 
 export const SITE_URL = "https://cesarnapoles.com";
 export const PERSON = {
@@ -11,7 +17,7 @@ export const PERSON = {
   coords: [41.1189, 1.2445],
 };
 export const LINKS = {
-  calendly: "https://calendly.com/cesarnapoles/30min",
+  booking: BOOKING[LOCALE],
   linkedin: "https://linkedin.com/in/jcnapoles",
   github: "https://github.com/jcnapoles",
   cv: "/Cesar_Napoles_CV.pdf",
@@ -20,8 +26,9 @@ export const LINKS = {
 };
 export const CV_LABEL = t({ en: "Download CV (PDF, 355 KB)", es: "Descargar CV (PDF, 355 KB, en inglés)" });
 export const PLACEMENTS = ["nav", "menu", "hero", "fit", "svc-fcto", "svc-arch", "svc-lead", "svc-build", "svc-unsure", "results", "process", "testimonials", "about", "faq", "launch", "contact", "footer", "sticky", "blog", "blog-post"];
-export const calendlyUrl = (placement) =>
-  `${LINKS.calendly}?utm_source=site&utm_medium=cta&utm_content=${encodeURIComponent(placement)}`;
+/** Booking link for a CTA, UTM-tagged with its placement. `lang` defaults to the page's locale (the blog passes it). */
+export const bookingUrl = (placement, lang = LOCALE) =>
+  `${BOOKING[lang] || BOOKING.en}?utm_source=site&utm_medium=cta&utm_content=${encodeURIComponent(placement)}`;
 export const NAV_OFFSET = 88;
 export const CHAPTERS = [
   { index: "00", name: t({ en: "LAUNCH", es: "DESPEGUE" }), id: "top", label: t({ en: "Launch", es: "Inicio" }) },

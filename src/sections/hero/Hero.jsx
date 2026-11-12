@@ -3,7 +3,7 @@ import Section from "@/components/ui/Section";
 import Container from "@/components/ui/Container";
 import StatusBadge from "@/components/ui/StatusBadge";
 import ScrambleText from "@/components/ui/ScrambleText";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import Button from "@/components/ui/Button";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { AVAILABILITY } from "@/constants/claims";
@@ -88,7 +88,7 @@ export default function Hero() {
           <p className="mt-6 max-w-[56ch] text-lead text-ink-2">{HERO_COPY.lead}</p>
 
           <div className="mt-10 flex flex-col items-stretch gap-4 md:flex-row md:items-center md:gap-3">
-            <CalendlyButton
+            <BookingButton
               id={ANCHORS.heroCta}
               placement="hero"
               label={HERO_COPY.primaryCta}

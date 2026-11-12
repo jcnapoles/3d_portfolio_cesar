@@ -3,7 +3,7 @@ import { Compass, Gauge, GitBranch, UsersRound } from "lucide-react";
 import Section from "@/components/ui/Section";
 import SectionHeading from "@/components/ui/SectionHeading";
 import SpotlightCard from "@/components/ui/SpotlightCard";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import Reveal from "@/components/ui/Reveal";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { fadeUp, fadeUpScale, STAGGER } from "@/lib/motion";
@@ -52,7 +52,7 @@ export default function Fit() {
             <p className="max-w-[26ch] text-lead text-ink-1">
               {t({ en: "Sound familiar? Let's talk it through.", es: "¿Te suena? Hablémoslo." })}
             </p>
-            <CalendlyButton placement="fit" label={t({ en: "Book a call", es: "Agenda una llamada" })} size="md" cursorLock className="mt-6" />
+            <BookingButton placement="fit" label={t({ en: "Book a call", es: "Agenda una llamada" })} size="md" cursorLock className="mt-6" />
           </Reveal>
         </div>
 

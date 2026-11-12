@@ -8,7 +8,7 @@ import { scrollToId, scrollToTop } from "@/lib/scroll";
 import { CV_LABEL, LINKS, NAV_LINKS } from "@/constants/site";
 import Logo from "@/components/ui/Logo";
 import StarGlyph from "@/components/ui/StarGlyph";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import ExternalLink from "@/components/ui/ExternalLink";
 import MotionToggle from "@/components/ui/MotionToggle";
 import LanguageSwitch from "@/components/ui/LanguageSwitch";
@@ -218,7 +218,7 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
 
               <m.div variants={list} initial="hidden" animate="show" className="mt-auto pt-10">
                 <m.div variants={item}>
-                  <CalendlyButton placement="menu" size="lg" fullWidth />
+                  <BookingButton placement="menu" size="lg" fullWidth />
                 </m.div>
                 <m.div variants={item} className="mt-6 flex flex-wrap items-center gap-x-8">
                   <ExternalLink href={LINKS.linkedin} className={EXT_LINK}>

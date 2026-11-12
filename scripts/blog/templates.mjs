@@ -3,7 +3,7 @@
 // small enhancements (scrolled nav, mobile menu, reading progress, copy link).
 // Tailwind scans this file (tailwind.config.cjs `content`), so utility classes here are generated.
 import { CATEGORIES } from "./content.mjs";
-import { SITE_URL, PERSON, LINKS, calendlyUrl } from "../../src/constants/site.js";
+import { SITE_URL, PERSON, LINKS, bookingUrl } from "../../src/constants/site.js";
 import { FLAGS } from "../../src/i18n/flags.js";
 
 /* ---------- Paths ---------- */
@@ -32,7 +32,7 @@ const UI = {
     book: "Book",
     bookCall: "Book a call",
     book30: "Book a 30-min call",
-    opensCalendly: "(opens Calendly in a new tab)",
+    opensBooking: "(opens Closevibe in a new tab)",
     newTab: "(opens in a new tab)",
     openMenu: "Open menu",
     closeMenu: "Close menu",
@@ -86,7 +86,7 @@ const UI = {
     book: "Reservar",
     bookCall: "Agendar llamada",
     book30: "Agenda una llamada de 30 min",
-    opensCalendly: "(abre Calendly en una pestaña nueva)",
+    opensBooking: "(abre Closevibe en una pestaña nueva)",
     newTab: "(se abre en una pestaña nueva)",
     openMenu: "Abrir menú",
     closeMenu: "Cerrar menú",
@@ -189,7 +189,7 @@ function header(lang, alt) {
     <nav aria-label="${u.primary}" class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block"><ul class="flex items-center">${links}</ul></nav>
     <div class="relative flex shrink-0 items-center gap-1 md:gap-1.5">
       <span class="max-[389px]:hidden">${languageSwitch(lang, alt)}</span>
-      <a href="${calendlyUrl("blog")}" target="_blank" rel="noopener noreferrer" class="${BTN_PRIMARY} max-md:px-4"><span class="md:hidden">${u.book}</span><span class="hidden md:inline">${u.bookCall}</span><span class="sr-only"> ${u.opensCalendly}</span></a>
+      <a href="${bookingUrl("blog", lang)}" target="_blank" rel="noopener noreferrer" class="${BTN_PRIMARY} max-md:px-4"><span class="md:hidden">${u.book}</span><span class="hidden md:inline">${u.bookCall}</span><span class="sr-only"> ${u.opensBooking}</span></a>
       <button type="button" data-menu-open aria-controls="blog-menu" aria-expanded="false" aria-label="${u.openMenu}" class="inline-flex size-11 items-center justify-center rounded-pill text-ink-1 transition-colors duration-ui ease-ui hover:bg-white/[.06] lg:hidden">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
@@ -205,7 +205,7 @@ function header(lang, alt) {
     </button>
   </div>
   <nav aria-label="${u.menu}" class="mx-auto w-full max-w-[1120px] px-4 pt-8 md:px-9"><ul class="border-t border-line">${menuLinks}</ul>
-    <a href="${calendlyUrl("menu")}" target="_blank" rel="noopener noreferrer" class="${BTN_PRIMARY} mt-10 h-14 w-full">${u.book30}<span class="sr-only"> ${u.opensCalendly}</span></a>
+    <a href="${bookingUrl("menu", lang)}" target="_blank" rel="noopener noreferrer" class="${BTN_PRIMARY} mt-10 h-14 w-full">${u.book30}<span class="sr-only"> ${u.opensBooking}</span></a>
     <div class="mt-6 border-t border-line pt-3">${languageSwitch(lang, alt)}</div>
   </nav>
 </dialog>`;
@@ -497,7 +497,7 @@ ${p.html}
         <p class="text-body font-semibold text-ink-1">${esc(PERSON.name)}</p>
         <p class="mt-1 text-small text-ink-2">${u.bio}</p>
       </div>
-      <a href="${calendlyUrl("blog-post")}" target="_blank" rel="noopener noreferrer" class="${BTN_PRIMARY} h-12 shrink-0">${u.bookCall}<span class="sr-only"> ${u.opensCalendly}</span></a>
+      <a href="${bookingUrl("blog-post", p.lang)}" target="_blank" rel="noopener noreferrer" class="${BTN_PRIMARY} h-12 shrink-0">${u.bookCall}<span class="sr-only"> ${u.opensBooking}</span></a>
     </section>
 
     <div class="mt-8 flex flex-wrap items-center gap-2">

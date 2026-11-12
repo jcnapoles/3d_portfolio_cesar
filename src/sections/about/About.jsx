@@ -4,7 +4,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import Picture from "@/components/ui/Picture";
 import Reveal from "@/components/ui/Reveal";
 import Button from "@/components/ui/Button";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import ExternalLink from "@/components/ui/ExternalLink";
 import { aboutPortrait } from "@/assets/media";
 import { CV_LABEL, LINKS } from "@/constants/site";
@@ -111,7 +111,7 @@ export default function About() {
             })}
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
-            <CalendlyButton placement="about" label={t({ en: "Book a call", es: "Agendar llamada" })} size="md" cursorLock className="w-full xs:w-auto" />
+            <BookingButton placement="about" label={t({ en: "Book a call", es: "Agendar llamada" })} size="md" cursorLock className="w-full xs:w-auto" />
             <Button variant="ghost" size="md" href={LINKS.cv} download icon="download" className="w-full xs:w-auto">
               {CV_LABEL}
             </Button>

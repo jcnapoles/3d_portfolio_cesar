@@ -4,7 +4,7 @@ import Section from "@/components/ui/Section";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 import Button from "@/components/ui/Button";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import useMotionPreference from "@/hooks/useMotionPreference";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import useInViewport from "@/hooks/useInViewport";
@@ -244,7 +244,7 @@ export default function Missions() {
       <Reveal className="mt-24 flex flex-col items-center text-center">
         <p className="max-w-[60ch] text-lead text-ink-1">{MISSIONS_FOOTER.line}</p>
         <div className="mt-8 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
-          <CalendlyButton placement="results" label={t({ en: "Book a call", es: "Agendar llamada" })} size="lg" cursorLock />
+          <BookingButton placement="results" label={t({ en: "Book a call", es: "Agendar llamada" })} size="lg" cursorLock />
           <Button variant="ghost" size="lg" href="#about" icon="down">
             {t({ en: "See my full career", es: "Ver mi trayectoria completa" })}
           </Button>

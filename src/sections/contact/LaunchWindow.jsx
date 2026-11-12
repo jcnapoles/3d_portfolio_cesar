@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import Button from "@/components/ui/Button";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import HudIndex from "@/components/ui/HudIndex";
 import Reveal from "@/components/ui/Reveal";
 import { ANCHORS } from "@/constants/site";
@@ -50,7 +50,7 @@ export default function LaunchWindow({ eclipseRef }) {
         delay={0.08}
         className="mt-10 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-center"
       >
-        <CalendlyButton
+        <BookingButton
           placement="launch"
           label={t({ en: "Book a 30-min call", es: "Agenda una llamada de 30 min" })}
           size="lg"

@@ -1,6 +1,6 @@
 import { MapPin } from "lucide-react";
 import { cn } from "@/lib/cn";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import ExternalLink from "@/components/ui/ExternalLink";
 import LocalTime from "@/components/ui/LocalTime";
 import Reveal from "@/components/ui/Reveal";
@@ -12,12 +12,12 @@ import Globe from "./Globe";
 
 const ROWS = [
   {
-    dt: "CALENDLY · 30 MIN",
+    dt: t({ en: "CALL · 30 MIN", es: "LLAMADA · 30 MIN" }),
     dd: (
-      <CalendlyButton
+      <BookingButton
         variant="text"
         placement="contact"
-        label={t({ en: "Book a call (Calendly)", es: "Agendar llamada (Calendly)" })}
+        label={t({ en: "Book a call (Closevibe)", es: "Agendar llamada (Closevibe)" })}
         icon="external"
         className="text-body"
       />
@@ -41,7 +41,7 @@ const ROWS = [
 ];
 
 /**
- * 10b side panel: a <dl> of HUD rows (Calendly, LinkedIn, GitHub, base, local time, languages).
+ * 10b side panel: a <dl> of HUD rows (booking, LinkedIn, GitHub, base, local time, languages).
  * Desktop (>= 1024) on a tier-A device also gets the cobe globe above the list.
  */
 export default function ChannelPanel({ className }) {

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import Section from "@/components/ui/Section";
 import SectionHeading from "@/components/ui/SectionHeading";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import Reveal from "@/components/ui/Reveal";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/cn";
@@ -67,7 +67,7 @@ export default function Testimonials() {
       </div>
 
       <Reveal variants={ctaVariants} className="mt-12 lg:mt-16">
-        <CalendlyButton placement="testimonials" label={tr({ en: "Book a call", es: "Agendar llamada" })} cursorLock />
+        <BookingButton placement="testimonials" label={tr({ en: "Book a call", es: "Agendar llamada" })} cursorLock />
       </Reveal>
     </Section>
   );

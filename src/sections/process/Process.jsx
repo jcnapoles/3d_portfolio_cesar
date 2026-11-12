@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import Section from "@/components/ui/Section";
 import SectionHeading from "@/components/ui/SectionHeading";
 import SpotlightCard from "@/components/ui/SpotlightCard";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import Reveal from "@/components/ui/Reveal";
 import useLazyGsap from "@/hooks/useLazyGsap";
 import useInViewport from "@/hooks/useInViewport";
@@ -286,7 +286,7 @@ export default function Process() {
 
       <Reveal variants={ctaVariants} className="mt-12 flex max-lg:pl-12 lg:mt-14 lg:justify-end">
         <span ref={ctaRef} className="process-cta relative inline-flex rounded-pill" data-glint={glint ? "true" : undefined}>
-          <CalendlyButton placement="process" label={t({ en: "Start with a 30-min call", es: "Empieza con una llamada de 30 min" })} cursorLock />
+          <BookingButton placement="process" label={t({ en: "Start with a 30-min call", es: "Empieza con una llamada de 30 min" })} cursorLock />
           <span aria-hidden="true" data-glow="" className="process-glint" />
         </span>
       </Reveal>

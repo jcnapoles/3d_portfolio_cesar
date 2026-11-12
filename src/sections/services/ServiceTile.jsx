@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import SpotlightCard from "@/components/ui/SpotlightCard";
 import Chip from "@/components/ui/Chip";
 import StarGlyph from "@/components/ui/StarGlyph";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import { cn } from "@/lib/cn";
 import { DUR, fadeUpScale } from "@/lib/motion";
 import { isVerified, sttokMetricKey } from "@/constants/claims";
@@ -265,7 +265,7 @@ export default function ServiceTile({
           <Proof text={proofText} />
 
           <div className="mt-auto pt-6">
-            <CalendlyButton variant="text" placement={service.placement} label={service.cta} />
+            <BookingButton variant="text" placement={service.placement} label={service.cta} />
           </div>
         </div>
       </SpotlightCard>

@@ -5,7 +5,7 @@ import { scrollToId, scrollToTop } from "@/lib/scroll";
 import { CV_LABEL, LINKS } from "@/constants/site";
 import { AVAILABILITY } from "@/constants/claims";
 import Container from "@/components/ui/Container";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import ExternalLink from "@/components/ui/ExternalLink";
 import LocalTime from "@/components/ui/LocalTime";
 import MissionElapsed from "@/components/ui/MissionElapsed";
@@ -165,7 +165,7 @@ export default function Footer() {
                 </ExternalLink>
               </li>
               <li className="pt-1 coarse:pt-0">
-                <CalendlyButton variant="text" placement="footer" label={t({ en: "Book a call", es: "Agendar llamada" })} className="min-h-8" />
+                <BookingButton variant="text" placement="footer" label={t({ en: "Book a call", es: "Agendar llamada" })} className="min-h-8" />
               </li>
             </ul>
           </div>

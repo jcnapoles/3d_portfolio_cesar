@@ -1,7 +1,7 @@
 import Section from "@/components/ui/Section";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { SERVICES, SERVICES_HEADING, SERVICES_UNSURE } from "@/constants/services";
 import ServiceTile from "./ServiceTile";
@@ -86,7 +86,7 @@ export default function Services() {
 
       <Reveal className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-1 lg:mt-14">
         <p className="text-body text-ink-2">{SERVICES_UNSURE.text}</p>
-        <CalendlyButton variant="text" placement={SERVICES_UNSURE.placement} label={SERVICES_UNSURE.cta} />
+        <BookingButton variant="text" placement={SERVICES_UNSURE.placement} label={SERVICES_UNSURE.cta} />
       </Reveal>
     </Section>
   );

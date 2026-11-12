@@ -7,7 +7,7 @@ import { scrollToId, scrollToTop } from "@/lib/scroll";
 import { NAV_LINKS } from "@/constants/site";
 import Logo from "@/components/ui/Logo";
 import StarGlyph from "@/components/ui/StarGlyph";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import useLenis from "@/hooks/useLenis";
 import useLenisScroll from "@/hooks/useLenisScroll";
 import useActiveChapter from "@/hooks/useActiveChapter";
@@ -147,7 +147,7 @@ export default function Navbar() {
 
           <div className="relative flex shrink-0 items-center gap-1 md:gap-1.5">
             <LanguageSwitch className="max-[389px]:hidden" />
-            <CalendlyButton
+            <BookingButton
               placement="nav"
               size="sm"
               magnetic
@@ -157,7 +157,7 @@ export default function Navbar() {
             >
               <span className="md:hidden">{t({ en: "Book", es: "Reservar" })}</span>
               <span className="hidden md:inline">{t({ en: "Book a call", es: "Agendar llamada" })}</span>
-            </CalendlyButton>
+            </BookingButton>
             <button
               ref={toggleRef}
               type="button"

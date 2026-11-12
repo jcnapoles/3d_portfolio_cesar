@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Plus } from "lucide-react";
 import Section from "@/components/ui/Section";
 import SectionHeading from "@/components/ui/SectionHeading";
-import CalendlyButton from "@/components/ui/CalendlyButton";
+import BookingButton from "@/components/ui/BookingButton";
 import Reveal from "@/components/ui/Reveal";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { fadeUp, staggerFor } from "@/lib/motion";
@@ -51,7 +51,7 @@ export default function Faq() {
             className="order-3 mt-12 flex flex-wrap items-center gap-x-4 gap-y-1 sm:mt-14 lg:order-none lg:mt-0"
           >
             <p className="text-lead text-ink-1">{t({ en: "Still unsure?", es: "¿Aún tienes dudas?" })}</p>
-            <CalendlyButton placement="faq" variant="text" label={t({ en: "Book a call", es: "Agenda una llamada" })} />
+            <BookingButton placement="faq" variant="text" label={t({ en: "Book a call", es: "Agenda una llamada" })} />
           </Reveal>
         </div>
 
