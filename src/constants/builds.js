@@ -6,6 +6,8 @@
 export const BUILDS = [
   { key: "closevibe", name: "Closevibe", sector: "SaaS", status: "LIVE", href: "https://www.closevibe.com/", code: "",
     description: "Multichannel AI sales and support platform I co-founded.", stack: ["Python", "FastAPI", "React"] },
+  { key: "calendavibe", name: "CalendaVibe", sector: "SaaS", status: "LIVE", href: "https://calendavibe.com/en", code: "",
+    description: "Free online scheduling: booking links on Google Calendar and Outlook, Meet, Stripe payments and teams.", stack: ["React", "Node.js", "PostgreSQL"] },
   { key: "cashela", name: "Cashela", sector: "Fintech", status: "LIVE", href: "https://www.cashela.com/", code: "", lead: true,
     description: "Cross-border B2B payments platform: pay-ins, payouts, wallets and payment links.", stack: ["Laravel", "Next.js", "AWS"] },
   { key: "1234ticket", name: "1234ticket", sector: "Ticketing", status: "LIVE", href: "https://1234ticket.com/", code: "", lead: true,

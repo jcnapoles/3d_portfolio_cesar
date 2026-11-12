@@ -60,7 +60,7 @@ if (!run("portrait")) {
 /* ---------- 2. Project screenshots (16:10, top-anchored) ---------- */
 // Masters: src/assets/projects/<key>.png, 2880 x 1800 captures written by scripts/capture-projects.mjs.
 // Output names (<key>-{640,1280}.{avif,webp}) are what src/assets/media.js reads; keep them stable.
-const PROJECTS = ["closevibe", "cashela", "1234ticket", "quinque", "investanalysis", "fullstackquestions", "dretimediacio", "vcdetectius", "fiatbrav"];
+const PROJECTS = ["closevibe", "calendavibe", "cashela", "1234ticket", "quinque", "investanalysis", "fullstackquestions", "dretimediacio", "vcdetectius", "fiatbrav"];
 if (run("projects")) {
   console.log("project screenshots");
   for (const key of PROJECTS) {
