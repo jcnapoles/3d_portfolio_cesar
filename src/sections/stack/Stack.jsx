@@ -6,6 +6,7 @@ import useBrandIcons from "@/hooks/useBrandIcons";
 import { ALSO_IN_THE_LOG } from "@/constants/stack";
 import SkyChart from "./SkyChart";
 import StackLegend from "./StackLegend";
+import { t } from "@/i18n";
 import "./stack.css";
 
 /**
@@ -20,10 +21,10 @@ export default function Stack() {
     <Section ref={sectionRef} id="stack" chapter="08" labelledBy="stack-title">
       <SectionHeading
         index="08"
-        name="SYSTEMS"
+        name={t({ en: "SYSTEMS", es: "SISTEMAS" })}
         eyebrow="Stack"
-        title="Tools I trust in production"
-        lead="Chosen for your problem, not my preferences."
+        title={t({ en: "Tools I trust in production", es: "Herramientas en las que confío en producción" })}
+        lead={t({ en: "Chosen for your problem, not my preferences.", es: "Elegidas para tu problema, no por mis preferencias." })}
         id="stack-title"
       />
       <SkyChart className="hidden lg:block" icons={icons} />

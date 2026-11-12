@@ -2,17 +2,18 @@ import { useEffect, useRef } from "react";
 import Chip from "@/components/ui/Chip";
 import StarGlyph from "@/components/ui/StarGlyph";
 import useMotionPreference from "@/hooks/useMotionPreference";
+import { t } from "@/i18n";
 
 // Spec 6.5, tile A. viewBox 400 x 300 (4:3). HTML chips sit at the same coordinates as percentages.
 const W = 400;
 const H = 300;
 const CENTER = { x: 200, y: 150 };
 const NODES = [
-  { label: "Product", x: 60, y: 60 },
-  { label: "Team", x: 60, y: 150 },
-  { label: "Cloud", x: 60, y: 240 },
-  { label: "AI", x: 340, y: 90 },
-  { label: "Business", x: 340, y: 210 },
+  { label: t({ en: "Product", es: "Producto" }), x: 60, y: 60 },
+  { label: t({ en: "Team", es: "Equipo" }), x: 60, y: 150 },
+  { label: t({ en: "Cloud", es: "Cloud" }), x: 60, y: 240 },
+  { label: t({ en: "AI", es: "IA" }), x: 340, y: 90 },
+  { label: t({ en: "Business", es: "Negocio" }), x: 340, y: 210 },
 ];
 // Quadratic from the node to the center, control point at the horizontal midpoint (node height).
 const controlFor = ({ x, y }) => ({ x: (x + CENTER.x) / 2, y });

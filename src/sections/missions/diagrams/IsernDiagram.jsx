@@ -4,7 +4,9 @@
  * right, with the delivery pipeline (JENKINS · GITLAB CI) beneath.
  * The satellite runs on the AWS / AZURE (target) ring. `fig` carries the shared primitives from MissionCard.
  */
-const RING = { cx: 395, cy: 165, rx: 115, ry: 48 };
+import { t } from "@/i18n";
+
+const RING ={ cx: 395, cy: 165, rx: 115, ry: 48 };
 const PIPE_Y = 300;
 const PIPE_NODES = [
   { x: 200, name: "Jenkins" },
@@ -41,7 +43,7 @@ export default function IsernDiagram({ svgRef, fig }) {
       <Satellite orbit={RING} parkDeg={300} />
 
       <Label x={120} y={239} place="below" delay={0.3}>
-        Monolith
+        {t({ en: "Monolith", es: "Monolito" })}
       </Label>
       <Label x={RING.cx} y={RING.cy} tone="ion" delay={0.4}>
         AWS / Azure

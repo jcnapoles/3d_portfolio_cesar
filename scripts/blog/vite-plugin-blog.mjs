@@ -6,7 +6,8 @@
 //   itself when a .md file changes). Drafts and future-dated posts are visible, flagged DRAFT / SCHEDULED.
 // - Build: blog.html is a Rollup entry only so Vite bundles src/blog/main.js (+ CSS). Its hashed <script>/<link>
 //   tags are reused in every generated page and the shell itself is dropped from the output. Emits
-//   blog/index.html, blog/<slug>/index.html, blog/category/<key>/index.html, blog/rss.xml and sitemap.xml.
+//   per language (en under blog/, es under es/blog/): index.html, <slug>/index.html, category|categoria/<key>/index.html,
+//   rss.xml; plus sitemap.xml (home pages, blog pages and posts in both languages).
 import path from "node:path";
 import { CATEGORIES, CONTENT_DIR, loadPosts } from "./content.mjs";
 import { listPage, postPage, rss, sitemap } from "./templates.mjs";
@@ -14,21 +15,31 @@ import { listPage, postPage, rss, sitemap } from "./templates.mjs";
 const SHELL = "blog.html";
 const DEV_ASSETS = '<script type="module" src="/src/blog/main.js"></script>';
 
-/** Maps a URL path to a generated document, or null when it is not a blog route. */
+/**
+ * Maps a URL path to a generated document, or null when it is not a blog route.
+ * English: /blog/..., /blog/category/<key>/   Spanish: /es/blog/..., /es/blog/categoria/<key>/
+ */
 function render(urlPath, posts, assets) {
   const p = urlPath.replace(/\/index\.html$/, "/");
   if (p === "/sitemap.xml") return { type: "application/xml", body: sitemap(posts) };
-  if (p === "/blog/rss.xml") return { type: "application/rss+xml", body: rss(posts) };
-  if (p === "/blog" || p === "/blog/") return { type: "text/html", body: listPage({ posts, assets }) };
 
-  const cat = p.match(/^\/blog\/category\/([a-z0-9-]+)\/?$/);
-  if (cat && CATEGORIES[cat[1]]) return { type: "text/html", body: listPage({ posts, category: cat[1], assets }) };
+  const m = p.match(/^(\/es)?\/blog(\/.*)?$/);
+  if (!m) return null;
+  const lang = m[1] ? "es" : "en";
+  const rest = (m[2] || "/").replace(/\/?$/, "/");
 
-  const post = p.match(/^\/blog\/([a-z0-9-]+)\/?$/);
+  if (rest === "/rss.xml/") return { type: "application/rss+xml", body: rss(posts, lang) };
+  if (rest === "/") return { type: "text/html", body: listPage({ posts, lang, assets }) };
+
+  const cat = rest.match(lang === "es" ? /^\/categoria\/([a-z0-9-]+)\/$/ : /^\/category\/([a-z0-9-]+)\/$/);
+  if (cat) return CATEGORIES[cat[1]] ? { type: "text/html", body: listPage({ posts, lang, category: cat[1], assets }) } : null;
+
+  const post = rest.match(/^\/([a-z0-9-]+)\/$/);
   if (post) {
-    const i = posts.findIndex((x) => x.slug === post[1]);
+    const same = posts.filter((x) => x.lang === lang);
+    const i = same.findIndex((x) => x.slug === post[1]);
     if (i === -1) return null;
-    return { type: "text/html", body: postPage({ post: posts[i], prev: posts[i + 1], next: posts[i - 1], assets }) };
+    return { type: "text/html", body: postPage({ post: same[i], prev: same[i + 1], next: same[i - 1], assets }) };
   }
   return null;
 }
@@ -50,7 +61,7 @@ export default function blogPlugin() {
       // Registered directly (not returned), so it runs before Vite's own HTML / SPA-fallback middlewares.
       server.middlewares.use(async (req, res, next) => {
         const urlPath = decodeURIComponent((req.url || "").split("?")[0]);
-        if (!urlPath.startsWith("/blog") && urlPath !== "/sitemap.xml") return next();
+        if (!/^(\/es)?\/blog(\/|$)/.test(urlPath) && urlPath !== "/sitemap.xml") return next();
         try {
           const out = render(urlPath, loadPosts({ includeDrafts: true }), DEV_ASSETS);
           if (!out) return next();
@@ -84,11 +95,15 @@ export default function blogPlugin() {
         this.emitFile({ type: "asset", fileName, source: out.body });
       };
 
-      emit("blog/index.html", "/blog/");
-      emit("blog/rss.xml", "/blog/rss.xml");
       emit("sitemap.xml", "/sitemap.xml");
-      for (const key of Object.keys(CATEGORIES)) emit(`blog/category/${key}/index.html`, `/blog/category/${key}/`);
-      for (const p of posts) emit(`blog/${p.slug}/index.html`, `/blog/${p.slug}/`);
+      for (const lang of ["en", "es"]) {
+        const base = lang === "es" ? "es/blog" : "blog";
+        const catSeg = lang === "es" ? "categoria" : "category";
+        emit(`${base}/index.html`, `/${base}/`);
+        emit(`${base}/rss.xml`, `/${base}/rss.xml`);
+        for (const key of Object.keys(CATEGORIES)) emit(`${base}/${catSeg}/${key}/index.html`, `/${base}/${catSeg}/${key}/`);
+        for (const p of posts.filter((x) => x.lang === lang)) emit(`${base}/${p.slug}/index.html`, `/${base}/${p.slug}/`);
+      }
 
       this.info?.(`blog: ${posts.length} post(s) published`);
     },

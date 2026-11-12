@@ -11,6 +11,7 @@ import { cn } from "@/lib/cn";
 import { requestRefresh } from "@/lib/gsap";
 import { fadeUp, fadeUpScale, STAGGER } from "@/lib/motion";
 import { STEPS, WAYPOINTS } from "@/constants/process";
+import { t } from "@/i18n";
 import TransferDiagram from "./TransferDiagram";
 import "./process.css";
 
@@ -62,7 +63,9 @@ function StepCard({ step, reached, dotRef }) {
         <span aria-hidden="true" className="md:hidden">
           ·
         </span>
-        <span className="whitespace-nowrap md:mt-1 md:basis-full lg:whitespace-normal lg:max-xl:min-h-[2.4em]">{step.phase}</span>
+        {/* md+: the phase has its own line, so it may wrap (the Spanish phases run 15-17 characters in the narrow
+            3-up cards at 768 px); below 768 it stays on the "{n} · {phase}" line. */}
+        <span className="whitespace-nowrap md:mt-1 md:basis-full md:whitespace-normal lg:max-xl:min-h-[2.4em]">{step.phase}</span>
       </p>
       <h3 className={cn("mt-4 text-h4 transition-colors duration-panel ease-ui", reached ? "text-ink-1" : "text-ink-3")}>
         {step.title}
@@ -239,10 +242,10 @@ export default function Process() {
     <Section ref={sectionRef} id="process" chapter="04" labelledBy="process-title">
       <SectionHeading
         index="04"
-        name="FLIGHT PLAN"
-        eyebrow="Process"
-        title="How we'll work together"
-        lead="Clear steps. No black box."
+        name={t({ en: "FLIGHT PLAN", es: "PLAN DE VUELO" })}
+        eyebrow={t({ en: "Process", es: "Proceso" })}
+        title={t({ en: "How we'll work together", es: "Cómo trabajaremos juntos" })}
+        lead={t({ en: "Clear steps. No black box.", es: "Pasos claros. Sin cajas negras." })}
         id="process-title"
       />
 
@@ -283,7 +286,7 @@ export default function Process() {
 
       <Reveal variants={ctaVariants} className="mt-12 flex max-lg:pl-12 lg:mt-14 lg:justify-end">
         <span ref={ctaRef} className="process-cta relative inline-flex rounded-pill" data-glint={glint ? "true" : undefined}>
-          <CalendlyButton placement="process" label="Start with a 30-min call" cursorLock />
+          <CalendlyButton placement="process" label={t({ en: "Start with a 30-min call", es: "Empieza con una llamada de 30 min" })} cursorLock />
           <span aria-hidden="true" data-glow="" className="process-glint" />
         </span>
       </Reveal>

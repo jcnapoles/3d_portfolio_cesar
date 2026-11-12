@@ -1,5 +1,6 @@
 import { cn } from "@/lib/cn";
 import useMotionPreference from "@/hooks/useMotionPreference";
+import { t } from "@/i18n";
 
 /**
  * The visible Motion On/Off switch (footer + mobile menu). It is the WCAG 2.2.2 pause control:
@@ -34,7 +35,7 @@ export default function MotionToggle({ className }) {
           )}
         />
       </span>
-      <span>{on ? "Motion: On" : "Motion: Off"}</span>
+      <span>{on ? t({ en: "Motion: On", es: "Animación: Sí" }) : t({ en: "Motion: Off", es: "Animación: No" })}</span>
     </button>
   );
 }

@@ -3,6 +3,7 @@ import BrowserFrame from "@/components/ui/BrowserFrame";
 import Picture from "@/components/ui/Picture";
 import useBrandIcons from "@/hooks/useBrandIcons";
 import { projectShots } from "@/assets/media";
+import { t } from "@/i18n";
 
 /**
  * FIG 03.4 — LIVE PRODUCT (viewBox 560 x 400).
@@ -78,7 +79,7 @@ export default function ClosevibeDiagram({ svgRef, fig }) {
         delay={0.9}
         className="whitespace-nowrap rounded-pill border border-ion/30 bg-space-800 px-2 py-1 font-mono text-[9px] font-medium uppercase leading-none tracking-[0.1em] text-ion sm:px-2.5 sm:py-1.5 sm:text-[11px] sm:tracking-[0.12em]"
       >
-        AI assistant
+        {t({ en: "AI assistant", es: "Asistente IA" })}
       </Pop>
     </>
   );

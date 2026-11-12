@@ -7,6 +7,7 @@ import Reveal from "@/components/ui/Reveal";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import useMotionPreference from "@/hooks/useMotionPreference";
 import { LINKS, PERSON } from "@/constants/site";
+import { t } from "@/i18n";
 import Globe from "./Globe";
 
 const ROWS = [
@@ -16,7 +17,7 @@ const ROWS = [
       <CalendlyButton
         variant="text"
         placement="contact"
-        label="Book a call (Calendly)"
+        label={t({ en: "Book a call (Calendly)", es: "Agendar llamada (Calendly)" })}
         icon="external"
         className="text-body"
       />
@@ -25,7 +26,7 @@ const ROWS = [
   { dt: "LINKEDIN", dd: <ExternalLink href={LINKS.linkedin}>linkedin.com/in/jcnapoles</ExternalLink> },
   { dt: "GITHUB", dd: <ExternalLink href={LINKS.github}>github.com/jcnapoles</ExternalLink> },
   {
-    dt: "BASE",
+    dt: t({ en: "BASE", es: "BASE" }),
     dd: (
       <span className="inline-flex items-start gap-2">
         <MapPin size={16} strokeWidth={1.75} aria-hidden="true" className="mt-[5px] shrink-0 text-ink-3" />
@@ -35,8 +36,8 @@ const ROWS = [
       </span>
     ),
   },
-  { dt: "LOCAL TIME", dd: <LocalTime prefix="TARRAGONA" className="text-[15px] tracking-[.02em]" /> },
-  { dt: "LANGUAGES", dd: "English · Spanish" },
+  { dt: t({ en: "LOCAL TIME", es: "HORA LOCAL" }), dd: <LocalTime prefix="TARRAGONA" className="text-[15px] tracking-[.02em]" /> },
+  { dt: t({ en: "LANGUAGES", es: "IDIOMAS" }), dd: t({ en: "English · Spanish", es: "Inglés · Español" }) },
 ];
 
 /**

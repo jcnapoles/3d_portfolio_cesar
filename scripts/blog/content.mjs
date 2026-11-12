@@ -7,29 +7,51 @@ import { Marked } from "marked";
 
 export const CONTENT_DIR = path.resolve("content/blog");
 
+/** One folder per language: content/blog/en/*.md, content/blog/es/*.md. Same file name = translations of each other. */
+export const LANGS = ["en", "es"];
+
 /**
- * The three editorial lines of the blog. `key` is the frontmatter value and the URL segment
- * (/blog/category/<key>/). Keep the list short: categories are navigation, tags are for detail.
+ * The three editorial lines of the blog. The key is the frontmatter value and the URL segment
+ * (/blog/category/<key>/, /es/blog/categoria/<key>/). Keep the list short: categories are navigation, tags are detail.
  */
 export const CATEGORIES = {
   "cto-log": {
-    label: "CTO Log",
-    hud: "FIELD NOTES",
-    description: "What happens in the CTO seat: decisions, trade-offs, teams, incidents and lessons learned.",
+    en: {
+      label: "CTO Log",
+      hud: "FIELD NOTES",
+      description: "What happens in the CTO seat: decisions, trade-offs, teams, incidents and lessons learned.",
+    },
+    es: {
+      label: "Bitácora CTO",
+      hud: "NOTAS DE CAMPO",
+      description: "Lo que pasa en la silla de CTO: decisiones, compromisos, equipos, incidentes y lecciones aprendidas.",
+    },
   },
   launch: {
-    label: "Launches",
-    hud: "PRODUCT LAUNCHES",
-    description: "Products I build or lead: launches, new features and why they exist.",
+    en: {
+      label: "Launches",
+      hud: "PRODUCT LAUNCHES",
+      description: "Products I build or lead: launches, new features and why they exist.",
+    },
+    es: {
+      label: "Lanzamientos",
+      hud: "LANZAMIENTOS",
+      description: "Productos que construyo o lidero: lanzamientos, novedades y por qué existen.",
+    },
   },
   signal: {
-    label: "Signals",
-    hud: "INCOMING SIGNALS",
-    description: "Tech and industry news, with a CTO's take on what it means for startups and SMEs.",
+    en: {
+      label: "Signals",
+      hud: "INCOMING SIGNALS",
+      description: "Tech and industry news, with a CTO's take on what it means for startups and SMEs.",
+    },
+    es: {
+      label: "Señales",
+      hud: "SEÑALES ENTRANTES",
+      description: "Noticias de tecnología y del sector, con la lectura de un CTO sobre lo que significan para startups y pymes.",
+    },
   },
 };
-
-const LANGS = ["en", "es"];
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const WORDS_PER_MINUTE = 220;
@@ -88,7 +110,7 @@ function fail(file, message) {
 }
 
 /** Validates one file's frontmatter and returns a normalised post object (with rendered HTML). */
-function parsePost(file) {
+function parsePost(file, lang) {
   const raw = fs.readFileSync(file, "utf8");
   const { data, content } = matter(raw);
 
@@ -100,8 +122,7 @@ function parsePost(file) {
   if (!CATEGORIES[data.category]) fail(file, `\`category\` must be one of: ${Object.keys(CATEGORIES).join(", ")}`);
   if (!data.summary) fail(file, "missing `summary` (1-2 sentences, used in cards, meta description and RSS)");
 
-  const lang = data.lang || "en";
-  if (!LANGS.includes(lang)) fail(file, `\`lang\` must be one of: ${LANGS.join(", ")}`);
+  if (data.lang && data.lang !== lang) fail(file, `\`lang: ${data.lang}\` does not match its folder (${lang}); drop the field, the folder decides`);
 
   // Slug: frontmatter `slug`, else the file name without an optional leading YYYY-MM-DD- prefix.
   const base = path.basename(file, ".md").replace(/^\d{4}-\d{2}-\d{2}-/, "");
@@ -129,6 +150,7 @@ function parsePost(file) {
   const words = content.split(/\s+/).filter(Boolean).length;
 
   return {
+    key: path.basename(file, ".md"),
     slug,
     title: String(data.title),
     summary: String(data.summary).trim(),
@@ -151,27 +173,34 @@ function parsePost(file) {
 }
 
 /**
- * All posts, newest first.
+ * All posts of every language, newest first, each with `lang` and `alternate` (the same post in the other
+ * language, when it exists and is published too).
  * - Files whose name starts with "_" (templates) and README.md are ignored.
  * - In production (`includeDrafts: false`) drafts and future-dated posts are left out, so publishing is
  *   "set draft: false and merge"; a future date publishes on the first deploy on or after that day.
  */
 export function loadPosts({ includeDrafts = false, today = new Date().toISOString().slice(0, 10) } = {}) {
-  if (!fs.existsSync(CONTENT_DIR)) return [];
-  const files = fs
-    .readdirSync(CONTENT_DIR)
-    .filter((f) => f.endsWith(".md") && !f.startsWith("_") && f.toLowerCase() !== "readme.md")
-    .map((f) => path.join(CONTENT_DIR, f));
-
-  const posts = files.map(parsePost);
-  const slugs = new Map();
-  for (const p of posts) {
-    if (slugs.has(p.slug)) throw new Error(`[blog] duplicate slug "${p.slug}" in ${slugs.get(p.slug)} and ${p.file}`);
-    slugs.set(p.slug, p.file);
+  const all = [];
+  for (const lang of LANGS) {
+    const dir = path.join(CONTENT_DIR, lang);
+    if (!fs.existsSync(dir)) continue;
+    const posts = fs
+      .readdirSync(dir)
+      .filter((f) => f.endsWith(".md") && !f.startsWith("_") && f.toLowerCase() !== "readme.md")
+      .map((f) => ({ ...parsePost(path.join(dir, f), lang), lang }));
+    const slugs = new Map();
+    for (const p of posts) {
+      if (slugs.has(p.slug)) throw new Error(`[blog] duplicate ${lang} slug "${p.slug}" in ${slugs.get(p.slug)} and ${p.file}`);
+      slugs.set(p.slug, p.file);
+    }
+    all.push(...posts);
   }
 
-  return posts
+  const visible = all
     .map((p) => ({ ...p, scheduled: p.date > today }))
     .filter((p) => includeDrafts || (!p.draft && !p.scheduled))
     .sort((a, b) => (a.date === b.date ? a.title.localeCompare(b.title) : a.date < b.date ? 1 : -1));
+
+  for (const p of visible) p.alternate = visible.find((q) => q.key === p.key && q.lang !== p.lang) || null;
+  return visible;
 }

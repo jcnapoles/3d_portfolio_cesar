@@ -48,16 +48,22 @@ if (menu && opener && typeof menu.showModal === "function") {
   opener.hidden = true;
 }
 
-/* Copy link. */
+/* Copy link (labels come from the page, in its language). */
+let copyLabels = { idle: "Copy link", done: "Link copied", fail: "Copy failed" };
+try {
+  copyLabels = { ...copyLabels, ...JSON.parse(document.body.dataset.copyLabels || "{}") };
+} catch {
+  /* keep defaults */
+}
 document.querySelectorAll("[data-copy-link]").forEach((button) => {
   const label = button.querySelector("[data-copy-label]");
   button.addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(button.dataset.copyLink);
-      if (label) label.textContent = "Link copied";
+      if (label) label.textContent = copyLabels.done;
     } catch {
-      if (label) label.textContent = "Copy failed";
+      if (label) label.textContent = copyLabels.fail;
     }
-    setTimeout(() => label && (label.textContent = "Copy link"), 2000);
+    setTimeout(() => label && (label.textContent = copyLabels.idle), 2000);
   });
 });

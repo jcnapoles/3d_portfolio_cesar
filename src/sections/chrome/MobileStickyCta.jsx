@@ -4,6 +4,7 @@ import { EASE } from "@/lib/motion";
 import { ANCHORS } from "@/constants/site";
 import CalendlyButton from "@/components/ui/CalendlyButton";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { t } from "@/i18n";
 
 /** Resolves `find()` now or as soon as it appears in the DOM. Returns a cleanup. */
 function whenPresent(find, cb) {
@@ -97,7 +98,7 @@ function StickyCta() {
           className="fixed bottom-[max(12px,env(safe-area-inset-bottom))] left-4 right-[96px] z-sticky md:hidden"
         >
           <div className="h-16 rounded-pill border-t border-line bg-space-800/[.92] p-1 shadow-hi-top">
-            <CalendlyButton placement="sticky" label="Book a 30-min call" size="lg" fullWidth />
+            <CalendlyButton placement="sticky" label={t({ en: "Book a 30-min call", es: "Agenda una llamada de 30 min" })} size="lg" fullWidth />
           </div>
         </m.div>
       ) : null}

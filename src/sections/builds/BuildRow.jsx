@@ -5,6 +5,7 @@ import Picture from "@/components/ui/Picture";
 import RevealItem from "@/components/ui/RevealItem";
 import StatusDot from "@/components/ui/StatusDot";
 import { projectShots } from "@/assets/media";
+import { t } from "@/i18n";
 
 /**
  * One build. A card below 1024 px (inline screenshot), a typographic index row from 1024 px whose
@@ -32,9 +33,15 @@ export default function BuildRow({ build, index, active = false }) {
             rel="noopener noreferrer"
             className="build-link after:absolute after:inset-0 after:z-[1] after:content-['']"
           >
-            <span className="sr-only">{live ? "Visit " : "Open "}</span>
+            <span className="sr-only">
+              {live ? t({ en: "Visit ", es: "Visitar la web de " }) : t({ en: "Open ", es: "Abrir la vista previa de " })}
+            </span>
             <span className="build-name-text">{name}</span>
-            <span className="sr-only">{live ? " live site (opens in a new tab)" : " preview (opens in a new tab)"}</span>
+            <span className="sr-only">
+              {live
+                ? t({ en: " live site (opens in a new tab)", es: " (se abre en una pestaña nueva)" })
+                : t({ en: " preview (opens in a new tab)", es: " (se abre en una pestaña nueva)" })}
+            </span>
           </a>
         </h3>
 
@@ -47,12 +54,12 @@ export default function BuildRow({ build, index, active = false }) {
             {lead ? (
               <>
                 <span className="sr-only">, </span>
-                <Chip tone="ion">Platform I lead</Chip>
+                <Chip tone="ion">{t({ en: "Platform I lead", es: "Plataforma que lidero" })}</Chip>
               </>
             ) : null}
           </p>
           <div className="build-stack">
-            <span className="sr-only">{lead ? "Stack: " : "Built with: "}</span>
+            <span className="sr-only">{lead ? "Stack: " : t({ en: "Built with: ", es: "Hecho con: " })}</span>
             <ul className="flex flex-wrap gap-1.5">
               {stack.slice(0, 3).map((tech) => (
                 <li key={tech}>
@@ -67,25 +74,25 @@ export default function BuildRow({ build, index, active = false }) {
           <p className="build-code">
             <ExternalLink
               href={code}
-              srHint={`for ${name} (opens in a new tab)`}
+              srHint={t({ en: `for ${name} (opens in a new tab)`, es: `de ${name} (se abre en una pestaña nueva)` })}
               className="relative z-[2] inline-flex items-center text-small coarse:min-h-11"
             >
-              View code
+              {t({ en: "View code", es: "Ver código" })}
             </ExternalLink>
           </p>
         ) : null}
 
         <p className="build-status flex items-center gap-2 font-mono text-[12px] uppercase leading-none tracking-[0.14em]">
-          <span className="sr-only">Status: </span>
+          <span className="sr-only">{t({ en: "Status: ", es: "Estado: " })}</span>
           {live ? (
             <>
               <StatusDot />
-              <span className="text-ink-1">Live</span>
+              <span className="text-ink-1">{t({ en: "Live", es: "En línea" })}</span>
             </>
           ) : (
             <>
               <span aria-hidden="true" className="inline-block size-2 shrink-0 rounded-full border border-ink-3" />
-              <span className="text-ink-3">Preview</span>
+              <span className="text-ink-3">{t({ en: "Preview", es: "Vista previa" })}</span>
             </>
           )}
         </p>
@@ -102,7 +109,7 @@ export default function BuildRow({ build, index, active = false }) {
         <div className="build-media">
           <Picture
             image={shot}
-            alt={`${name} screenshot`}
+            alt={t({ en: `${name} screenshot`, es: `Captura de pantalla de ${name}` })}
             sizes="(min-width: 640px) calc(50vw - 44px), calc(100vw - 58px)"
             className="block size-full"
             imgClassName="size-full object-cover object-top"

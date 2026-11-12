@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import useMotionPreference from "@/hooks/useMotionPreference";
+import { isEs } from "@/i18n";
 
 // Spec 6.5, tile C. Four mono nodes on a 4-column grid: centers at 12.5 / 37.5 / 62.5 / 87.5 %.
-const STAGES = ["BUILD", "TEST", "REVIEW", "DEPLOY"];
+const STAGES = isEs ? ["COMPILAR", "PROBAR", "REVISAR", "DESPLEGAR"] : ["BUILD", "TEST", "REVIEW", "DEPLOY"];
 const ROW = "flex flex-col items-center gap-3";
 const DOT_Y = "top-[13px]"; // indicator center (26 px circle)
 

@@ -2,9 +2,13 @@ import { Fragment, useRef } from "react";
 import StarGlyph from "@/components/ui/StarGlyph";
 import useInViewport from "@/hooks/useInViewport";
 import { cn } from "@/lib/cn";
+import { t } from "@/i18n";
 import "./kinetic-strip.css";
 
-const WORDS = ["STRATEGY", "ARCHITECTURE", "TEAMS", "CLOUD", "AI", "PRODUCT"];
+const WORDS = t({
+  en: ["STRATEGY", "ARCHITECTURE", "TEAMS", "CLOUD", "AI", "PRODUCT"],
+  es: ["ESTRATEGIA", "ARQUITECTURA", "EQUIPOS", "CLOUD", "IA", "PRODUCTO"],
+});
 const REPEATS = 3; // each row is repeated three times for width
 
 function Row({ className }) {

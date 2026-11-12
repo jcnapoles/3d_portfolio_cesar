@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { cn } from "@/lib/cn";
 import { HERO_COPY } from "@/constants/hero";
+import { isEs, t } from "@/i18n";
 
 /** One H1 word inside a CSS mask; `i` drives the rise stagger (hero.css). */
 function Word({ i, children }) {
@@ -22,10 +23,22 @@ const HeroHeadline = forwardRef(function HeroHeadline({ className }, periodRef) 
   return (
     <h1 id="hero-title" className={cn("text-ink-1", className)}>
       <span className="block text-display-xl stretch-112 text-ink-1">
-        <Word i={0}>Senior</Word> <Word i={1}>tech</Word>
-        <br />
+        {/* Spanish reorders the adjectives ("Liderazgo técnico sénior"): same three words, same --i stagger. Line 1
+            holds the long noun alone; "técnico sénior." may wrap between its two words on narrow columns. */}
+        {isEs ? (
+          <>
+            <Word i={0}>Liderazgo</Word>
+            <br />
+            <Word i={1}>técnico</Word>{" "}
+          </>
+        ) : (
+          <>
+            <Word i={0}>Senior</Word> <Word i={1}>tech</Word>
+            <br />
+          </>
+        )}
         <span className="whitespace-nowrap">
-          <Word i={2}>leadership</Word>
+          <Word i={2}>{t({ en: "leadership", es: "sénior" })}</Word>
           <span className="sr-only">.</span>
           <span
             ref={periodRef}

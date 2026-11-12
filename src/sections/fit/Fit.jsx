@@ -8,6 +8,7 @@ import Reveal from "@/components/ui/Reveal";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { fadeUp, fadeUpScale, STAGGER } from "@/lib/motion";
 import { FIT_CARDS } from "@/constants/fit";
+import { t } from "@/i18n";
 
 // FIT_CARDS[].icon -> lucide-react 1.57.0 export (all four exist in that version).
 const ICONS = { Gauge, Compass, GitBranch, UsersRound };
@@ -38,15 +39,20 @@ export default function Fit() {
         <div className="contents lg:sticky lg:top-[120px] lg:col-span-5 lg:block lg:self-start">
           <SectionHeading
             index="01"
-            name="BRIEFING"
-            eyebrow="Is this you?"
-            title="Built for founders who can't afford the wrong tech bet"
+            name={t({ en: "BRIEFING", es: "BRIEFING" })}
+            eyebrow={t({ en: "Is this you?", es: "¿Te ves aquí?" })}
+            title={t({
+              en: "Built for founders who can't afford the wrong tech bet",
+              es: "Para fundadores que no pueden fallar en su apuesta técnica",
+            })}
             id="fit-title"
             className="order-1 lg:order-none lg:mb-10"
           />
           <Reveal variants={closingVariants} className="order-3 mt-12 sm:mt-14 lg:order-none lg:mt-0">
-            <p className="max-w-[26ch] text-lead text-ink-1">Sound familiar? Let&apos;s talk it through.</p>
-            <CalendlyButton placement="fit" label="Book a call" size="md" cursorLock className="mt-6" />
+            <p className="max-w-[26ch] text-lead text-ink-1">
+              {t({ en: "Sound familiar? Let's talk it through.", es: "¿Te suena? Hablémoslo." })}
+            </p>
+            <CalendlyButton placement="fit" label={t({ en: "Book a call", es: "Agenda una llamada" })} size="md" cursorLock className="mt-6" />
           </Reveal>
         </div>
 

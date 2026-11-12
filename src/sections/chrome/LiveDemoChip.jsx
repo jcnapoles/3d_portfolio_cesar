@@ -5,6 +5,7 @@ import { EASE } from "@/lib/motion";
 import { readSession, writeSession } from "@/lib/storage";
 import { ANCHORS } from "@/constants/site";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { t } from "@/i18n";
 
 const SESSION_KEY = "cn:demochip";
 const VISIBLE_MS = 8000;
@@ -106,13 +107,16 @@ function DemoChip() {
             className="pointer-events-auto flex max-w-[380px] items-start gap-3 rounded-sm border border-line-strong bg-space-800/[.96] py-2.5 pl-3.5 pr-1.5 shadow-hi-top"
           >
             <p className="py-0.5 font-mono text-[13px] leading-[1.45] text-ink-1">
-              <span className="text-ion">LIVE DEMO</span>
+              <span className="text-ion">{t({ en: "LIVE DEMO", es: "DEMO EN VIVO" })}</span>
               <span className="text-ink-3"> · </span>
-              This assistant runs on Closevibe, the AI SaaS I co-founded.
+              {t({
+                en: "This assistant runs on Closevibe, the AI SaaS I co-founded.",
+                es: "Este asistente funciona con Closevibe, el SaaS de IA que cofundé.",
+              })}
             </p>
             <button
               type="button"
-              aria-label="Dismiss"
+              aria-label={t({ en: "Dismiss", es: "Cerrar" })}
               onClick={() => setShow(false)}
               className="-my-1 inline-flex size-8 shrink-0 items-center justify-center rounded-xs text-ink-3 transition-colors duration-ui ease-ui hover:bg-white/[.06] hover:text-ink-1"
             >

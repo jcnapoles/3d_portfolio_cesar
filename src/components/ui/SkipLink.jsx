@@ -1,5 +1,6 @@
 import { scrollToId } from "@/lib/scroll";
 import useLenis from "@/hooks/useLenis";
+import { t } from "@/i18n";
 
 /**
  * First focusable element: "Skip to content" -> #main. sr-only until focused, then a gold pill top-left.
@@ -21,7 +22,7 @@ export default function SkipLink() {
       onClick={onClick}
       className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-skip focus:inline-flex focus:h-11 focus:items-center focus:rounded-pill focus:bg-gold focus:px-5 focus:text-button focus:text-void focus:shadow-glow-cta"
     >
-      Skip to content
+      {t({ en: "Skip to content", es: "Saltar al contenido" })}
     </a>
   );
 }

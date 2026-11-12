@@ -7,6 +7,7 @@ import Reveal from "@/components/ui/Reveal";
 import StarGlyph from "@/components/ui/StarGlyph";
 import useInViewport from "@/hooks/useInViewport";
 import { ANCHORS } from "@/constants/site";
+import { t } from "@/i18n";
 import SuccessPanel from "./SuccessPanel";
 import { HONEYPOT_FIELD, TURNSTILE_TOKEN_FIELD } from '../../../netlify/shared/form-fields.js';
 
@@ -55,11 +56,16 @@ const INPUT =
 /** Plain-language message for a field the browser's constraint validation rejected. */
 const invalidMessage = (el) => {
   if (el.validity.valueMissing) {
-    if (el.name === "name") return "Please enter your name.";
-    if (el.name === "email") return "Please enter your email address.";
-    return "Please tell me what you need help with.";
+    if (el.name === "name") return t({ en: "Please enter your name.", es: "Escribe tu nombre." });
+    if (el.name === "email") return t({ en: "Please enter your email address.", es: "Escribe tu dirección de email." });
+    return t({ en: "Please tell me what you need help with.", es: "Cuéntame en qué necesitas ayuda." });
   }
-  if (el.validity.typeMismatch) return "Please enter a valid email address, like jane@company.com.";
+  if (el.validity.typeMismatch) {
+    return t({
+      en: "Please enter a valid email address, like jane@company.com.",
+      es: "Escribe una dirección de email válida, como laura@empresa.com.",
+    });
+  }
   return el.validationMessage;
 };
 
@@ -169,26 +175,41 @@ export default function ContactForm({ className, onSuccess }) {
     const details = `${error?.message || ''} ${error?.error || ''}`.toLowerCase();
 
     if (error?.status === 429) {
-      return 'You have already sent a few messages. Please wait a little while before trying again.';
+      return t({
+        en: 'You have already sent a few messages. Please wait a little while before trying again.',
+        es: 'Ya has enviado varios mensajes. Espera un poco antes de volver a intentarlo.',
+      });
     }
 
     if (error?.code === 'failed_verification') {
-      return 'We could not verify your submission. Please try sending it again.';
+      return t({
+        en: 'We could not verify your submission. Please try sending it again.',
+        es: 'No hemos podido verificar el envío. Prueba a enviarlo de nuevo.',
+      });
     }
 
     if (error?.status === 403) {
-      return 'This submission was blocked. Please send your message from your email app instead.';
+      return t({
+        en: 'This submission was blocked. Please send your message from your email app instead.',
+        es: 'Se ha bloqueado el envío. Envía tu mensaje desde tu aplicación de correo.',
+      });
     }
 
     if (details.includes('missing environment variables')) {
-      return 'Contact form is not configured yet. Please try again later or use the email app button.';
+      return t({
+        en: 'Contact form is not configured yet. Please try again later or use the email app button.',
+        es: 'El formulario aún no está configurado. Inténtalo más tarde o usa el botón de la aplicación de correo.',
+      });
     }
 
     if (error?.status >= 500) {
-      return 'Email service is temporarily unavailable. You can send the message directly from your email app.';
+      return t({
+        en: 'Email service is temporarily unavailable. You can send the message directly from your email app.',
+        es: 'El servicio de email no está disponible ahora mismo. Puedes enviar el mensaje directamente desde tu aplicación de correo.',
+      });
     }
 
-    return 'Something went wrong. Please try again.';
+    return t({ en: 'Something went wrong. Please try again.', es: 'Algo ha fallado. Inténtalo de nuevo.' });
   };
 
   const handleChange = (e) => {
@@ -205,13 +226,16 @@ export default function ContactForm({ className, onSuccess }) {
     e.preventDefault();
 
     if (!form.name || !form.email || !form.message) {
-      setNotification({ message: 'Please fill in all fields.', type: 'error', linkText: '', linkHref: '' });
+      setNotification({ message: t({ en: 'Please fill in all fields.', es: 'Rellena todos los campos.' }), type: 'error', linkText: '', linkHref: '' });
       return;
     }
 
     if (TURNSTILE_SITE_KEY && !turnstileToken) {
       setNotification({
-        message: 'Still checking you are human. Please try again in a moment.',
+        message: t({
+          en: 'Still checking you are human. Please try again in a moment.',
+          es: 'Aún estamos comprobando que eres humano. Inténtalo de nuevo en un momento.',
+        }),
         type: 'error',
         linkText: '',
         linkHref: '',
@@ -243,7 +267,10 @@ export default function ContactForm({ className, onSuccess }) {
       }
 
       setNotification({
-        message: 'Thank you. I will get back to you as soon as possible.',
+        message: t({
+          en: 'Thank you. I will get back to you as soon as possible.',
+          es: 'Gracias. Te responderé lo antes posible.',
+        }),
         type: 'success',
         linkText: '',
         linkHref: '',
@@ -259,7 +286,7 @@ export default function ContactForm({ className, onSuccess }) {
       setNotification({
         message: getResendErrorMessage(error),
         type: 'error',
-        linkText: 'Open email app',
+        linkText: t({ en: 'Open email app', es: 'Abrir app de correo' }),
         linkHref: buildMailtoLink(),
       });
     } finally {
@@ -339,14 +366,17 @@ export default function ContactForm({ className, onSuccess }) {
       className={cn("card-k1 relative isolate scroll-mt-2 rounded-xl p-8 lg:p-10", className)}
     >
       <div inert={success ? "" : undefined} aria-hidden={success ? true : undefined}>
-        <h3 className="text-h3 text-ink-1">Tell me what you're building</h3>
+        <h3 className="text-h3 text-ink-1">{t({ en: "Tell me what you're building", es: "Cuéntame qué estás construyendo" })}</h3>
         <p className="mt-3 max-w-[48ch] text-body text-ink-2">
-          Prefer writing to talking? Send a few lines and I'll reply by email.
+          {t({
+            en: "Prefer writing to talking? Send a few lines and I'll reply by email.",
+            es: "¿Prefieres escribir a hablar? Mándame unas líneas y te responderé por email.",
+          })}
         </p>
 
         <form ref={formRef} onSubmit={handleSubmit} className="mt-8 flex flex-col gap-6 lg:mt-10">
           <div className="grid gap-6 sm:grid-cols-2">
-            <Field id={FIELD_IDS.name} label="Name" error={fieldErrors.name}>
+            <Field id={FIELD_IDS.name} label={t({ en: "Name", es: "Nombre" })} error={fieldErrors.name}>
               <input
                 ref={nameRef}
                 id={FIELD_IDS.name}
@@ -355,7 +385,7 @@ export default function ContactForm({ className, onSuccess }) {
                 value={form.name}
                 onChange={handleFieldChange}
                 onInvalid={handleInvalid}
-                placeholder="Jane Doe"
+                placeholder={t({ en: "Jane Doe", es: "Laura García" })}
                 autoComplete="name"
                 required
                 {...errorProps("name")}
@@ -370,7 +400,7 @@ export default function ContactForm({ className, onSuccess }) {
                 value={form.email}
                 onChange={handleFieldChange}
                 onInvalid={handleInvalid}
-                placeholder="jane@company.com"
+                placeholder={t({ en: "jane@company.com", es: "laura@empresa.com" })}
                 autoComplete="email"
                 spellCheck={false}
                 required
@@ -380,7 +410,7 @@ export default function ContactForm({ className, onSuccess }) {
             </Field>
           </div>
 
-          <Field id={FIELD_IDS.message} label="What do you need help with?" error={fieldErrors.message}>
+          <Field id={FIELD_IDS.message} label={t({ en: "What do you need help with?", es: "¿En qué necesitas ayuda?" })} error={fieldErrors.message}>
             <textarea
               id={FIELD_IDS.message}
               rows={5}
@@ -388,7 +418,10 @@ export default function ContactForm({ className, onSuccess }) {
               value={form.message}
               onChange={handleFieldChange}
               onInvalid={handleInvalid}
-              placeholder="Your product, your team, and the problem you want solved."
+              placeholder={t({
+                en: "Your product, your team, and the problem you want solved.",
+                es: "Tu producto, tu equipo y el problema que quieres resolver.",
+              })}
               required
               {...errorProps("message")}
               className={cn(
@@ -414,7 +447,7 @@ export default function ContactForm({ className, onSuccess }) {
               overflow: 'hidden',
             }}
           >
-            <label htmlFor={HONEYPOT_FIELD}>Leave this field empty</label>
+            <label htmlFor={HONEYPOT_FIELD}>{t({ en: "Leave this field empty", es: "Deja este campo vacío" })}</label>
             <input
               type='text'
               id={HONEYPOT_FIELD}
@@ -449,7 +482,7 @@ export default function ContactForm({ className, onSuccess }) {
               <button
                 type="button"
                 onClick={closeNotification}
-                aria-label="Dismiss"
+                aria-label={t({ en: "Dismiss", es: "Cerrar" })}
                 className="-my-1 grid size-8 shrink-0 place-items-center rounded-sm text-danger/80 transition-colors duration-micro ease-ui hover:bg-danger/10 hover:text-danger coarse:size-11"
               >
                 <X size={16} strokeWidth={2} aria-hidden="true" />
@@ -481,20 +514,27 @@ export default function ContactForm({ className, onSuccess }) {
               {loading ? (
                 <span className="inline-flex items-center gap-2">
                   <StarGlyph size={14} className="motion-ok:animate-[spin_1.2s_linear_infinite]" />
-                  Sending…
+                  {t({ en: "Sending…", es: "Enviando…" })}
                 </span>
               ) : (
-                "Send message"
+                t({ en: "Send message", es: "Enviar mensaje" })
               )}
             </Button>
           </div>
 
-          <p className="text-small text-ink-3">Your details are used only to reply to your message.</p>
+          <p className="text-small text-ink-3">
+            {t({
+              en: "Your details are used only to reply to your message.",
+              es: "Tus datos solo se usan para responder a tu mensaje.",
+            })}
+          </p>
         </form>
       </div>
 
       <p role="status" aria-live="polite" className="sr-only">
-        {success ? "Thanks, your message is in. I'll reply by email." : ""}
+        {success
+          ? t({ en: "Thanks, your message is in. I'll reply by email.", es: "Gracias, he recibido tu mensaje. Te responderé por email." })
+          : ""}
       </p>
 
       <AnimatePresence>{success ? <SuccessPanel key="success" onReset={sendAnother} /> : null}</AnimatePresence>

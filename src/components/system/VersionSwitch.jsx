@@ -1,5 +1,6 @@
 import { cn } from "@/lib/cn";
 import { originFrom, useVersion } from "@/providers/versionContext";
+import { t } from "@/i18n";
 
 /** 'loading' while the 2024 chunk is fetched or the warp runs, 'error' after a failed fetch, else 'idle'. */
 const stateOf = (status) => (status === "loading" || status === "warping" ? "loading" : status === "error" ? "error" : "idle");
@@ -48,14 +49,21 @@ export function EraIcon({ size = 20, tone = "ink", className }) {
 export function VersionPill() {
   const { status, switchTo, preload } = useVersion();
   const state = stateOf(status);
-  const text = state === "loading" ? "Loading 2024" : state === "error" ? "Retry 2024" : "2024 version";
+  const text =
+    state === "loading"
+      ? t({ en: "Loading 2024", es: "Cargando 2024" })
+      : state === "error"
+        ? t({ en: "Retry 2024", es: "Reintentar 2024" })
+        : t({ en: "2024 version", es: "Versión 2024" });
 
   return (
     <div className="pointer-events-none fixed left-0 top-1/2 z-rail hidden -translate-y-1/2 lg:block">
       <button
         type="button"
         data-state={state}
-        aria-label={state === "idle" ? "View the 2024 site (2024 version)" : undefined}
+        aria-label={
+          state === "idle" ? t({ en: "View the 2024 site (2024 version)", es: "Ver la web de 2024 (versión 2024)" }) : undefined
+        }
         aria-busy={state === "loading" || undefined}
         onPointerDown={preload}
         onClick={(e) => switchTo("legacy", originFrom(e))}
@@ -70,7 +78,7 @@ export function VersionPill() {
         <span className="cn-era-tab-text font-mono text-hud-xs uppercase">{text}</span>
         {state === "idle" ? (
           <span aria-hidden="true" className="cn-era-tip text-small font-medium text-ink-1">
-            View the 2024 site
+            {t({ en: "View the 2024 site", es: "Ver la web de 2024" })}
           </span>
         ) : null}
       </button>
@@ -94,10 +102,10 @@ export function VersionSwitchLink({ className, iconSize = 16 }) {
       <EraIcon size={iconSize} />
       <span>
         {state === "loading"
-          ? "Loading the 2024 version…"
+          ? t({ en: "Loading the 2024 version…", es: "Cargando la versión 2024…" })
           : state === "error"
-            ? "Retry the 2024 version"
-            : "View the 2024 version"}
+            ? t({ en: "Retry the 2024 version", es: "Reintentar la versión 2024" })
+            : t({ en: "View the 2024 version", es: "Ver la versión 2024" })}
       </span>
     </button>
   );
@@ -124,8 +132,21 @@ export function LegacyReturnPill() {
         )}
       >
         <EraIcon tone="gold" />
+        {/* es: "Volver a 2026" below 640 (the hidden span is display:none, so the accessible name matches),
+            "Volver a la versión 2026" from 640. */}
         <span>
-          Back to <span className="max-sm:hidden">the </span>2026<span className="max-sm:sr-only"> site</span>
+          {t({
+            en: (
+              <>
+                Back to <span className="max-sm:hidden">the </span>2026<span className="max-sm:sr-only"> site</span>
+              </>
+            ),
+            es: (
+              <>
+                Volver a <span className="max-sm:hidden">la versión </span>2026
+              </>
+            ),
+          })}
         </span>
       </button>
     </div>
@@ -143,18 +164,23 @@ export function LegacyNotice({ state = "loading", onRetry }) {
       {loading ? (
         <div role="status" data-state="loading" className="cn-era-trigger flex flex-col items-center gap-4 text-ink-2">
           <EraIcon size={32} />
-          <p className="font-mono text-hud uppercase">Loading the 2024 site</p>
+          <p className="font-mono text-hud uppercase">{t({ en: "Loading the 2024 site", es: "Cargando la web de 2024" })}</p>
         </div>
       ) : (
         <div role="alert" className="flex max-w-[40ch] flex-col items-center gap-4">
-          <p className="text-lead text-ink-1">The 2024 site could not be shown on this device.</p>
+          <p className="text-lead text-ink-1">
+            {t({
+              en: "The 2024 site could not be shown on this device.",
+              es: "No se ha podido mostrar la web de 2024 en este dispositivo.",
+            })}
+          </p>
           {state === "failed" && onRetry ? (
             <button
               type="button"
               onClick={onRetry}
               className="inline-flex h-11 items-center rounded-pill border border-line-strong px-5 text-small font-medium text-ink-1 hover:border-ink-3"
             >
-              Try again
+              {t({ en: "Try again", es: "Reintentar" })}
             </button>
           ) : null}
         </div>

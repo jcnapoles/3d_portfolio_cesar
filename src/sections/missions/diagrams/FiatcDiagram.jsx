@@ -4,6 +4,8 @@
  * orbit on the right, and a bottom axis with ticks labelled AUDIT · ROADMAP · CI/CD.
  * The satellite runs on the LIFERAY (target) orbit. `fig` carries the shared primitives from MissionCard.
  */
+import { t } from "@/i18n";
+
 const AXIS_Y = 300;
 const MAJOR = [140, 280, 420];
 const minorTicks = () => {
@@ -41,13 +43,13 @@ export default function FiatcDiagram({ svgRef, fig }) {
       <Satellite orbit={{ cx: 380, cy: 180, rx: 130, ry: 52 }} parkDeg={300} />
 
       <Label x={150} y={222} place="below" delay={0.35}>
-        Legacy CMS
+        {t({ en: "Legacy CMS", es: "CMS heredado" })}
       </Label>
       <Label x={380} y={180} tone="ion" delay={0.45}>
         Liferay
       </Label>
       <Label x={MAJOR[0]} y={AXIS_Y + 16} place="below" delay={tickDelay(0)}>
-        Audit
+        {t({ en: "Audit", es: "Auditoría" })}
       </Label>
       <Label x={MAJOR[1]} y={AXIS_Y + 16} place="below" delay={tickDelay(1)}>
         Roadmap

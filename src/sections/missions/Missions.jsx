@@ -12,6 +12,7 @@ import useLenisScroll from "@/hooks/useLenisScroll";
 import { fadeUpScale } from "@/lib/motion";
 import { NAV_OFFSET } from "@/constants/site";
 import { MISSIONS, MISSIONS_FOOTER } from "@/constants/missions";
+import { t } from "@/i18n";
 import MissionCard from "./MissionCard";
 import "./missions.css";
 
@@ -197,11 +198,11 @@ export default function Missions() {
     <Section ref={sectionRef} id="results" chapter="03" labelledBy="results-title">
       <SectionHeading
         index="03"
-        name="MISSIONS"
-        eyebrow="Results"
-        title="Selected work"
-        lead="The problem, what I did, and what changed."
-        hudRight="5 MISSION FILES"
+        name={t({ en: "MISSIONS", es: "MISIONES" })}
+        eyebrow={t({ en: "Results", es: "Resultados" })}
+        title={t({ en: "Selected work", es: "Trabajo destacado" })}
+        lead={t({ en: "The problem, what I did, and what changed.", es: "El problema, lo que hice y lo que cambió." })}
+        hudRight={t({ en: "5 MISSION FILES", es: "5 EXPEDIENTES DE MISIÓN" })}
         id="results-title"
       />
 
@@ -243,9 +244,9 @@ export default function Missions() {
       <Reveal className="mt-24 flex flex-col items-center text-center">
         <p className="max-w-[60ch] text-lead text-ink-1">{MISSIONS_FOOTER.line}</p>
         <div className="mt-8 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
-          <CalendlyButton placement="results" label="Book a call" size="lg" cursorLock />
+          <CalendlyButton placement="results" label={t({ en: "Book a call", es: "Agendar llamada" })} size="lg" cursorLock />
           <Button variant="ghost" size="lg" href="#about" icon="down">
-            See my full career
+            {t({ en: "See my full career", es: "Ver mi trayectoria completa" })}
           </Button>
         </div>
       </Reveal>

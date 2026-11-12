@@ -4,7 +4,6 @@ summary: "One or two sentences: what the reader gets from this post."
 date: 2026-01-01
 category: cto-log
 tags: []
-lang: en
 draft: true
 ---
 

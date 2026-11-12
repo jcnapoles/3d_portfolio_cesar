@@ -6,6 +6,7 @@ import ScrambleText from "@/components/ui/ScrambleText";
 import useLenis from "@/hooks/useLenis";
 import useActiveChapter from "@/hooks/useActiveChapter";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { t } from "@/i18n";
 import "@/sections/chrome/chrome.css";
 
 const ROW = 24; // px: each link is a 32 x 24 hit area
@@ -72,7 +73,7 @@ export default function MissionRail() {
   };
 
   return (
-    <nav aria-label="Chapters" className="fixed right-6 top-1/2 z-rail hidden -translate-y-1/2 min-[1360px]:block">
+    <nav aria-label={t({ en: "Chapters", es: "Capítulos" })} className="fixed right-6 top-1/2 z-rail hidden -translate-y-1/2 min-[1360px]:block">
       <div className="rail-body relative" data-hidden={heroInView ? "true" : "false"}>
         {/* Active label, centred on the active tick (decorative: every link carries its own sr-only label). */}
         <div aria-hidden="true" className="pointer-events-none absolute right-full top-0 mr-1">

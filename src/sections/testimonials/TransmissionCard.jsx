@@ -7,6 +7,8 @@ import { cn } from "@/lib/cn";
 import { DUR, EASE } from "@/lib/motion";
 import { testimonialPhotos } from "@/assets/media";
 import useMotionPreference from "@/hooks/useMotionPreference";
+// Aliased: `t` is the transmission prop in this file.
+import { t as tr } from "@/i18n";
 
 const OPEN_QUOTE = "“";
 const CLOSE_QUOTE = "”";
@@ -295,7 +297,7 @@ export default function TransmissionCard({ transmission: t, featured = false, co
       ) : null}
       <figure className="flex h-full flex-col">
         <div aria-hidden="true" className={cn("flex flex-wrap items-center gap-x-[.6em] gap-y-1.5 font-mono text-hud-xs uppercase text-ink-3", compact && "xl:tracking-[.08em]")}>
-          <span>INCOMING TRANSMISSION ·</span>
+          <span>{tr({ en: "INCOMING TRANSMISSION ·", es: "TRANSMISIÓN ENTRANTE ·" })}</span>
           <span>
             {t.rx} · {t.org}
           </span>
@@ -329,10 +331,21 @@ export default function TransmissionCard({ transmission: t, featured = false, co
             </p>
             <ExternalLink
               href={t.linkedin}
-              srHint="(opens LinkedIn in a new tab)"
+              srHint={tr({ en: "(opens LinkedIn in a new tab)", es: "(abre LinkedIn en una pestaña nueva)" })}
               className="mt-1 inline-block text-small coarse:inline-flex coarse:min-h-11 coarse:items-center"
             >
-              LinkedIn<span className="sr-only"> profile of {t.name}</span>
+              {tr({
+                en: (
+                  <>
+                    LinkedIn<span className="sr-only"> profile of {t.name}</span>
+                  </>
+                ),
+                es: (
+                  <>
+                    <span className="sr-only">Perfil de </span>LinkedIn<span className="sr-only"> de {t.name}</span>
+                  </>
+                ),
+              })}
             </ExternalLink>
           </div>
         </figcaption>
