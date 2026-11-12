@@ -117,13 +117,13 @@ export default function Navbar() {
           <nav aria-label="Primary" className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block">
             <ul className="flex items-center">
               {NAV_LINKS.map((link) => {
-                const active = link.chapter === chapter;
+                const active = !link.href && link.chapter === chapter;
                 return (
                   <li key={link.id}>
                     <a
-                      href={`#${link.id}`}
+                      href={link.href || `#${link.id}`}
                       aria-current={active ? "true" : undefined}
-                      onClick={(e) => handleAnchorClick(e, link.id, lenis)}
+                      onClick={link.href ? undefined : (e) => handleAnchorClick(e, link.id, lenis)}
                       className={cn(
                         "relative flex h-10 items-center rounded-pill px-3.5 text-small transition-colors duration-ui ease-ui coarse:h-11",
                         active ? "text-ink-1" : "text-ink-2 hover:text-ink-1"

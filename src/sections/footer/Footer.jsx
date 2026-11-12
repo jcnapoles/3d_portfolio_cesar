@@ -24,6 +24,7 @@ const NAVIGATE = [
   { id: "results", label: "Results" },
   { id: "process", label: "Process" },
   { id: "about", label: "About" },
+  { id: "blog", label: "Blog", href: LINKS.blog },
   { id: "contact", label: "Contact" },
 ];
 
@@ -134,7 +135,7 @@ export default function Footer() {
             <ul className={LIST}>
               {NAVIGATE.map((l) => (
                 <li key={l.id}>
-                  <a href={`#${l.id}`} onClick={(e) => onAnchor(e, l.id)} className={LINK}>
+                  <a href={l.href || `#${l.id}`} onClick={l.href ? undefined : (e) => onAnchor(e, l.id)} className={LINK}>
                     {l.label}
                   </a>
                 </li>

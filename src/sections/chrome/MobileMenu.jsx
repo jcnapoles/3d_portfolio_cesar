@@ -185,14 +185,14 @@ export default function MobileMenu({ open, onClose, toggleRef, headerRef, active
                     (polish 3 hairline rhythm; 14 px left only 8 px). */}
                 <m.ul variants={list} initial="hidden" animate="show" className="border-t border-line">
                   {NAV_LINKS.map((link, i) => {
-                    const active = link.chapter === activeChapter;
+                    const active = !link.href && link.chapter === activeChapter;
                     return (
                       <m.li key={link.id} variants={item} className="border-b border-line">
                         <a
                           ref={i === 0 ? firstLinkRef : undefined}
-                          href={`#${link.id}`}
+                          href={link.href || `#${link.id}`}
                           aria-current={active ? "true" : undefined}
-                          onClick={(e) => go(e, link.id)}
+                          onClick={link.href ? undefined : (e) => go(e, link.id)}
                           className="group flex items-center gap-5 py-[18px]"
                         >
                           <span aria-hidden="true" className="hud-label w-6 shrink-0 tabular">
