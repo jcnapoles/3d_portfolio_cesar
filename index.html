@@ -20,6 +20,8 @@
         d.dataset.tier = reduced ? 'C' : base;
         d.dataset.pointer = fine ? 'fine' : 'coarse';
         d.dataset.visit = launched ? 'repeat' : 'first';
+        // Language switch transition (src/i18n/switch.js): fade in from the curtain the last page faded to.
+        try { if (sessionStorage.getItem('cn:lang-switch')) { sessionStorage.removeItem('cn:lang-switch'); if (!reduced) { d.classList.add('lang-entering'); var done = function () { d.classList.remove('lang-entering'); }; d.addEventListener('animationend', function (e) { if (e.animationName === 'lang-curtain-out') done(); }); setTimeout(done, 4000); } } } catch (e) {}
       })();
     </script>
     <title>Cesar Napoles | Fractional CTO for Startups &amp; SMEs</title>

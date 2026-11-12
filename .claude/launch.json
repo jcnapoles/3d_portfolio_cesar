@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "portfolio-dev",
+      "runtimeExecutable": "npm.cmd",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5173", "--strictPort"],
+      "port": 5173
+    },
+    {
+      "name": "foundation-dev",
+      "runtimeExecutable": "npm.cmd",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5181", "--strictPort"],
+      "port": 5181
+    },
+    {
+      "name": "integration-dev",
+      "runtimeExecutable": "npm.cmd",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5199", "--strictPort"],
+      "port": 5199
+    },
+    {
+      "name": "integration-preview",
+      "runtimeExecutable": "npm.cmd",
+      "runtimeArgs": ["run", "preview", "--", "--port", "5198", "--strictPort"],
+      "port": 5198
+    }
+  ]
+}

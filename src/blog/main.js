@@ -2,6 +2,7 @@
 import "@/index.css";
 import "@/sections/chrome/chrome.css";
 import "./blog.css";
+import { switchLanguage } from "@/i18n/switch";
 
 const SCROLLED_AT = 24;
 const header = document.querySelector("[data-blog-nav]");
@@ -47,6 +48,15 @@ if (menu && opener && typeof menu.showModal === "function") {
 } else if (opener) {
   opener.hidden = true;
 }
+
+/* Language switch: same curtain transition as the home page. */
+document.querySelectorAll("a[data-lang-switch]").forEach((a) =>
+  a.addEventListener("click", (e) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    switchLanguage(a.href);
+  })
+);
 
 /* Copy link (labels come from the page, in its language). */
 let copyLabels = { idle: "Copy link", done: "Link copied", fail: "Copy failed" };

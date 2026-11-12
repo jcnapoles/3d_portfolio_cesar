@@ -4,6 +4,7 @@
 // Tailwind scans this file (tailwind.config.cjs `content`), so utility classes here are generated.
 import { CATEGORIES } from "./content.mjs";
 import { SITE_URL, PERSON, LINKS, calendlyUrl } from "../../src/constants/site.js";
+import { FLAGS } from "../../src/i18n/flags.js";
 
 /* ---------- Paths ---------- */
 
@@ -65,7 +66,8 @@ const UI = {
     older: "&larr; Older",
     newer: "Newer &rarr;",
     readIn: "Leer en español",
-    switchAria: "Ver en español",
+    switchAria: "Language: English. Ver en español",
+    switchTitle: "Ver en español",
     rssTitle: "Cesar Napoles: Mission Log",
     ogLocale: "en_US",
     dateLocale: "en-GB",
@@ -118,7 +120,8 @@ const UI = {
     older: "&larr; Anterior",
     newer: "Siguiente &rarr;",
     readIn: "Read in English",
-    switchAria: "View in English",
+    switchAria: "Idioma: español. View in English",
+    switchTitle: "View in English",
     rssTitle: "Cesar Napoles: Bitácora de misión",
     ogLocale: "es_ES",
     dateLocale: "es-ES",
@@ -153,14 +156,14 @@ const BTN_PRIMARY =
 const BTN_GHOST =
   "inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-pill border border-line-strong bg-white/[.04] px-5 text-small font-medium text-ink-1 transition-colors duration-ui ease-ui hover:border-ink-3 hover:bg-white/[.07]";
 const SWITCH =
-  "inline-flex h-10 items-center gap-1 rounded-pill px-2.5 font-mono text-hud-xs uppercase text-ink-2 transition-colors duration-ui ease-ui hover:bg-white/[.06] hover:text-ink-1 coarse:h-11";
+  "inline-flex h-10 items-center gap-1.5 rounded-pill px-2.5 font-mono text-hud-xs uppercase text-ink-2 transition-colors duration-ui ease-ui hover:bg-white/[.06] hover:text-ink-1 coarse:h-11";
 
 /* ---------- Chrome ---------- */
 
 /** `alt` is the same page in the other language (a translated post, else the other blog index). */
 function languageSwitch(lang, alt) {
   const other = lang === "es" ? "en" : "es";
-  return `<a href="${alt}" hreflang="${other}" lang="${other}" data-lang-switch="${other}" aria-label="${UI[lang].switchAria}" class="${SWITCH}"><span aria-hidden="true" class="text-ink-1">${lang.toUpperCase()}</span><span aria-hidden="true" class="text-ink-3">/</span><span aria-hidden="true">${other.toUpperCase()}</span></a>`;
+  return `<a href="${alt}" hreflang="${other}" lang="${other}" data-lang-switch="${other}" aria-label="${UI[lang].switchAria}" title="${UI[lang].switchTitle}" class="${SWITCH}"><span aria-hidden="true" class="inline-flex">${FLAGS[lang]}</span><span aria-hidden="true" class="text-ink-1">${lang.toUpperCase()}</span></a>`;
 }
 
 function header(lang, alt) {
@@ -265,6 +268,7 @@ export function layout({ lang, title, description, path, alternates = {}, switch
         var reduced = pref ? pref === 'reduced' : !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
         d.dataset.motion = reduced ? 'reduced' : 'full';
         d.dataset.pointer = window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches ? 'fine' : 'coarse';
+        try { if (sessionStorage.getItem('cn:lang-switch')) { sessionStorage.removeItem('cn:lang-switch'); if (!reduced) { d.classList.add('lang-entering'); var done = function () { d.classList.remove('lang-entering'); }; d.addEventListener('animationend', function (e) { if (e.animationName === 'lang-curtain-out') done(); }); setTimeout(done, 4000); } } } catch (e) {}
       })();
     </script>
     <title>${esc(title)}</title>
