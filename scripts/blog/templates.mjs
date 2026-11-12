@@ -268,9 +268,18 @@ export function layout({ lang, title, description, path, alternates = {}, switch
         var reduced = pref ? pref === 'reduced' : !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
         d.dataset.motion = reduced ? 'reduced' : 'full';
         d.dataset.pointer = window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches ? 'fine' : 'coarse';
-        try { if (sessionStorage.getItem('cn:lang-switch')) { sessionStorage.removeItem('cn:lang-switch'); if (!reduced) { d.classList.add('lang-entering'); var done = function () { d.classList.remove('lang-entering'); }; d.addEventListener('animationend', function (e) { if (e.animationName === 'lang-curtain-out') done(); }); setTimeout(done, 4000); } } } catch (e) {}
+        try { if (sessionStorage.getItem('cn:lang-switch')) { sessionStorage.removeItem('cn:lang-switch'); if (!reduced) { d.classList.add('lang-entering'); var finished = false, reveal = function () { if (!finished) d.classList.add('lang-ready'); }; window.addEventListener('load', function () { requestAnimationFrame(function () { requestAnimationFrame(reveal); }); }); setTimeout(reveal, 1500); var done = function () { finished = true; d.classList.remove('lang-entering', 'lang-ready'); }; d.addEventListener('animationend', function (e) { if (e.animationName === 'lang-curtain-out') done(); }); setTimeout(done, 3000); } } } catch (e) {}
       })();
     </script>
+    <style>
+      /* Language-change curtain: same rules as index.html (inline so it works before the stylesheets load). */
+      html.lang-leaving::after, html.lang-entering::after { content: ""; position: fixed; inset: 0; z-index: 2147483647; pointer-events: none; background: radial-gradient(120% 80% at 50% 0%, rgba(244,184,96,.07), transparent 60%), #05060A; }
+      html.lang-leaving::after { animation: lang-curtain-in .26s cubic-bezier(.4,0,1,1) both; }
+      html.lang-entering.lang-ready::after { animation: lang-curtain-out .6s cubic-bezier(.2,.7,.2,1) both; }
+      html.lang-leaving body { cursor: progress; }
+      @keyframes lang-curtain-in { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes lang-curtain-out { from { opacity: 1; } to { opacity: 0; } }
+    </style>
     <title>${esc(title)}</title>
     <meta name="description" content="${esc(description)}" />
     <link rel="canonical" href="${url}" />
