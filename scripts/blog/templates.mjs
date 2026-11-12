@@ -3,7 +3,7 @@
 // small enhancements (scrolled nav, mobile menu, reading progress, copy link).
 // Tailwind scans this file (tailwind.config.cjs `content`), so utility classes here are generated.
 import { CATEGORIES } from "./content.mjs";
-import { SITE_URL, PERSON, LINKS, bookingUrl } from "../../src/constants/site.js";
+import { SITE_URL, PERSON, LINKS, NAV_ITEMS, bookingUrl } from "../../src/constants/site.js";
 import { FLAGS } from "../../src/i18n/flags.js";
 
 /* ---------- Paths ---------- */
@@ -26,7 +26,6 @@ const UI = {
     tagline: "Fractional CTO for startups and SMEs. Strategy, architecture and teams that ship.",
     bio: "Fractional CTO for startups and SMEs. 12+ years building and scaling software in banking, fintech, insurance and e-commerce.",
     location: "Tarragona, Spain",
-    nav: [["/#services", "Services"], ["/#results", "Results"], ["/#about", "About"], ["BLOG", "Blog"], ["/#contact", "Contact"]],
     home: "Home",
     homeAria: "Cesar Napoles, Fractional CTO: home",
     book: "Book",
@@ -80,7 +79,6 @@ const UI = {
     tagline: "CTO fraccional para startups y pymes. Estrategia, arquitectura y equipos que entregan.",
     bio: "CTO fraccional para startups y pymes. Más de 12 años construyendo y escalando software en banca, fintech, seguros y e-commerce.",
     location: "Tarragona, España",
-    nav: [["/es/#services", "Servicios"], ["/es/#results", "Resultados"], ["/es/#about", "Sobre mí"], ["BLOG", "Blog"], ["/es/#contact", "Contacto"]],
     home: "Inicio",
     homeAria: "Cesar Napoles, CTO fraccional: inicio",
     book: "Reservar",
@@ -168,11 +166,17 @@ function languageSwitch(lang, alt) {
 
 function header(lang, alt) {
   const u = UI[lang];
-  const nav = u.nav.map(([href, label]) => ({ href: href === "BLOG" ? blogPath(lang) : href, label, blog: href === "BLOG" }));
+  // Same links, order and classes as the home navbar (NAV_ITEMS, src/sections/chrome/Navbar.jsx).
+  const nav = NAV_ITEMS.map((l) => ({
+    href: l.page ? blogPath(lang) : `${homePath(lang)}#${l.id}`,
+    label: l.label[lang],
+    blog: !!l.page,
+    wideOnly: !!l.wideOnly,
+  }));
   const links = nav
     .map(
       (l) =>
-        `<li><a href="${l.href}"${l.blog ? ' aria-current="true"' : ""} class="relative flex h-10 items-center rounded-pill px-3.5 text-small transition-colors duration-ui ease-ui ${l.blog ? "text-ink-1" : "text-ink-2 hover:text-ink-1"}">${l.label}<span aria-hidden="true" class="nav-dot absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-gold shadow-[0_0_6px_rgba(244,184,96,.8)]"></span></a></li>`
+        `<li${l.wideOnly ? ' class="hidden xl:block"' : ""}><a href="${l.href}"${l.blog ? ' aria-current="true"' : ""} class="relative flex h-10 items-center whitespace-nowrap rounded-pill px-2.5 text-small xl:px-3.5 transition-colors duration-ui ease-ui ${l.blog ? "text-ink-1" : "text-ink-2 hover:text-ink-1"}">${l.label}<span aria-hidden="true" class="nav-dot absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-gold shadow-[0_0_6px_rgba(244,184,96,.8)]"></span></a></li>`
     )
     .join("");
   const menuLinks = nav
